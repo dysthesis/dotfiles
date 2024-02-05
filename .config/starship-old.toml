@@ -1,0 +1,100 @@
+      
+add_newline = true
+format ="""\
+[╭╴](238) $os   \
+$all[╰─󰁔](237)$character"""
+      
+[character]
+success_symbol = ""
+error_symbol = ""
+
+[container]
+symbol = " 󰏖"
+format = "[$symbol ](yellow dimmed)"
+
+[username]
+style_user = "white"
+style_root = "black"
+format = "[$user]($style) "
+show_always = true
+ 
+[directory]
+truncation_length = 3
+truncation_symbol = "…/"
+home_symbol = "󰋞 ~"
+read_only_style = "197"
+read_only = "  "
+format = "at [$path]($style)[$read_only]($read_only_style) "
+
+[directory.substitutions]
+"documents" = " "
+"downloads" = " "
+"media/music" = " "
+"media/pictures" = " "
+"media/videos" = " "
+"dev" = "󱌢 "
+"skl" = "󰑴 "
+".config" = " "
+
+[os]
+disabled = false
+style = "bold white"
+format = "[$symbol]($style)"
+
+[os.symbols] 
+Arch = ""
+Artix = ""
+Debian = ""
+EndeavourOS = ""
+Fedora = ""
+NixOS = ""
+openSUSE = ""
+SUSE = ""
+Ubuntu = ""
+Raspbian = ""
+Gentoo = ""
+CentOS = ""
+Mint = ""
+Alpine = ""
+Manjaro = ""
+Macos = "󰀵"
+Linux = ""
+Windows = ""
+
+[python]
+symbol = ""
+format = "[$symbol ](yellow)"
+[nodejs]
+symbol = " "
+format = "[$symbol ](yellow)"
+[lua]
+symbol = "󰢱"
+format = "[$symbol ](blue)"
+[rust]
+symbol = ""
+format = "[$symbol ](red)"
+[docker_context]
+symbol = ""
+format = "[$symbol ](blue)"
+
+[java]
+symbol = ""
+format = "[$symbol ](red)"
+[c]
+symbol = ""
+format = "[$symbol ](blue)"
+
+[golang]
+symbol = ""
+format = "[$symbol ](blue)"
+
+[battery]
+disabled = true
+
+[git_branch]
+symbol = "󰊢 "
+format = "on [$symbol$branch]($style) "
+truncation_length = 4
+truncation_symbol = "…/"
+style = "bold green"
+
