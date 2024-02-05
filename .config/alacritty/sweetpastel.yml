@@ -1,0 +1,36 @@
+# name: SweetPastel
+# author: Deathemonic
+# maintainer: Deathemonic
+# license: MIT
+# upstream: https://github.com/sweetpastel/sweet-terms
+# blurb: a smooth pinkish color scheme inspired by pastel foods
+
+colors:
+  # Default colors
+  primary:
+    background: '#000000'
+    foreground: '#ffffff'
+
+  # Normal colors
+  normal:
+    black:   '#161a1e'
+    red:     '#e5a3a1'
+    green:   '#b4e3ad'
+    yellow:  '#ece3b1'
+    blue:    '#a3cbe7'
+    magenta: '#ceace8'
+    cyan:    '#c9d4ff'
+    white:   '#eeeff0'
+
+  # Bright colors
+  bright:
+    black:   '#43474b'
+    red:     '#f9b7b5'
+    green:   '#c8f7c1'
+    yellow:  '#fff7c5'
+    blue:    '#b7dffb'
+    magenta: '#e2c0fc'
+    cyan:    '#dde8ff'
+    white:   '#f8f9fa'
+
+# vim:ft=alacritty
