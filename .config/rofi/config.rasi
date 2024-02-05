@@ -1,0 +1,12 @@
+configuration {
+	show-icons: false;
+	drun-display-format: "<b>{name}</b>";
+	cycle: false;
+	sidebar-mode: false;
+	m: "-1";
+	click-to-exit: false;
+    modi: "drun,window,calc";
+}
+
+
+@theme "~/.config/rofi/themes/default.rasi"

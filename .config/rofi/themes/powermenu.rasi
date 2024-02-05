@@ -1,0 +1,57 @@
+configuration {
+    show-icons:                     false;
+    disable-history:                false;
+	sidebar-mode: 					false;
+}
+
+* {
+    background-color:               #000000;
+    text-color:                     #ffffff;
+}
+
+window {
+    transparency:                   "real";
+    border-radius:                  10px;
+    width:                          357px;
+    location:                       center;
+    x-offset:                       -5px;
+    y-offset:                       0px;
+}
+
+listview {
+    lines:							5;
+    margin:                         8px;
+    spacing:                        8px;
+    cycle:                          true;
+    dynamic:                        true;
+    layout:                         horizontal;
+}
+
+mainbox {
+    background-color:               @background-color;
+    children:                       [ listview ];
+}
+
+element {
+    background-color:               #0f0f0f;
+    text-color:                     #d6dcdc;
+    orientation:                    vertical;
+    border-radius:                  10px;
+}
+
+element-text {
+    background-color: 				inherit;
+    text-color:       				inherit;
+	font:							"JetBrainsMono Nerd Font 20";
+    expand:                         true;
+    horizontal-align:               0.5;
+    vertical-align:                 0.5;
+    margin:                         30px 30px 30px 30px;
+}
+element selected {
+    background-color:               #1f1f1f;
+    text-color:                     #ffffff;
+    border:                  		0px;
+    border-radius:                  10px;
+    border-color:                  	@bg;
+}
