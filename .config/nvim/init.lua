@@ -20,7 +20,7 @@ require("lazy").setup({
     -- Git related plugins
     'tpope/vim-fugitive',
     'tpope/vim-rhubarb',
-
+    'norcalli/nvim-colorizer.lua',
     -- Detect tabstop and shiftwidth automatically
     'tpope/vim-sleuth',
     { 'folke/which-key.nvim', opts = {} },
@@ -29,7 +29,7 @@ require("lazy").setup({
   {
     -- Options
   })
-
+require 'colorizer'.setup()
 -- Modules
 require("config.keybinds")
 require("config.autocomplete")
