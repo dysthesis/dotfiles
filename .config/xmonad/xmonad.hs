@@ -43,8 +43,9 @@ import XMonad.Layout.Tabbed (Theme (activeColor, activeBorderColor, activeTextCo
 import qualified XMonad.Util.Hacks as Hacks
 import XMonad.Actions.TopicSpace (TopicItem (TI), inHome, Dir, currentTopicDir, TopicConfig (topicDirs, defaultTopicAction, topicActions, defaultTopic), tiDirs, tiActions, Topic, switchTopic, currentTopicAction, topicNames, noAction)
 import XMonad.Prompt.Workspace (workspacePrompt)
-import XMonad.Actions.Search (promptSearch, hoogle, scholar, SearchEngine, searchEngine)
+import XMonad.Actions.Search (promptSearch, hoogle, scholar, SearchEngine, searchEngine, wikipedia, rustStd)
 import XMonad.Util.Ungrab ( unGrab )
+
 {-- VARIABLES:
  - Define some basic settings for XMonad here. This includes the modifier keys, default terminal emulator, window borders, etc. --}
 myModMask :: KeyMask
@@ -123,6 +124,8 @@ myKeys =
   , ("M-f a", promptSearch myXPConfig archWiki)
   , ("M-f h", promptSearch myXPConfig hoogle)
   , ("M-f s", promptSearch myXPConfig scholar)
+  , ("M-f w", promptSearch myXPConfig wikiless)
+  , ("M-f r", promptSearch myXPConfig rustStd)
   ]
 
 {- Topics -}
@@ -174,6 +177,9 @@ archWiki = searchEngine "Arch Linux Wiki" "https://wiki.archlinux.org/index.php?
 
 gentooWiki :: SearchEngine
 gentooWiki = searchEngine "Gentoo Linux Wiki" "https://wiki.gentoo.org/index.php?title=Special:Search&search="
+
+wikiless :: SearchEngine
+wikiless = searchEngine "Wikiless" "https://wikiless.org/wiki/Special:Search?go=Go&search="
 
 {- Scratchpads -}
 myScratchpads :: [NamedScratchpad]
@@ -276,8 +282,12 @@ myXPConfig = def
   }
 
 {-- XMOBAR --}
+-- xmobar0 = statusBarPropTo "_XMONAD_LOG_1" "xmobar -x 0 ~/.config/xmobar/xmobar0.hs" (pure myXmobarPP)
+-- xmobar1 = statusBarPropTo "_XMONAD_LOG_2" "xmobar -x 1 ~/.config/xmobar/xmobar1.hs" (pure myXmobarPP)
+xmobar0 :: StatusBarConfig
 xmobar0 = statusBarPropTo "_XMONAD_LOG_1" "xmobar -x 0 ~/.config/xmobar/xmobar0.hs" (pure myXmobarPP)
-xmobar1 = statusBarPropTo "_XMONAD_LOG_2" "xmobar -x 1 ~/.config/xmobar/xmobar1.hs" (pure myXmobarPP)
+xmobar1 :: StatusBarConfig
+xmobar1 = statusBarPropTo "_XMONAD_LOG_2" "xmobar -x 1 ~/.config/xmobar/xmobar1.hs" (pure myXmobarPP2)
 
 myXmobarPP :: PP
 myXmobarPP = def
@@ -304,6 +314,32 @@ myXmobarPP = def
         wrapSep = wrap 
             (xmobarColor "#0f0f0f" "#000000:6" (xmobarFont 2 "\xe0b4"))
             (xmobarColor "#0f0f0f" "#000000:6" (xmobarFont 2 "\xe0b6"))
+myXmobarPP2 :: PP
+myXmobarPP2 = def
+    { ppCurrent          = xmobarColor "#CEACE8" "#0f0f0f:5" . xmobarFont 4
+    , ppVisibleNoWindows = Just (xmobarColor "#A9B1D6" "#0f0f0f:5")
+    , ppVisible          = xmobarColor "#A3CBE7" "#0f0f0f:5"
+    , ppHidden           = xmobarColor "#DDE8FF" "#0f0f0f:5"
+    -- , ppHiddenNoWindows  = xmobarColor "#6B7089" "#0f0f0f:5"  -- Uncomment this line to also show hidden workspaces without windows.
+    , ppUrgent           = xmobarColor "#E5A3A1" "#0f0f0f:5" . wrap "!" "!"
+    , ppTitle            = xmobarColor "#ffffff" "#0f0f0f:5" {- . shorten 49 -}
+    , ppSep              = wrapSep " "
+    , ppTitleSanitize    = xmobarStrip . shorten 30
+    , ppWsSep            = xmobarColor "" "#0f0f0f:5" "   "
+    , ppLayout           = xmobarColor "#B4E3AD" "#0f0f0f:5"
+    -- , ppLayout           = xmobarColor "#0f0f0f" ""
+    --                        . (\case
+    --                            "Spacing Tall"        -> "<icon=tiled.xpm/>"
+    --                            "Mirror Spacing Tall" -> "<icon=mirrortiled.xpm/>"
+    --                            "Full"        -> "<icon=full.xpm/>"
+    --                          )
+    }
+    where
+        wrapSep :: String -> String
+        wrapSep = wrap
+            (xmobarColor "#0f0f0f" "#000000:6" (xmobarFont 2 "\xe0b4"))
+            (xmobarColor "#0f0f0f" "#000000:6" (xmobarFont 2 "\xe0b6"))
+
 
 {-- MANAGE HOOK --}
 myManageHook :: ManageHook
