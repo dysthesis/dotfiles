@@ -13,3 +13,12 @@ alias la='eza -la --icons'
 alias lst='eza --tree --icons'
 alias llt='eza -l --tree --icons'
 alias lat='eza -la --tree --icons'
+
+function ya
+	set tmp (mktemp -t "yazi-cwd.XXXXX")
+	yazi $argv --cwd-file="$tmp"
+	if set cwd (cat -- "$tmp"); and [ -n "$cwd" ]; and [ "$cwd" != "$PWD" ]
+		cd -- "$cwd"
+	end
+	rm -f -- "$tmp"
+end

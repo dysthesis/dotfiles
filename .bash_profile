@@ -6,6 +6,8 @@ if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
     exec startx
 fi
 
+export PATH="/home/apollyon/.cargo/bin:${PATH}"
+
 if [[ -f ~/.bashrc ]] ; then
 	. ~/.bashrc
 fi
