@@ -9,7 +9,7 @@ import qualified XMonad.StackSet as W
 import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.SpawnOnce ( spawnOnce )
 import XMonad.Util.ClickableWorkspaces ( clickablePP )
-
+import XMonad.Util.Types ( Direction2D(L, R, U, D) )
 {-- Layouts --}
 import XMonad.Layout.ThreeColumns ( ThreeCol(ThreeColMid) )
 import XMonad.Layout.Spacing ( spacing )
@@ -39,12 +39,16 @@ import XMonad.Hooks.ManageHelpers (isDialog)
 import XMonad.Prompt (XPConfig (font, bgColor, fgColor, bgHLight, fgHLight, position, borderColor, autoComplete, height, sorter, searchPredicate, alwaysHighlight), XPPosition (Top))
 import XMonad.Prompt.OrgMode (orgPrompt)
 import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
-import XMonad.Layout.Tabbed (Theme (activeColor, activeBorderColor, activeTextColor, activeBorderWidth, inactiveColor, inactiveTextColor, inactiveBorderColor, inactiveBorderWidth, fontName, decoHeight, decoWidth), shrinkText, tabbed)
+import XMonad.Layout.Tabbed (Theme (activeColor, activeBorderColor, activeTextColor, activeBorderWidth, inactiveColor, inactiveTextColor, inactiveBorderColor, inactiveBorderWidth, fontName, decoHeight, decoWidth), shrinkText, tabbed, addTabs)
 import qualified XMonad.Util.Hacks as Hacks
 import XMonad.Actions.TopicSpace (TopicItem (TI), inHome, Dir, currentTopicDir, TopicConfig (topicDirs, defaultTopicAction, topicActions, defaultTopic), tiDirs, tiActions, Topic, switchTopic, currentTopicAction, topicNames, noAction)
 import XMonad.Prompt.Workspace (workspacePrompt)
 import XMonad.Actions.Search (promptSearch, hoogle, scholar, SearchEngine, searchEngine, wikipedia, rustStd)
-import XMonad.Util.Ungrab ( unGrab )
+import XMonad.Operations (unGrab)
+import XMonad.Layout.SubLayouts (subLayout, pullGroup, subTabbed, GroupMsg (UnMerge))
+import XMonad.Layout.Simplest (Simplest(Simplest))
+import XMonad.Layout.WindowNavigation (windowNavigation)
+import XMonad.Layout.BoringWindows (boringWindows)
 
 {-- VARIABLES:
  - Define some basic settings for XMonad here. This includes the modifier keys, default terminal emulator, window borders, etc. --}
@@ -108,14 +112,20 @@ myKeys =
   , ("M-c", orgPrompt myXPConfig "TODO" "~/Org/GTD/inbox.org")
   , ("M-S-p", promote)
   -- Layout keybinds
-  , ("M-; t", switchToLayout "Spacing Tall")
+  , ("M-; t", switchToLayout "Spacing Tabbed Tall")
   , ("M-; w", switchToLayout "Mirror Spacing Tall")
   , ("M-; f", switchToLayout "Full")
   , ("M-; 3", switchToLayout "Spacing ThreeCol")
   , ("M-; a", switchToLayout "Tabbed Simplest")
+  , ("M-S-a", sendMessage $ pullGroup L)
+  , ("M-S-d", sendMessage $ pullGroup R)
+  , ("M-S-w", sendMessage $ pullGroup U)
+  , ("M-S-s", sendMessage $ pullGroup D)
+  , ("M-S-u", withFocused (sendMessage . UnMerge))
+
   -- TopicSpaces
   , ("M-n"        , spawnShell)
-  , ("M-S-a"      , currentTopicAction myTopicConfig)
+  -- , ("M-S-a"      , currentTopicAction myTopicConfig)
   , ("M-g"        , promptedGoto)
   , ("M-S-g"      , promptedShift)
 
@@ -131,7 +141,7 @@ myKeys =
 {- Topics -}
 topicItems :: [TopicItem]
 topicItems =
-  [ inHome  "1:WEB"   (spawn "firefox")
+  [ inHome  "1:WEB"                             (  spawn "firefox")
   , TI      "2:UNI"   "Documents/University"    (  spawn "firefox --profile /home/apollyon/.mozilla/firefox/University"
                                                 *> spawn myEditor)
   , inHome  "3:CHAT"                            (  spawn "flatpak run io.github.spacingbat3.webcord"
@@ -257,7 +267,7 @@ myTabConfig = def
 myLayout = avoidStruts $ tiled ||| Mirror tiled ||| Full ||| threeCol ||| tabs
   where
     tabs = tabbed shrinkText myTabConfig
-    tiled   = spacing gaps $ Tall nmaster delta ratio
+    tiled   = spacing gaps $ windowNavigation $ subTabbed $ boringWindows $ Tall nmaster delta ratio
     threeCol = spacing gaps $ ThreeColMid nmaster delta ratio
     nmaster = 1      -- Default number of windows in the master pane
     ratio   = 1/2    -- Default proportion of screen occupied by master pane
