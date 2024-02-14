@@ -13,6 +13,7 @@ alias la='eza -la --icons'
 alias lst='eza --tree --icons'
 alias llt='eza -l --tree --icons'
 alias lat='eza -la --tree --icons'
+alias cse-ssh='ssh z5437039@login9.cse.unsw.edu.au'
 
 function ya
 	set tmp (mktemp -t "yazi-cwd.XXXXX")
