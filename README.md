@@ -1,10 +1,10 @@
 These are dotfiles for my PC running Gentoo Linux, with the following details:
 
-- *Window manager:* XMonad
-- *Bar:* Polybar
-- *Notification daemon:* dunst
-- *Editor:* Neovim
-- *Terminal emulator:* st-flexipatch
+- **Window manager:** XMonad
+- **Bar:** Polybar
+- **Notification daemon:** dunst
+- **Editor:** Neovim
+- **Terminal emulator:** st-flexipatch
 
 
 # Replicating
