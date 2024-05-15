@@ -4,6 +4,7 @@ if status is-interactive
     set -x SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
     gpgconf --launch gpg-agent
     fastfetch
+    task
 end
 
 zoxide init fish | source
