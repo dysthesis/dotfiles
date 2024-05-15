@@ -10,40 +10,35 @@ import XMonad.Util.ClickableWorkspaces (clickablePP)
 import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.SpawnOnce (spawnOnce)
 import XMonad.Util.Types (Direction2D (D, L, R, U))
+import XMonad.Util.Hacks qualified as Hacks
+import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), customFloating, namedScratchpadAction, namedScratchpadManageHook)
 
 {-- Layouts --}
-
 import XMonad.Layout.Fullscreen (fullscreenSupport)
 import XMonad.Layout.Spacing (spacing)
 import XMonad.Layout.ThreeColumns (ThreeCol (ThreeColMid))
-
-{-- Hooks --}
-
-import XMonad.Actions.Promote (promote)
-import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
-import XMonad.Hooks.ManageDocks (avoidStruts, docks, manageDocks)
-
-{-- System --}
-import System.Environment (getEnv)
-import System.IO.Unsafe (unsafeDupablePerformIO)
-import XMonad.Actions.TopicSpace (Dir, Topic, TopicConfig (defaultTopic, defaultTopicAction, topicActions, topicDirs), TopicItem (TI), currentTopicAction, currentTopicDir, inHome, noAction, switchTopic, tiActions, tiDirs, topicNames)
-import XMonad.Hooks.ManageHelpers (isDialog, isFullscreen, doFullFloat)
 import XMonad.Layout.BoringWindows (boringWindows)
 import XMonad.Layout.Simplest (Simplest (Simplest))
 import XMonad.Layout.SubLayouts (GroupMsg (UnMerge), pullGroup, subLayout, subTabbed)
 import XMonad.Layout.Tabbed (Theme (activeBorderColor, activeBorderWidth, activeColor, activeTextColor, decoHeight, decoWidth, fontName, inactiveBorderColor, inactiveBorderWidth, inactiveColor, inactiveTextColor), addTabs, shrinkText, tabbed)
 import XMonad.Layout.WindowNavigation (windowNavigation)
-import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, position, searchPredicate, sorter), XPPosition (Top))
-import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
-import XMonad.Prompt.OrgMode (orgPrompt)
-import XMonad.Prompt.Workspace (workspacePrompt)
-import XMonad.Util.Hacks qualified as Hacks
-import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), customFloating, namedScratchpadAction, namedScratchpadManageHook)
 import XMonad.Layout.Renamed (renamed, Rename (Replace))
 import XMonad.Layout.NoBorders (smartBorders)
 import XMonad.Layout.MultiToggle (mkToggle, EOT (EOT), (??), Toggle (Toggle))
 import XMonad.Layout.MultiToggle.Instances (StdTransformers(NBFULL, NOBORDERS))
 import XMonad.Layout.Gaps (GapMessage(ToggleGaps))
+
+{-- Hooks --}
+import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
+import XMonad.Hooks.ManageDocks (avoidStruts, docks, manageDocks)
+
+{-- System --}
+import System.Environment (getEnv)
+import XMonad.Hooks.ManageHelpers (isDialog, isFullscreen, doFullFloat)
+import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, position, searchPredicate, sorter), XPPosition (Bottom))
+import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
+import XMonad.Actions.Search (SearchEngine, searchEngine, promptSearch, hackage, hoogle, cratesIo, rustStd, flora)
+
 
 {-- VARIABLES:
  - Define some basic settings for XMonad here. This includes the modifier keys, default terminal emulator, window borders, etc. --}
@@ -54,7 +49,7 @@ myTerminal :: String
 myTerminal = "st"
 
 myLauncher :: String
-myLauncher = "dmenu_run"
+myLauncher = "dmenu_run -p ' \62645  '"
 
 myBorderWidth :: Dimension
 myBorderWidth = 2
@@ -72,7 +67,7 @@ myEditor = "nvim"
  - The following keybindings are to be used with the `additionalKeysP` function
  - provided by XMonad.Util.EZConfig to provide a simpler syntax --}
 
--- Switch to a certain layout.
+-- Helper function to switch to a certain layout.
 switchToLayout :: String -> X ()
 switchToLayout = sendMessage . JumpToLayout
 
@@ -84,15 +79,23 @@ myKeys =
   , ("M-q", kill)
   , ("M-t f", sendMessage $ Toggle NBFULL)
   , ("M-t b", sendMessage ToggleGaps >> spawn "polybar-msg cmd toggle")
+  -- Scratchpads
   , ("M-s t", namedScratchpadAction myScratchpads "terminal")
   , ("M-s b", namedScratchpadAction myScratchpads "btop")
   , ("M-s i", namedScratchpadAction myScratchpads "irc")
   , ("M-s f", namedScratchpadAction myScratchpads "fm")
   , ("M-s s", namedScratchpadAction myScratchpads "signal")
-  , ("M-s m", namedScratchpadAction myScratchpads "music")
   , ("M-s n", namedScratchpadAction myScratchpads "notes")
   , ("M-p",   spawn "flameshot gui")
-  , ("M-S-p", promote)
+  -- Search
+  , ("M-f a", promptSearch myXPConfig archWiki)
+  , ("M-f g", promptSearch myXPConfig gentooWiki)
+  , ("M-f h", promptSearch myXPConfig hackage)
+  , ("M-f o", promptSearch myXPConfig hoogle)
+  , ("M-f c", promptSearch myXPConfig cratesIo)
+  , ("M-f r", promptSearch myXPConfig rustStd)
+  , ("M-f b", promptSearch myXPConfig braveSearch)
+  , ("M-f f", promptSearch myXPConfig flora)
   -- Layout keybinds
   , ("M-; t", switchToLayout "Spacing Tabbed Tall")
   , ("M-; w", switchToLayout "Mirror Spacing Tall")
@@ -106,7 +109,18 @@ myKeys =
   , ("M-S-u", withFocused (sendMessage . UnMerge))
   ]
 
-{- Scratchpads -}
+{-- Search engines --}
+archWiki :: SearchEngine
+archWiki = searchEngine "Arch Linux Wiki" "https://wiki.archlinux.org/index.php?search="
+
+gentooWiki :: SearchEngine
+gentooWiki = searchEngine "Gentoo Linux Wiki" "https://wiki.gentoo.org/index.php?title=Special:Search&search="
+
+braveSearch :: SearchEngine
+braveSearch = searchEngine "Brave Search" "https://search.brave.com/search?q="
+
+
+{-- Scratchpads --}
 myScratchpads :: [NamedScratchpad]
 myScratchpads =
   [ NS "terminal" spawnTerm findTerm manageTerm
@@ -115,7 +129,6 @@ myScratchpads =
   , NS "fm" spawnFM findFM manageFM
   , NS "notes" spawnNotes findNotes manageNotes
   , NS "signal" spawnSignal findSignal manageSignal
-  , NS "music" spawnMusic findMusic manageMusic
   ]
  where
   spawnTerm = "st -c scratchpad"
@@ -166,14 +179,6 @@ myScratchpads =
     w = 0.9
     t = 0.95 - h
     l = 0.95 - w
-  spawnMusic = "st -c music -e ncmpcpp"
-  findMusic = className =? "music"
-  manageMusic = customFloating $ W.RationalRect l t w h
-   where
-    h = 0.9
-    w = 0.9
-    t = 0.95 - h
-    l = 0.95 - w
 
 myTabConfig :: Theme
 myTabConfig =
@@ -191,6 +196,7 @@ myTabConfig =
     , decoWidth = maxBound
     }
 
+-- Here, `mkToggle` (NBFULL ?? NOBORDERS ?? EOT) is used to enable fullscreen toggling.
 myLayout = avoidStruts $ mkToggle (NBFULL ?? NOBORDERS ?? EOT) $ tiled ||| Mirror tiled ||| monocle ||| threeCol ||| tabs
  where
   {-- Here are some custom layouts --}
@@ -216,12 +222,11 @@ myXPConfig =
     { font = "xft:JetBrainsMono Nerd Font:size=10:antialias=true:hinting=true"
     , bgColor = "#000000"
     , fgColor = "#FFFFFF"
-    , bgHLight = "#C9D4FF"
+    , bgHLight = "#89b4fa"
     , fgHLight = "#000000"
     , borderColor = "#000000"
-    , position = Top
-    , -- , autoComplete = Just 100000 -- This is what's causing prompt entries to automatically execute
-      height = 32
+    , position = Bottom
+    , height = 34
     , searchPredicate = fuzzyMatch
     , sorter = fuzzySort
     , alwaysHighlight = True
@@ -255,6 +260,7 @@ myStartupHook = do
   spawnOnce "picom -b"
   spawnOnce "redshift -l -33.9166485:151.2233364"
   spawnOnce "dunst"
+  spawnOnce "transmission-daemon"
   spawnOnce "flameshot"
   spawn "~/.local/bin/polybar-xmonad.sh"
   spawn "killall conky"
@@ -272,7 +278,6 @@ myConfig =
     , manageHook = myManageHook <+> manageDocks
     , handleEventHook =
         handleEventHook def
-          <> Hacks.trayerPaddingXmobarEventHook
     }
     `additionalKeysP` myKeys
 
