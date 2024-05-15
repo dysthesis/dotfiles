@@ -54,7 +54,7 @@ myTerminal :: String
 myTerminal = "st"
 
 myLauncher :: String
-myLauncher = "rofi -show drun -sorting-method fzf -sort"
+myLauncher = "dmenu_run"
 
 myBorderWidth :: Dimension
 myBorderWidth = 2
@@ -81,9 +81,6 @@ myKeys =
   [ ("M-S-r", spawn "xmonad --recompile && xmonad --restart")
   , ("M-<Return>", spawn myTerminal)
   , ("M-r", spawn myLauncher)
-  , ("M-w", spawn "rofi -show window")
-  , ("M-S-c", spawn "rofi -show calc")
-  , ("M-o", spawn "rofi -show power-menu -modi power-menu:~/.local/bin/rofi-power-menu")
   , ("M-q", kill)
   , ("M-t f", sendMessage $ Toggle NBFULL)
   , ("M-t b", sendMessage ToggleGaps >> spawn "polybar-msg cmd toggle")
