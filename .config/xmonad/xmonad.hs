@@ -1,17 +1,14 @@
-{-- PRAGMAS --}
-{-# OPTIONS_GHC -Wno-missing-signatures -Wno-orphans #-}
-
+{-# LANGUAGE LambdaCase #-}
 import XMonad
 import XMonad.StackSet qualified as W
 
 {-- Utilities --}
-
 import XMonad.Util.ClickableWorkspaces (clickablePP)
 import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.SpawnOnce (spawnOnce)
 import XMonad.Util.Types (Direction2D (D, L, R, U))
 import XMonad.Util.Hacks qualified as Hacks
-import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), customFloating, namedScratchpadAction, namedScratchpadManageHook)
+import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), customFloating, namedScratchpadAction, namedScratchpadManageHook, scratchpadWorkspaceTag)
 
 {-- Layouts --}
 import XMonad.Layout.Fullscreen (fullscreenSupport)
@@ -38,6 +35,9 @@ import XMonad.Hooks.ManageHelpers (isDialog, isFullscreen, doFullFloat)
 import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, position, searchPredicate, sorter), XPPosition (Bottom))
 import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
 import XMonad.Actions.Search (SearchEngine, searchEngine, promptSearch, hackage, hoogle, cratesIo, rustStd, flora)
+import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppVisibleNoWindows, ppVisible, ppHidden, ppUrgent, ppTitle, ppSep, ppTitleSanitize, ppWsSep, ppLayout, ppOrder, ppExtras, ppOutput), xmobarColor, xmobarFont, wrap, xmobarStrip, shorten, dynamicLogWithPP, filterOutWsPP)
+import XMonad.Hooks.StatusBar (StatusBarConfig, statusBarPropTo, withEasySB, statusBarProp)
+import XMonad.Hooks.DynamicLog (xmobarPP)
 
 
 {-- VARIABLES:
@@ -86,6 +86,7 @@ myKeys =
   , ("M-s f", namedScratchpadAction myScratchpads "fm")
   , ("M-s s", namedScratchpadAction myScratchpads "signal")
   , ("M-s n", namedScratchpadAction myScratchpads "notes")
+  , ("M-s v", namedScratchpadAction myScratchpads "vit")
   , ("M-p",   spawn "flameshot gui")
   -- Search
   , ("M-f a", promptSearch myXPConfig archWiki)
@@ -119,7 +120,6 @@ gentooWiki = searchEngine "Gentoo Linux Wiki" "https://wiki.gentoo.org/index.php
 braveSearch :: SearchEngine
 braveSearch = searchEngine "Brave Search" "https://search.brave.com/search?q="
 
-
 {-- Scratchpads --}
 myScratchpads :: [NamedScratchpad]
 myScratchpads =
@@ -129,6 +129,7 @@ myScratchpads =
   , NS "fm" spawnFM findFM manageFM
   , NS "notes" spawnNotes findNotes manageNotes
   , NS "signal" spawnSignal findSignal manageSignal
+  , NS "vit" spawnVit findVit manageVit
   ]
  where
   spawnTerm = "st -c scratchpad"
@@ -171,6 +172,14 @@ myScratchpads =
     w = 0.9
     t = 0.95 - h
     l = 0.95 - w
+  spawnVit = "st -c vit -e vit"
+  findVit = className =? "vit"
+  manageVit = customFloating $ W.RationalRect l t w h
+   where
+    h = 0.9
+    w = 0.9
+    t = 0.95 - h
+    l = 0.95 - w
   spawnSignal = "signal-desktop"
   findSignal = className =? "Signal"
   manageSignal = customFloating $ W.RationalRect l t w h
@@ -180,6 +189,37 @@ myScratchpads =
     t = 0.95 - h
     l = 0.95 - w
 
+{-- XMobar --}
+xmobarProp = withEasySB (statusBarProp "xmobar -x 0 ~/.config/xmobar/xmobar.hs" (pure myXmobarPP)) toggleStrutsKey
+  where
+    toggleStrutsKey :: XConfig Layout -> (KeyMask, KeySym)
+    toggleStrutsKey XConfig{ modMask = m } = (m, xK_b)
+
+myXmobarPP :: PP
+myXmobarPP = def
+  { ppSep           = grey "  \xf01d9  "
+  , ppCurrent       = blue
+  , ppHidden        = grey
+  , ppVisible       = white
+  , ppWsSep         = "  "
+  , ppTitleSanitize = xmobarStrip . shorten 30 -- `shorten` defines the max length
+  , ppTitle         = wrap "\xf0570 " ""
+  , ppLayout        = white 
+                         . (\case
+                             "Spacing Tabbed Tall"        -> "<icon=tiled.xpm/>"
+                             "Mirror Spacing Tabbed Tall" -> "<icon=mirrortiled.xpm/>"
+                             "Full"                       -> "<icon=full.xpm/>"
+                             "monocle"                    -> "<icon=full.xpm/>"
+                             "Spacing ThreeCol"           -> "<icon=threecol.xpm/>"
+                             "Tabbed Simplest"            -> "<icon=tabbed.xpm/>"
+                           )
+  }
+  where
+    grey  = xmobarColor "#6c7086" ""
+    white = xmobarColor "#ffffff" ""
+    blue  = xmobarColor "#89b4fa" ""
+
+{-- Tabbed layouts --}
 myTabConfig :: Theme
 myTabConfig =
   def
@@ -257,12 +297,12 @@ myStartupHook :: X ()
 myStartupHook = do
   -- proper monitor layout
   spawnOnce "xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1"
-  spawnOnce "picom -b"
+  -- spawnOnce "picom -b"
   spawnOnce "redshift -l -33.9166485:151.2233364"
   spawnOnce "dunst"
   spawnOnce "transmission-daemon"
   spawnOnce "flameshot"
-  spawn "~/.local/bin/polybar-xmonad.sh"
+  -- spawn "~/.local/bin/polybar-xmonad.sh"
   spawn "killall conky"
   spawn "hsetroot -cover ~/.config/wallpaper.png"
 
@@ -289,4 +329,5 @@ main =
     . ewmh
     . ewmhFullscreen
     . fullscreenSupport
-    $ myConfig
+    $ xmobarProp 
+    myConfig

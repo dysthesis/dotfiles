@@ -33,12 +33,32 @@ return {
     {
       '<Leader>os',
       '<cmd>ObsidianSearch<cr>',
-      desc = 'obsidian: open',
+      desc = 'Obsidian: search',
+    },
+    {
+      '<Leader>ob',
+      '<cmd>ObsidianBacklinks<cr>',
+      desc = 'Obsidian: Find backlinks',
     },
     {
       '<Leader>ol',
-      '<cmd>ObsidianBacklinks<cr>',
-      desc = 'obsidian: open',
+      '<cmd>ObsidianLinks<cr>',
+      desc = 'Obsidian: Find backlinks',
+    },
+    {
+      '<Leader>ot',
+      '<cmd>ObsidianToday<cr>',
+      desc = "Obsidian: Today's daily note",
+    },
+    {
+      '<Leader>oy',
+      '<cmd>ObsidianYesterday<cr>',
+      desc = "Obsidian: Yesterday's daily note",
+    },
+    {
+      '<Leader>om',
+      '<cmd>ObsidianTomorrow<cr>',
+      desc = "Obsidian: Tomorrow's daily note",
     },
   },
   opts = {

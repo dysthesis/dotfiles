@@ -5,13 +5,29 @@ if status is-interactive
     gpgconf --launch gpg-agent
     task calendar
     task summary
-    task
+    task list
 end
 
 zoxide init fish | source
 
 alias sudo=doas
+
+# Neovim
+alias vim=nvim
+alias v=nvim
+
+# Zoxide
 alias cd=z
+
+# Eza (better ls)
 alias ls='eza --icons'
 alias ll='eza --icons -l'
 alias la='eza --icons -la'
+
+# Taskwarrior
+alias t=task
+alias tn='clear;task next'
+alias ta='task add'
+alias tan='task add scheduled:today'
+alias tat='task add scheduled:tomorrow until:sch+14d'
+alias tm='task modify'
