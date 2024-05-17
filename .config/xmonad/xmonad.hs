@@ -209,7 +209,7 @@ myXmobarPP = def
                              "Spacing Tabbed Tall"        -> "<icon=tiled.xpm/>"
                              "Mirror Spacing Tabbed Tall" -> "<icon=mirrortiled.xpm/>"
                              "Full"                       -> "<icon=full.xpm/>"
-                             "monocle"                    -> "<icon=full.xpm/>"
+                             "monocle"                    -> "<icon=monocle.xpm/>"
                              "Spacing ThreeCol"           -> "<icon=threecol.xpm/>"
                              "Tabbed Simplest"            -> "<icon=tabbed.xpm/>"
                            )
