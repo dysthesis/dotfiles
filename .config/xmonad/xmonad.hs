@@ -79,6 +79,7 @@ myKeys =
   , ("M-q", kill)
   , ("M-t f", sendMessage $ Toggle NBFULL)
   , ("M-t b", sendMessage ToggleGaps >> spawn "polybar-msg cmd toggle")
+  , ("M-e", spawn "emacsclient -c -a 'emacs'")
   -- Scratchpads
   , ("M-s t", namedScratchpadAction myScratchpads "terminal")
   , ("M-s b", namedScratchpadAction myScratchpads "btop")
@@ -297,10 +298,9 @@ myStartupHook :: X ()
 myStartupHook = do
   -- proper monitor layout
   spawnOnce "xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1"
-  -- spawnOnce "picom -b"
+  spawnOnce "picom -b"
   spawnOnce "redshift -l -33.9166485:151.2233364"
   spawnOnce "dunst"
-  spawnOnce "transmission-daemon"
   spawnOnce "flameshot"
   -- spawn "~/.local/bin/polybar-xmonad.sh"
   spawn "killall conky"
@@ -326,8 +326,8 @@ main =
   do
     xmonad
     . docks
-    . ewmh
     . ewmhFullscreen
+    . ewmh
     . fullscreenSupport
     $ xmobarProp 
     myConfig

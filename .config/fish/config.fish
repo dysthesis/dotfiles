@@ -16,6 +16,9 @@ alias sudo=doas
 alias vim=nvim
 alias v=nvim
 
+# Doom emacs
+alias doom='~/.config/emacs/bin/doom'
+
 # Zoxide
 alias cd=z
 

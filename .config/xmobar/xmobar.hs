@@ -36,6 +36,7 @@ config =
                     ["-t", "<skyConditionS> <tempC>°C"]
                     18000
             , Run $ Memory ["-t", "\xf0193 <usedratio>%"] 10
+            , Run $ DiskU [("/", "\xf0a0 <used> <usedbar> <size>")]["-L", "20", "-H", "50", "-m", "1", "-p", "3"] 10
             , Run $ Cpu ["-t", "\xf4bc <total>%"] 10
             , Run $ Date "%a %_d %b, %H:%M" "date" 10
             , Run $ Swap ["-t", "\xf0bcd <usedratio>%"] 10
@@ -56,7 +57,7 @@ config =
                     ]
                     10
             ]
-        , template = "  <icon=haskell_20.xpm/>  <fc=#6c7086>\xf01d9</fc>  %XMonadLog% } %date% { <fc=#cba6f7>%cpu%</fc>  <fc=#89b4fa>%memory%</fc>  <fc=#a6e3a1>%swap%</fc>  <fc=#fab387>%dynnetwork%</fc>  <fc=#6c7086>\xf01d9</fc> %YSSY%   "
+        , template = "  <icon=haskell_20.xpm/>  <fc=#6c7086>\xf01d9</fc>  %XMonadLog% } %date% { <fc=#cba6f7>%cpu%</fc>  <fc=#89b4fa>%memory%</fc> <fc=#94e2d5>%disku%</fc>  <fc=#a6e3a1>%swap%</fc>  <fc=#fab387>%dynnetwork%</fc>  <fc=#6c7086>\xf01d9</fc> %YSSY%   "
         , alignSep = "}{"
         }
 
