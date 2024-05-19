@@ -31,13 +31,16 @@ import XMonad.Hooks.ManageDocks (avoidStruts, docks, manageDocks)
 
 {-- System --}
 import System.Environment (getEnv)
-import XMonad.Hooks.ManageHelpers (isDialog, isFullscreen, doFullFloat)
+import XMonad.Hooks.ManageHelpers (isDialog, isFullscreen, doFullFloat, doCenterFloat, isInProperty)
 import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, position, searchPredicate, sorter), XPPosition (Bottom))
 import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
 import XMonad.Actions.Search (SearchEngine, searchEngine, promptSearch, hackage, hoogle, cratesIo, rustStd, flora)
 import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppVisibleNoWindows, ppVisible, ppHidden, ppUrgent, ppTitle, ppSep, ppTitleSanitize, ppWsSep, ppLayout, ppOrder, ppExtras, ppOutput), xmobarColor, xmobarFont, wrap, xmobarStrip, shorten, dynamicLogWithPP, filterOutWsPP)
-import XMonad.Hooks.StatusBar (StatusBarConfig, statusBarPropTo, withEasySB, statusBarProp)
+import XMonad.Hooks.StatusBar (StatusBarConfig, statusBarPropTo, withEasySB, statusBarProp, dynamicSBs)
 import XMonad.Hooks.DynamicLog (xmobarPP)
+import XMonad.Actions.DynamicProjects (Project (projectDirectory, projectName, Project, projectStartHook), dynamicProjects, switchProjectPrompt)
+import System.Process (readProcess, callCommand)
+import XMonad.Prompt.Input ((?+), inputPrompt)
 
 
 {-- VARIABLES:
@@ -79,7 +82,6 @@ myKeys =
   , ("M-q", kill)
   , ("M-t f", sendMessage $ Toggle NBFULL)
   , ("M-t b", sendMessage ToggleGaps >> spawn "polybar-msg cmd toggle")
-  , ("M-e", spawn "emacsclient -c -a 'emacs'")
   -- Scratchpads
   , ("M-s t", namedScratchpadAction myScratchpads "terminal")
   , ("M-s b", namedScratchpadAction myScratchpads "btop")
@@ -88,7 +90,9 @@ myKeys =
   , ("M-s s", namedScratchpadAction myScratchpads "signal")
   , ("M-s n", namedScratchpadAction myScratchpads "notes")
   , ("M-s v", namedScratchpadAction myScratchpads "vit")
+  , ("M-s c", namedScratchpadAction myScratchpads "khal")
   , ("M-p",   spawn "flameshot gui")
+  , ("M-a t", taskPrompt myXPConfig)
   -- Search
   , ("M-f a", promptSearch myXPConfig archWiki)
   , ("M-f g", promptSearch myXPConfig gentooWiki)
@@ -109,6 +113,8 @@ myKeys =
   , ("M-S-w", sendMessage $ pullGroup U)
   , ("M-S-s", sendMessage $ pullGroup D)
   , ("M-S-u", withFocused (sendMessage . UnMerge))
+  -- Projects
+  , ("M-g p", switchProjectPrompt myXPConfig)
   ]
 
 {-- Search engines --}
@@ -131,6 +137,7 @@ myScratchpads =
   , NS "notes" spawnNotes findNotes manageNotes
   , NS "signal" spawnSignal findSignal manageSignal
   , NS "vit" spawnVit findVit manageVit
+  , NS "khal" spawnKhal findKhal manageKhal
   ]
  where
   spawnTerm = "st -c scratchpad"
@@ -181,6 +188,14 @@ myScratchpads =
     w = 0.9
     t = 0.95 - h
     l = 0.95 - w
+  spawnKhal = "st -c khal -e 'khal interactive'"
+  findKhal = className =? "khal"
+  manageKhal = customFloating $ W.RationalRect l t w h
+   where
+    h = 0.9
+    w = 0.9
+    t = 0.95 - h
+    l = 0.95 - w
   spawnSignal = "signal-desktop"
   findSignal = className =? "Signal"
   manageSignal = customFloating $ W.RationalRect l t w h
@@ -190,7 +205,29 @@ myScratchpads =
     t = 0.95 - h
     l = 0.95 - w
 
+{-- Projects --}
+myProjects :: [Project]
+myProjects = 
+  [ Project { projectName = "Browser"
+            , projectDirectory = "~/"
+            , projectStartHook = Just $ do spawn "firefox"
+            }
+  , Project { projectName = "Messaging"
+            , projectDirectory = "~/"
+            , projectStartHook = Just $ do  spawn "vesktop-bin"
+                                            spawn "element-desktop"
+            }
+  ]
+
 {-- XMobar --}
+-- Create a command to spawn xmobar for the given screen ID
+-- xmobarCmd :: ScreenId -> String
+-- xmobarCmd screen = "xmobar ~/.config/xmobar/xmobar.hs -x " ++ show screen
+--
+-- -- Spawn an xmobar for the given screen
+-- barSpawner :: ScreenId -> IO StatusBarConfig
+-- barSpawner screen = pure $ statusBarProp (xmobarCmd screen) (pure myXmobarPP)
+
 xmobarProp = withEasySB (statusBarProp "xmobar -x 0 ~/.config/xmobar/xmobar.hs" (pure myXmobarPP)) toggleStrutsKey
   where
     toggleStrutsKey :: XConfig Layout -> (KeyMask, KeySym)
@@ -277,7 +314,12 @@ myXPConfig =
 myManageHook :: ManageHook
 myManageHook =
   composeAll
-    [ isDialog                    --> doFloat
+    [ isDialog                    --> doCenterFloat
+    , isFileChooserDialog         --> doCenterFloat
+    , isPopup                     --> doCenterFloat
+    , isGtk4Modal                 --> doCenterFloat
+    , isGtk4Dialog                --> doCenterFloat
+    , isSplash                    --> doCenterFloat
     , isFullscreen                --> doFullFloat
     , className =? "confirm"      --> doFloat
     , className =? "file_progress"--> doFloat
@@ -292,13 +334,29 @@ myManageHook =
     , className =? "steam"        --> doShift "6"
     ]
     <+> namedScratchpadManageHook myScratchpads
+    where
+      isRole              = stringProperty "WM_WINDOW_ROLE"
+      isFileChooserDialog = isRole =? "GtkFileChooserDialog"
+      isPopup             = isRole =? "pop-up"
+      isSplash            = isInProperty "_NET_WM_WINDOW_TYPE" "_NET_WM_WINDOW_TYPE_SPLASH"
+      isGtk4Dialog        = isInProperty "_NET_WM_WINDOW_TYPE" "_NET_WM_WINDOW_TYPE_DIALOG"
+      isGtk4Modal         = isInProperty "_NET_WM_STATE" "_NET_WM_STATE_MODAL"
+
+{-- Prompts --}
+addTaskAndNotify :: String -> X ()
+addTaskAndNotify task = do
+  let command = "task add " ++ task
+  output <- io $ readProcess "sh" ["-c", command] ""
+  io $ callCommand $ "notify-send 'Task Added' " ++ show output
+taskPrompt :: XPConfig -> X ()
+taskPrompt config = inputPrompt config "Task" ?+ addTaskAndNotify
 
 {-- STARTUP --}
 myStartupHook :: X ()
 myStartupHook = do
   -- proper monitor layout
   spawnOnce "xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1"
-  spawnOnce "picom -b"
+  -- spawnOnce "picom -b"
   spawnOnce "redshift -l -33.9166485:151.2233364"
   spawnOnce "dunst"
   spawnOnce "flameshot"
@@ -329,5 +387,6 @@ main =
     . ewmhFullscreen
     . ewmh
     . fullscreenSupport
-    $ xmobarProp 
+    $ xmobarProp
+    $ dynamicProjects myProjects
     myConfig

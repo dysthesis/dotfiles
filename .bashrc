@@ -23,4 +23,5 @@ if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTI
 	exec fish $LOGIN_OPTION
 fi
 
+export VDIRSYNCER_CONFIG=/home/faust/.config/vdirsyncer/config
 # Put your fun stuff here.

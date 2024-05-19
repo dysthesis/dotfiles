@@ -3,9 +3,8 @@ if status is-interactive
     set -x GPG_TTY (tty)
     set -x SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
     gpgconf --launch gpg-agent
-    task calendar
-    task summary
-    task list
+    khal calendar
+    task next
 end
 
 zoxide init fish | source
@@ -34,3 +33,6 @@ alias ta='task add'
 alias tan='task add scheduled:today'
 alias tat='task add scheduled:tomorrow until:sch+14d'
 alias tm='task modify'
+
+# Variables
+export VDIRSYNCER_CONFIG=/home/faust/.config/vdirsyncer/config
