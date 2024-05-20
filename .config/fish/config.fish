@@ -21,6 +21,9 @@ alias doom='~/.config/emacs/bin/doom'
 # Zoxide
 alias cd=z
 
+# Bat (better cat)
+alias cat=bat
+
 # Eza (better ls)
 alias ls='eza --icons'
 alias ll='eza --icons -l'

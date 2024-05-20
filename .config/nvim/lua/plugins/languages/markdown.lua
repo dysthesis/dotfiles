@@ -64,7 +64,7 @@ return {
 
   {
     'lukas-reineke/headlines.nvim',
-    ft = { 'markdown', 'norg', 'rmd', 'org' },
+    ft = { 'markdown', 'norg', 'rmd', 'org', 'vimwiki' },
     config = function(_, opts)
       -- PERF: schedule to prevent headlines slowing down opening a file
       vim.schedule(function()
