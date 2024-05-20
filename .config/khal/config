@@ -1,0 +1,23 @@
+[calendars]
+
+[[Personal]]
+path = ~/Documents/Calendars/Personal/
+type = calendar
+
+[[Chores]]
+path = ~/Documents/Calendars/Chores/
+type = calendar
+
+[[University]]
+path = ~/Documents/Calendars/University/
+type = calendar
+
+[locale]
+timeformat = %H:%M
+dateformat = %d/%m/%Y
+longdateformat = %d/%m/%Y
+datetimeformat = %d/%m/%Y %H:%M
+longdatetimeformat = %d/%m/%Y %H:%M
+
+[default]
+default_calendar = Personal
