@@ -328,6 +328,7 @@ myManageHook =
     , className =? "error"        --> doFloat
     , className =? "firefox"      --> doShift "1"
     , className =? "FreeTube"     --> doShift "3"
+    , className =? "mpv"          --> doShift "3"
     , className =? "vesktop"      --> doShift "2"
     , className =? "Element"      --> doShift "2"
     , className =? "thunderbird"  --> doShift "4"
@@ -360,6 +361,7 @@ myStartupHook = do
   spawnOnce "redshift -l -33.9166485:151.2233364"
   spawnOnce "dunst"
   spawnOnce "flameshot"
+  spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
   -- spawn "~/.local/bin/polybar-xmonad.sh"
   spawn "killall conky"
   spawn "hsetroot -cover ~/.config/wallpaper.png"

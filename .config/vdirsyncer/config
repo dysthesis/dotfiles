@@ -1,0 +1,34 @@
+[general]
+status_path = "~/.local/share/vdirsyncer/status/"
+
+[pair unsw]
+a = "unsw_remote"
+b = "unsw_local"
+conflict_resolution = "a wins"
+collections = null
+
+[storage unsw_remote]
+type = "http"
+# The URL to your iCalendar file.
+url = "https://my.unsw.edu.au/cal/pttd/HjNK7qhBjh.ics"
+
+[storage unsw_local]
+type = "filesystem"
+path = "~/.local/share/calendars/UNSW"
+fileext = ".ics"
+
+[pair personal]
+a = "personal_remote"
+b = "personal_local"
+conflict_resolution = "a wins"
+collections = null
+
+[storage personal_remote]
+type = "http"
+# The URL to your iCalendar file.
+url = "https://calendar.proton.me/api/calendar/v1/url/TC1L9PM4Rosz_7QIg2J0ZjXJr32601lc7HRAZcuqblIJuzSXR15iLWwKc0mOCMwrBBRtRkbnGkSQY2H3Z8L0_w==/calendar.ics?CacheKey=W0Zlmu9zBGEEUwDiqF4TBw%3D%3D&PassphraseKey=IDgvaRx4rMIeXliHqU7FDKiOkdesmqRttOg5yt6W5Sw%3D"
+
+[storage personal_local]
+type = "filesystem"
+fileext = ".ics"
+path = "~/.local/share/calendars/Personal"

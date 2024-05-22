@@ -1,16 +1,14 @@
 [calendars]
 
-[[Personal]]
-path = ~/Documents/Calendars/Personal/
+[[private]]
+path = /home/demiurge/.local/share/khal/calendars/private
 type = calendar
 
-[[Chores]]
-path = ~/Documents/Calendars/Chores/
-type = calendar
+[[university]]
+path = ~/.local/share/calendars/UNSW
 
-[[University]]
-path = ~/Documents/Calendars/University/
-type = calendar
+[[personal]]
+path = ~/.local/share/calendars/Personal
 
 [locale]
 timeformat = %H:%M
@@ -20,4 +18,4 @@ datetimeformat = %d/%m/%Y %H:%M
 longdatetimeformat = %d/%m/%Y %H:%M
 
 [default]
-default_calendar = Personal
+default_calendar = private
