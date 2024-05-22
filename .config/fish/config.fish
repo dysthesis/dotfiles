@@ -36,4 +36,4 @@ alias tat='task add scheduled:tomorrow until:sch+14d'
 alias tm='task modify'
 
 # Variables
-export VDIRSYNCER_CONFIG=/home/demiurge/.config/vdirsyncer/config
+export VDIRSYNCER_CONFIG=$HOME/.config/vdirsyncer/config
