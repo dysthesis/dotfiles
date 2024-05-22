@@ -1,4 +1,5 @@
 Config  { font = "JetBrainsMono Nerd Font 10"
+	, additionalFonts = [ "Symbola 10" ]
         , allDesktops = True
         , bgColor = "#000000"
         , fgColor = "#ffffff"

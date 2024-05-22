@@ -228,7 +228,7 @@ myProjects =
 -- barSpawner :: ScreenId -> IO StatusBarConfig
 -- barSpawner screen = pure $ statusBarProp (xmobarCmd screen) (pure myXmobarPP)
 
-xmobarProp = withEasySB (statusBarProp "xmobar -x 0 ~/.config/xmobar/xmobar.hs" (pure myXmobarPP)) toggleStrutsKey
+xmobarProp = withEasySB (statusBarProp "xmobar -x 0 ~/.config/xmobar/xmobarrc" (pure myXmobarPP)) toggleStrutsKey
   where
     toggleStrutsKey :: XConfig Layout -> (KeyMask, KeySym)
     toggleStrutsKey XConfig{ modMask = m } = (m, xK_b)
@@ -356,7 +356,7 @@ myStartupHook :: X ()
 myStartupHook = do
   -- proper monitor layout
   spawnOnce "xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1"
-  -- spawnOnce "picom -b"
+  spawnOnce "picom -b"
   spawnOnce "redshift -l -33.9166485:151.2233364"
   spawnOnce "dunst"
   spawnOnce "flameshot"
