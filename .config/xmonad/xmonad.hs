@@ -228,7 +228,7 @@ myProjects =
 -- barSpawner :: ScreenId -> IO StatusBarConfig
 -- barSpawner screen = pure $ statusBarProp (xmobarCmd screen) (pure myXmobarPP)
 
-xmobarProp = withEasySB (statusBarProp "xmobar -x 0 ~/.config/xmobar/xmobarrc" (pure myXmobarPP)) toggleStrutsKey
+xmobarProp = withEasySB (statusBarProp "xmobar -x 0 ~/.config/xmobar/xmobar.hs" (pure myXmobarPP)) toggleStrutsKey
   where
     toggleStrutsKey :: XConfig Layout -> (KeyMask, KeySym)
     toggleStrutsKey XConfig{ modMask = m } = (m, xK_b)

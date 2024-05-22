@@ -8,7 +8,7 @@ myHomeDir = unsafeDupablePerformIO (getEnv "HOME")
 config :: Config
 config =
     defaultConfig
-        { font = "xft:JetBrainsMono Nerd Font:size=10:antialias=true:hinting=true"
+        { font = "JetBrainsMono Nerd Font 10"
         , allDesktops = True
         , bgColor = "#000000"
         , fgColor = "#ffffff"
@@ -36,7 +36,7 @@ config =
                     ["-t", "<skyConditionS> <tempC>°C"]
                     18000
             , Run $ Memory ["-t", "\xf0193 <usedratio>%"] 10
-            , Run $ DiskU [("/", "\xf0a0 <used>/<size>")]["-L", "20", "-H", "50", "-m", "1", "-p", "3"] 10
+            , Run $ DiskU [("/", "\xf0a0 <used>/<size>")] ["-L", "20", "-H", "50", "-m", "1", "-p", "3"] 10
             , Run $ Cpu ["-t", "\xf4bc <total>%"] 10
             , Run $ Date "%a %_d %b, %H:%M" "date" 10
             , Run $ Swap ["-t", "\xf0bcd <usedratio>%"] 10
