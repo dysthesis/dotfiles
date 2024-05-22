@@ -6,9 +6,11 @@ type = calendar
 
 [[university]]
 path = ~/.local/share/calendars/UNSW
+color = yellow
 
 [[personal]]
 path = ~/.local/share/calendars/Personal
+color = light blue
 
 [locale]
 timeformat = %H:%M

@@ -188,7 +188,7 @@ myScratchpads =
     w = 0.9
     t = 0.95 - h
     l = 0.95 - w
-  spawnKhal = "st -c khal -e 'khal interactive'"
+  spawnKhal = "st -c khal -e ikhal"
   findKhal = className =? "khal"
   manageKhal = customFloating $ W.RationalRect l t w h
    where
