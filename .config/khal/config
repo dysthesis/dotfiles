@@ -12,6 +12,14 @@ color = yellow
 path = ~/.local/share/calendars/Personal
 color = light blue
 
+[[home]]
+path = ~/.local/share/calendars/Home
+color = light magenta
+
+[[study]]
+path = ~/.local/share/calendars/Study
+color = light red
+
 [locale]
 timeformat = %H:%M
 dateformat = %d/%m/%Y

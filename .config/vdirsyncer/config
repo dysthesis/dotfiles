@@ -32,3 +32,35 @@ url = "https://calendar.proton.me/api/calendar/v1/url/TC1L9PM4Rosz_7QIg2J0ZjXJr3
 type = "filesystem"
 fileext = ".ics"
 path = "~/.local/share/calendars/Personal"
+
+[pair home]
+a = "home_remote"
+b = "home_local"
+conflict_resolution = "a wins"
+collections = null
+
+[storage home_remote]
+type = "http"
+# The URL to your iCalendar file.
+url = "https://calendar.proton.me/api/calendar/v1/url/CMBH9X14zV2rZic_4wcSAW4SVMNpfYX1lpS5Xot4_MNgfIT5sJLZkYvEr6fZQ2F6CQKcapU7qA63eWlJBGl1_w==/calendar.ics?CacheKey=kfnHbc8yvACMhP19v5XN_w%3D%3D&PassphraseKey=m7jPImiDOUyb_vz0Hm_xjqPp8U2WWG4DD6RhQJoLTpY%3D"
+
+[storage home_local]
+type = "filesystem"
+fileext = ".ics"
+path = "~/.local/share/calendars/Home"
+
+[pair study]
+a = "study_remote"
+b = "study_local"
+conflict_resolution = "a wins"
+collections = null
+
+[storage study_remote]
+type = "http"
+# The URL to your iCalendar file.
+url = "https://calendar.proton.me/api/calendar/v1/url/mnftSHU1mIFmBPxRVNpPvCYwERE3JUhbkusTMHJzsKJJbUt3LDmC-5VjmJJgyn9ZkMVvk-Vt371EOLmmUv65CQ==/calendar.ics?CacheKey=l5N9JAS5WAFf5xH4dIDceA%3D%3D&PassphraseKey=_ry99WWa4r_ZUekU8y_qC7WN25aDEgwET_ZZjv58s2s%3D"
+
+[storage study_local]
+type = "filesystem"
+fileext = ".ics"
+path = "~/.local/share/calendars/Study"
