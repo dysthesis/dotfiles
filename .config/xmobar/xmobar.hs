@@ -40,6 +40,8 @@ config =
             , Run $ Cpu ["-t", "\xf4bc <total>%"] 10
             , Run $ Date "%a %_d %b, %H:%M" "date" 10
             , Run $ Swap ["-t", "\xf0bcd <usedratio>%"] 10
+            , Run $ Com ".config/xmobar/scripts/taskwarrior.sh" [] "task" 30
+            , Run $ Com ".config/xmobar/scripts/khal.sh" [] "calendar" 30
             , Run $
                 DynNetwork
                     [ "--template"
@@ -57,7 +59,7 @@ config =
                     ]
                     10
             ]
-        , template = "  <icon=haskell_20.xpm/>  <fc=#6c7086>\xf01d9</fc>  %XMonadLog% } %date% { <fc=#cba6f7>%cpu%</fc>  <fc=#89b4fa>%memory%</fc>  <fc=#94e2d5>%disku%</fc>  <fc=#a6e3a1>%swap%</fc>  <fc=#fab387>%dynnetwork%</fc>  <fc=#6c7086>\xf01d9</fc> %YSSY%   "
+        , template = "  <icon=haskell_20.xpm/>  <fc=#6c7086>\xf01d9</fc>  %XMonadLog% } \xf133  %calendar% <fc=#6c7086>\xf01d9</fc>  %date%  <fc=#6c7086>\xf01d9</fc>  \xf0ae  %task% { <fc=#cba6f7>%cpu%</fc>  <fc=#89b4fa>%memory%</fc>  <fc=#94e2d5>%disku%</fc>  <fc=#a6e3a1>%swap%</fc>  <fc=#fab387>%dynnetwork%</fc>  <fc=#6c7086>\xf01d9</fc> %YSSY%   "
         , alignSep = "}{"
         }
 
