@@ -4,7 +4,7 @@
 current_date=$(date +%d/%m/%Y)
 
 # Get the list of events for today
-events=$(khal list today)
+events=$(khal list now)
 
 # Check if the events list is empty or only contains the header
 if echo "$events" | grep -q "$current_date"; then
