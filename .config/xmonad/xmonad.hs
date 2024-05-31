@@ -1,13 +1,13 @@
 {-# LANGUAGE LambdaCase #-}
 import XMonad
-import XMonad.StackSet qualified as W
+import qualified XMonad.StackSet as W
 
 {-- Utilities --}
 import XMonad.Util.ClickableWorkspaces (clickablePP)
 import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.SpawnOnce (spawnOnce)
 import XMonad.Util.Types (Direction2D (D, L, R, U))
-import XMonad.Util.Hacks qualified as Hacks
+import qualified XMonad.Util.Hacks as Hacks
 import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), customFloating, namedScratchpadAction, namedScratchpadManageHook, scratchpadWorkspaceTag)
 
 {-- Layouts --}
@@ -34,7 +34,7 @@ import System.Environment (getEnv)
 import XMonad.Hooks.ManageHelpers (isDialog, isFullscreen, doFullFloat, doCenterFloat, isInProperty)
 import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, position, searchPredicate, sorter), XPPosition (Bottom))
 import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
-import XMonad.Actions.Search (SearchEngine, searchEngine, promptSearch, hackage, hoogle, cratesIo, rustStd, flora)
+import XMonad.Actions.Search (SearchEngine, searchEngine, promptSearch, hackage, hoogle)
 import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppVisibleNoWindows, ppVisible, ppHidden, ppUrgent, ppTitle, ppSep, ppTitleSanitize, ppWsSep, ppLayout, ppOrder, ppExtras, ppOutput), xmobarColor, xmobarFont, wrap, xmobarStrip, shorten, dynamicLogWithPP, filterOutWsPP)
 import XMonad.Hooks.StatusBar (StatusBarConfig, statusBarPropTo, withEasySB, statusBarProp, dynamicSBs)
 import XMonad.Hooks.DynamicLog (xmobarPP)
@@ -99,10 +99,7 @@ myKeys =
   , ("M-f g", promptSearch myXPConfig gentooWiki)
   , ("M-f h", promptSearch myXPConfig hackage)
   , ("M-f o", promptSearch myXPConfig hoogle)
-  , ("M-f c", promptSearch myXPConfig cratesIo)
-  , ("M-f r", promptSearch myXPConfig rustStd)
   , ("M-f b", promptSearch myXPConfig braveSearch)
-  , ("M-f f", promptSearch myXPConfig flora)
   -- Layout keybinds
   , ("M-; t", switchToLayout "Spacing Tabbed Tall")
   , ("M-; w", switchToLayout "Mirror Spacing Tall")
