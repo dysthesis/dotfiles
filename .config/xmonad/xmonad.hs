@@ -41,7 +41,7 @@ import XMonad.Hooks.DynamicLog (xmobarPP)
 import XMonad.Actions.DynamicProjects (Project (projectDirectory, projectName, Project, projectStartHook), dynamicProjects, switchProjectPrompt)
 import System.Process (readProcess, callCommand)
 import XMonad.Prompt.Input ((?+), inputPrompt)
-
+import XMonad.Actions.CycleWS (nextScreen, shiftNextScreen)
 
 {-- VARIABLES:
  - Define some basic settings for XMonad here. This includes the modifier keys, default terminal emulator, window borders, etc. --}
@@ -82,6 +82,8 @@ myKeys =
   , ("M-q", kill)
   , ("M-t f", sendMessage $ Toggle NBFULL)
   , ("M-t b", sendMessage ToggleGaps >> spawn "polybar-msg cmd toggle")
+  , ("M-n", nextScreen)
+  , ("M-S-n", shiftNextScreen)
   -- Scratchpads
   , ("M-s t", namedScratchpadAction myScratchpads "terminal")
   , ("M-s b", namedScratchpadAction myScratchpads "btop")
