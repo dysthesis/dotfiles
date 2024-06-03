@@ -120,7 +120,7 @@ return { -- Autocompletion
         { name = 'nvim_lsp' },
         { name = 'luasnip' },
         { name = 'path' },
-        { name = 'neorg' },
+        { name = 'omni' },
       },
       experimental = {
         ghost_text = {
