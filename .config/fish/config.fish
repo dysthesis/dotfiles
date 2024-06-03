@@ -9,8 +9,6 @@ end
 
 zoxide init fish | source
 
-alias sudo=doas
-
 # Neovim
 alias vim=nvim
 alias v=nvim
