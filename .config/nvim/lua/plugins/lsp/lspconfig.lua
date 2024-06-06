@@ -19,6 +19,23 @@ return { -- LSP Configuration & Plugins
     },
   },
   config = function()
+    local signs = {
+      Error = ' ',
+      Warn = ' ',
+      Info = ' ',
+      Hint = ' ',
+    }
+    for type, icon in pairs(signs) do
+      local hl = 'DiagnosticSign' .. type
+      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+    end
+    vim.diagnostic.config {
+      signs = true,
+      -- disable virtual text
+      update_in_insert = true,
+      underline = true,
+      severity_sort = true,
+    }
     --  This function gets run when an LSP attaches to a particular buffer.
     --    That is to say, every time a new file is opened that is associated with
     --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
@@ -164,7 +181,6 @@ return { -- LSP Configuration & Plugins
             },
             hint = { enable = true },
             -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-            -- diagnostics = { disable = { 'missing-fields' } },
           },
         },
       },
