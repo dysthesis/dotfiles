@@ -50,6 +50,25 @@ function gpush
         git push $remote main
     end
 end
+function dotpull
+    set -l git_cmd 'git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
+    set -l remotes (eval $git_cmd remote)
+    set -l current_branch (eval $git_cmd symbolic-ref --short HEAD)
+    for remote in $remotes
+        echo "Pulling from $remote..."
+        eval $git_cmd pull $remote $current_branch
+    end
+end
+function dotpush
+    set -l git_cmd 'git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
+    set -l remotes (eval $git_cmd remote)
+    set -l current_branch (eval $git_cmd symbolic-ref --short HEAD)
+    for remote in $remotes
+        echo "Pushing from $remote..."
+        eval $git_cmd push $remote $current_branch
+    end
+end
+
 
 # Variables
 export VDIRSYNCER_CONFIG=$HOME/.config/vdirsyncer/config
