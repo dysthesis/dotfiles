@@ -6,7 +6,7 @@ local vault_path = vim.fn.expand '~' .. '/Documents/Episteme'
 
 return {
   'epwalsh/obsidian.nvim',
-  enabled = true,
+  enabled = false,
   version = '*', -- recommended, use latest release instead of latest commit
   -- ft = 'markdown', -- Load obsidian.nvim on any markdown file
   event = {

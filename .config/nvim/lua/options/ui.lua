@@ -4,7 +4,7 @@ vim.opt.number = true
 --  Experiment for yourself to see if you like it!
 vim.opt.relativenumber = true
 
-vim.opt.conceallevel = 2 -- obsidian.nvim stuff
+vim.opt.conceallevel = 2
 
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'

@@ -120,6 +120,7 @@ return { -- Autocompletion
         { name = 'luasnip' },
         { name = 'path' },
         { name = 'omni' },
+        { name = 'mkdnflow' },
       },
       experimental = {
         ghost_text = {

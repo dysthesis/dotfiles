@@ -35,5 +35,21 @@ alias tan='task add scheduled:today'
 alias tat='task add scheduled:tomorrow until:sch+14d'
 alias tm='task modify'
 
+function gpull
+    set remotes (git remote)
+    for remote in $remotes
+        echo "Pulling from $remote..."
+        git pull $remote main
+    end
+end
+
+function gpush
+    set remotes (git remote)
+    for remote in $remotes
+        echo "Pushing to remote $remote"
+        git push $remote main
+    end
+end
+
 # Variables
 export VDIRSYNCER_CONFIG=$HOME/.config/vdirsyncer/config

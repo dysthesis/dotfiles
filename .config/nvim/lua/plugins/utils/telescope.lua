@@ -17,13 +17,13 @@ return { -- Fuzzy Finder (files, lsp, etc)
         return vim.fn.executable 'make' == 1
       end,
     },
-    {
-      'nvim-telescope/telescope-frecency.nvim',
-      config = function()
-        require('telescope').load_extension 'frecency'
-      end,
-      dependencies = { 'kkharji/sqlite.lua' },
-    },
+    -- {
+    --   'nvim-telescope/telescope-frecency.nvim',
+    --   config = function()
+    --     require('telescope').load_extension 'frecency'
+    --   end,
+    --   dependencies = { 'kkharji/sqlite.lua' },
+    -- },
     { 'nvim-telescope/telescope-ui-select.nvim' },
 
     -- Useful for getting pretty icons, but requires a Nerd Font.
