@@ -5,7 +5,7 @@ palette = "catppuccin_mocha"
 
 # Customizing the prompt (and placing desired modules at desired position and sequence):
 format = """
-$character $shell $directory $username $git_branch $git_status $git_commit $fill
+$character $shell $directory $username $hostname $git_branch $git_status $git_commit $fill
 $character [❯](red)[❯](yellow)[❯](green) 
 """
 
@@ -27,6 +27,11 @@ style_user = 'fg:#ffffff bold bg:mantle'
 style_root = 'fg:red bold bg:mantle'
 show_always = true
 disabled = false
+
+[hostname]
+format = 'at [█](fg:surface0)[󰍹 ](fg:lavender bg:surface0 bold)[█](fg:surface0)[█](fg:mantle)[$hostname]($style)[█](fg:mantle)'
+ssh_only = true
+style = 'fg:#ffffff bold bg:mantle'
 
 [directory]
 format = '[█](fg:surface0)[ ](fg:blue bg:surface0 bold)[█](fg:surface0)[█](fg:mantle)[$read_only]($read_only_style)[$repo_root]($repo_root_style)[$path]($style)[█](fg:mantle)'
