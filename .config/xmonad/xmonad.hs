@@ -57,7 +57,7 @@ myLauncher :: String
 myLauncher = "dmenu_run -p ' \62645  '"
 
 myBorderWidth :: Dimension
-myBorderWidth = 2
+myBorderWidth = 1
 
 myNormColor :: String
 myNormColor = "#0f0f0f"
@@ -177,7 +177,7 @@ myScratchpads =
         w = 0.9
         t = 0.95 - h
         l = 0.95 - w
-    spawnNotes = "st -c notes -e tmux new-session -s notes -c ~/Documents/Episteme/"
+    spawnNotes = "st -c notes -e tmux new-session -s notes -c ~/Documents/Notes/"
     findNotes = className =? "notes"
     manageNotes = customFloating $ W.RationalRect l t w h
       where
