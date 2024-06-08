@@ -369,7 +369,7 @@ myStartupHook :: X ()
 myStartupHook = do
     -- proper monitor layout
     spawnOnce "xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1"
-    spawnOnce "picom -b"
+    -- spawnOnce "picom -b"
     spawnOnce "redshift -l -33.9166485:151.2233364"
     spawnOnce "dunst"
     spawnOnce "flameshot"
