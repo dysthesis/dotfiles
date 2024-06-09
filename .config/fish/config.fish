@@ -1,6 +1,10 @@
 if status is-interactive
     starship init fish | source
-    fastfetch
+    set -x GPG_TTY (tty)
+    set -x SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
+    gpgconf --launch gpg-agent
+    khal list now
+    task next
 end
 
 zoxide init fish | source
