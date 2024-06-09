@@ -2,6 +2,15 @@ return {
   'folke/trouble.nvim',
   dependencies = { 'nvim-tree/nvim-web-devicons' },
   opts = {
+    action_keys = {
+      toggle_fold = { '<Space>' },
+    },
+    signs = {
+      error = ' ',
+      warning = ' ',
+      hint = ' ',
+      information = ' ',
+    },
     -- your configuration comes here
     -- or leave it empty to use the default settings
     -- refer to the configuration section below

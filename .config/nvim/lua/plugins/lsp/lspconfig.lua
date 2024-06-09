@@ -35,6 +35,30 @@ return { -- LSP Configuration & Plugins
       update_in_insert = true,
       underline = true,
       severity_sort = true,
+      virtual_text = {
+        prefix = '',
+        format = function(diagnostic)
+          local severity = diagnostic.severity
+
+          local function prefix_diagnostic(prefix, value)
+            return string.format(prefix .. ' %s', value.message)
+          end
+
+          if severity == vim.diagnostic.severity.ERROR then
+            return prefix_diagnostic('󰅚', diagnostic)
+          end
+          if severity == vim.diagnostic.severity.WARN then
+            return prefix_diagnostic('⚠', diagnostic)
+          end
+          if severity == vim.diagnostic.severity.INFO then
+            return prefix_diagnostic('ⓘ', diagnostic)
+          end
+          if severity == vim.diagnostic.severity.HINT then
+            return prefix_diagnostic('󰌶', diagnostic)
+          end
+          return prefix_diagnostic('●', diagnostic)
+        end,
+      },
     }
     --  This function gets run when an LSP attaches to a particular buffer.
     --    That is to say, every time a new file is opened that is associated with

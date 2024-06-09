@@ -73,25 +73,25 @@ return {
       end)
     end,
   },
-  -- {
-  --   'jakewvincent/mkdnflow.nvim',
-  --   config = function()
-  --     require('mkdnflow').setup {
-  --       -- Config goes here; leave blank for defaults
-  --       modules = {
-  --         cmp = true,
-  --         -- bib = false,
-  --       },
-  --       links = {
-  --         transform_explicit = function(text)
-  --           -- text = text:gsub(" ", "-")
-  --           -- text = text:lower()
-  --           -- text = os.date('%Y-%m-%d_')..text
-  --           return text
-  --         end,
-  --         create_on_follow_failure = true,
-  --       },
-  --     }
-  --   end,
-  -- },
+  {
+    'jakewvincent/mkdnflow.nvim',
+    config = function()
+      require('mkdnflow').setup {
+        -- Config goes here; leave blank for defaults
+        modules = {
+          cmp = true,
+          -- bib = false,
+        },
+        links = {
+          transform_explicit = function(text)
+            -- text = text:gsub(" ", "-")
+            -- text = text:lower()
+            -- text = os.date('%Y-%m-%d_')..text
+            return text
+          end,
+          create_on_follow_failure = true,
+        },
+      }
+    end,
+  },
 }
