@@ -345,8 +345,8 @@ myManageHook =
         , className =? "Element" --> doShift "2"
         , className =? "Zathura" --> doShift "4"
         , className =? "thunderbird" --> doShift "5"
-        , className =? "virt-manager" --> doShift "6"
-        , className =? "Virt-manager" --> doShift "6"
+        , -- , className =? "virt-manager" --> doShift "6"
+          className =? "Virt-manager" --> doShift "6"
         , className =? "steam" --> doShift "7"
         ]
         <+> namedScratchpadManageHook myScratchpads
@@ -393,8 +393,8 @@ myConfig =
         , normalBorderColor = myNormColor
         , focusedBorderColor = myFocusColor
         , layoutHook = myLayout
-        , workspaces = myWorkspaces
-        , startupHook = myStartupHook
+        , -- , workspaces = myWorkspaces
+          startupHook = myStartupHook
         , manageHook = myManageHook <+> manageDocks
         , handleEventHook =
             handleEventHook def
