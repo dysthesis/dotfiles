@@ -9,7 +9,7 @@ events=$(khal list now)
 # Check if the events list is empty or only contains the header
 if echo "$events" | grep -q "$current_date"; then
 	# Get the next event by selecting the first line after the header
-	next_event=$(echo "$events" | sed -n '2p' | cut -c 1-20)
+	next_event=$(echo "$events" | sed -n '2p' | cut -c 1-50)
 	if [ -z "$next_event" ]; then
 		echo "No events today"
 	else
