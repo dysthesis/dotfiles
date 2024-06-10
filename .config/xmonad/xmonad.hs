@@ -372,6 +372,7 @@ myStartupHook = do
     -- spawnOnce "picom -b"
     spawnOnce "redshift -l -33.9166485:151.2233364"
     spawnOnce "dunst"
+    spawnOnce "parcellite"
     spawnOnce "flameshot"
     spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
     -- spawn "~/.local/bin/polybar-xmonad.sh"

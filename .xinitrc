@@ -38,4 +38,4 @@ fi
 if [ -f "$usermodmap" ]; then
     xmodmap "$usermodmap"
 fi
-bspwm
+xmonad

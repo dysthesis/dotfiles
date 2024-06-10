@@ -1,5 +1,6 @@
 if status is-interactive
     starship init fish | source
+    zoxide init fish --cmd cd | source
     set -x GPG_TTY (tty)
     set -x SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
     gpgconf --launch gpg-agent
@@ -15,9 +16,6 @@ alias v=nvim
 
 # Doom emacs
 alias doom='~/.config/emacs/bin/doom'
-
-# Zoxide
-alias cd=z
 
 # Bat (better cat)
 alias cat=bat
