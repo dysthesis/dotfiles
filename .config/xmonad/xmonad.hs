@@ -40,7 +40,7 @@ import XMonad.Actions.Search (SearchEngine, hackage, hoogle, promptSearch, searc
 import XMonad.Hooks.DynamicLog (PP (ppSort), xmobarPP)
 import XMonad.Hooks.ManageHelpers (doCenterFloat, doFullFloat, isDialog, isFullscreen, isInProperty)
 import XMonad.Hooks.StatusBar (StatusBarConfig, dynamicSBs, statusBarProp, statusBarPropTo, withEasySB)
-import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppExtras, ppHidden, ppLayout, ppOrder, ppOutput, ppSep, ppTitle, ppTitleSanitize, ppUrgent, ppVisible, ppVisibleNoWindows, ppWsSep), filterOutWsPP, shorten, wrap, xmobarColor, xmobarFont, xmobarStrip)
+import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppExtras, ppHidden, ppLayout, ppOrder, ppOutput, ppSep, ppTitle, ppTitleSanitize, ppUrgent, ppVisible, ppVisibleNoWindows, ppWsSep), filterOutWsPP, shorten, wrap, xmobarBorder, xmobarColor, xmobarFont, xmobarStrip)
 import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, position, searchPredicate, sorter), XPPosition (Bottom))
 import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
 import XMonad.Prompt.Input (inputPrompt, (?+))
@@ -245,8 +245,9 @@ myXmobarPP :: PP
 myXmobarPP =
     def
         { ppSep = grey "  \xf01d9  "
-        , ppCurrent = blue
-        , ppHidden = grey
+        , ppCurrent = blue . wrap "" "" . xmobarBorder "Top" "#89b4fa" 3
+        , -- , ppCurrent = blue
+          ppHidden = grey
         , ppVisible = white
         , ppWsSep = "  "
         , ppTitleSanitize = xmobarStrip . shorten 30 -- `shorten` defines the max length
