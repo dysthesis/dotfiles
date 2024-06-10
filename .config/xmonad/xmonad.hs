@@ -37,10 +37,10 @@ import System.Process (callCommand, readProcess)
 import XMonad.Actions.CycleWS (nextScreen, shiftNextScreen)
 import XMonad.Actions.DynamicProjects (Project (Project, projectDirectory, projectName, projectStartHook), dynamicProjects, switchProjectPrompt)
 import XMonad.Actions.Search (SearchEngine, hackage, hoogle, promptSearch, searchEngine)
-import XMonad.Hooks.DynamicLog (xmobarPP)
+import XMonad.Hooks.DynamicLog (PP (ppSort), xmobarPP)
 import XMonad.Hooks.ManageHelpers (doCenterFloat, doFullFloat, isDialog, isFullscreen, isInProperty)
 import XMonad.Hooks.StatusBar (StatusBarConfig, dynamicSBs, statusBarProp, statusBarPropTo, withEasySB)
-import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppExtras, ppHidden, ppLayout, ppOrder, ppOutput, ppSep, ppTitle, ppTitleSanitize, ppUrgent, ppVisible, ppVisibleNoWindows, ppWsSep), dynamicLogWithPP, filterOutWsPP, shorten, wrap, xmobarColor, xmobarFont, xmobarStrip)
+import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppExtras, ppHidden, ppLayout, ppOrder, ppOutput, ppSep, ppTitle, ppTitleSanitize, ppUrgent, ppVisible, ppVisibleNoWindows, ppWsSep), filterOutWsPP, shorten, wrap, xmobarColor, xmobarFont, xmobarStrip)
 import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, position, searchPredicate, sorter), XPPosition (Bottom))
 import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
 import XMonad.Prompt.Input (inputPrompt, (?+))
@@ -236,7 +236,7 @@ myProjects =
 -- barSpawner :: ScreenId -> IO StatusBarConfig
 -- barSpawner screen = pure $ statusBarProp (xmobarCmd screen) (pure myXmobarPP)
 
-xmobarProp = withEasySB (statusBarProp "xmobar -x 0 ~/.config/xmobar/xmobar.hs" (pure myXmobarPP)) toggleStrutsKey
+xmobarProp = withEasySB (statusBarProp "xmobar -x 0 ~/.config/xmobar/xmobar.hs" (pure (filterOutWsPP [scratchpadWorkspaceTag] myXmobarPP))) toggleStrutsKey
   where
     toggleStrutsKey :: XConfig Layout -> (KeyMask, KeySym)
     toggleStrutsKey XConfig{modMask = m} = (m, xK_b)
@@ -342,8 +342,10 @@ myManageHook =
         , className =? "mpv" --> doShift "3"
         , className =? "vesktop" --> doShift "2"
         , className =? "Element" --> doShift "2"
-        , className =? "thunderbird" --> doShift "4"
+        , className =? "Zathura" --> doShift "4"
+        , className =? "thunderbird" --> doShift "5"
         , className =? "virt-manager" --> doShift "6"
+        , className =? "Virt-manager" --> doShift "6"
         , className =? "steam" --> doShift "7"
         ]
         <+> namedScratchpadManageHook myScratchpads
@@ -379,6 +381,9 @@ myStartupHook = do
     spawn "killall conky"
     spawn "hsetroot -cover ~/.config/wallpaper.png"
 
+myWorkspaces :: [String]
+myWorkspaces = [" \xf269 ", " \xf0b79 ", " \xf16a ", " \xf4b5 ", " \xeb1c ", " \xea7a ", " \xf1b6 ", " \xf03bd ", " \xf0feb "]
+
 myConfig =
     def
         { modMask = myModMask
@@ -387,6 +392,7 @@ myConfig =
         , normalBorderColor = myNormColor
         , focusedBorderColor = myFocusColor
         , layoutHook = myLayout
+        , workspaces = myWorkspaces
         , startupHook = myStartupHook
         , manageHook = myManageHook <+> manageDocks
         , handleEventHook =
