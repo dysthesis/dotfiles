@@ -3,7 +3,7 @@
 if [[ $# -eq 1 ]]; then
 	selected=$1
 else
-	selected="$(find ~/Documents ~/Documents/Projects/ ~/Documents/University/ ~/Documents/University/COMP3121/ ~/Documents/University/COMP3141/ ~/Documents/University/COMP6845/ ~/Documents/University/COMP3141/Quiz/ -mindepth 1 -maxdepth 1 -type d | fzf --color=bg+:#1e1e2e,bg:-1,spinner:#f5e0dc,hl:#f38ba8 --color=fg:#ffffff,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8)"
+	selected="$(find ~/Documents ~/Documents/Projects/ ~/Documents/University/ ~/Documents/University/COMP3121/ ~/Documents/University/COMP3121/Week* ~/Documents/University/COMP3141/ ~/Documents/University/COMP6845/ ~/Documents/University/COMP3141/Quiz/ -mindepth 1 -maxdepth 1 -type d | fzf --color=bg+:#1e1e2e,bg:-1,spinner:#f5e0dc,hl:#f38ba8 --color=fg:#ffffff,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8)"
 fi
 
 if [[ -z $selected ]]; then

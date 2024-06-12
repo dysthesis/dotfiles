@@ -33,6 +33,9 @@ alias tan='task add scheduled:today'
 alias tat='task add scheduled:tomorrow until:sch+14d'
 alias tm='task modify'
 
+# yt-fzf
+alias subs='ytfzf -t -c SI --sort'
+
 function gpull
     set remotes (git remote)
     for remote in $remotes

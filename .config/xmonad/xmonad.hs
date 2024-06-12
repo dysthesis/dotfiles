@@ -41,9 +41,11 @@ import XMonad.Hooks.DynamicLog (PP (ppSort), xmobarPP)
 import XMonad.Hooks.ManageHelpers (doCenterFloat, doFullFloat, isDialog, isFullscreen, isInProperty)
 import XMonad.Hooks.StatusBar (StatusBarConfig, dynamicSBs, statusBarProp, statusBarPropTo, withEasySB)
 import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppExtras, ppHidden, ppLayout, ppOrder, ppOutput, ppSep, ppTitle, ppTitleSanitize, ppUrgent, ppVisible, ppVisibleNoWindows, ppWsSep), filterOutWsPP, shorten, wrap, xmobarBorder, xmobarColor, xmobarFont, xmobarStrip)
+import XMonad.Hooks.WindowSwallowing (swallowEventHook)
 import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, position, searchPredicate, sorter), XPPosition (Bottom))
 import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
 import XMonad.Prompt.Input (inputPrompt, (?+))
+import XMonad.Util.Hacks (windowedFullscreenFixEventHook)
 
 {-- VARIABLES:
  - Define some basic settings for XMonad here. This includes the modifier keys, default terminal emulator, window borders, etc. --}
@@ -385,6 +387,8 @@ myStartupHook = do
 myWorkspaces :: [String]
 myWorkspaces = [" \xf269 ", " \xf0b79 ", " \xf16a ", " \xf4b5 ", " \xeb1c ", " \xea7a ", " \xf1b6 ", " \xf03bd ", " \xf0feb "]
 
+myHandleEventHook = windowedFullscreenFixEventHook <> swallowEventHook (className =? "st-256color" <||> className =? "Alacritty") (return True)
+
 myConfig =
     def
         { modMask = myModMask
@@ -396,8 +400,9 @@ myConfig =
         , -- , workspaces = myWorkspaces
           startupHook = myStartupHook
         , manageHook = myManageHook <+> manageDocks
-        , handleEventHook =
-            handleEventHook def
+        , handleEventHook = myHandleEventHook
+        -- , handleEventHook =
+        --     handleEventHook def
         }
         `additionalKeysP` myKeys
 
