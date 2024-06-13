@@ -5,6 +5,7 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 
 vim.opt.conceallevel = 2
+vim.g.vim_markdown_conceal = 1
 
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
