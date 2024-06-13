@@ -17,9 +17,9 @@ return {
   },
   keys = {
     {
-      '<leader>xx',
+      '<leader>cd',
       '<cmd>Trouble diagnostics toggle<cr>',
-      desc = 'Diagnostics (Trouble)',
+      desc = '[C]ode [D]iagnostics (Trouble)',
     },
     {
       '<leader>xX',
@@ -29,7 +29,7 @@ return {
     {
       '<leader>cs',
       '<cmd>Trouble symbols toggle focus=false<cr>',
-      desc = 'Symbols (Trouble)',
+      desc = '[C]ode [S]ymbols (Trouble)',
     },
     {
       '<leader>cl',
@@ -37,14 +37,14 @@ return {
       desc = 'LSP Definitions / references / ... (Trouble)',
     },
     {
-      '<leader>xL',
+      '<leader>cL',
       '<cmd>Trouble loclist toggle<cr>',
       desc = 'Location List (Trouble)',
     },
     {
-      '<leader>xQ',
+      '<leader>cq',
       '<cmd>Trouble qflist toggle<cr>',
-      desc = 'Quickfix List (Trouble)',
+      desc = '[C]ode [Q]uickfix List (Trouble)',
     },
   },
 }

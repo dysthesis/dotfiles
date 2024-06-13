@@ -12,7 +12,7 @@ return {
   },
   keys = {
     -- Write to a git staging area
-    { '<leader>gw', ':Git<CR>' },
-    { '<leader>gb', ':Gblame<CR>' },
+    { '<leader>gw', ':Git<CR>', '[G]it [W]indow' },
+    { '<leader>gb', ':Gblame<CR>', '[G]it [B]lame' },
   },
 }
