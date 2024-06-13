@@ -39,7 +39,7 @@ alias subs='ytfzf -t -c SI --sort'
 function gpull
     set remotes (git remote)
     for remote in $remotes
-        echo "Pulling from $remote..."
+        echo -e "\nPulling from $remote..."
         git pull $remote main
     end
 end
@@ -47,7 +47,7 @@ end
 function gpush
     set remotes (git remote)
     for remote in $remotes
-        echo "Pushing to remote $remote"
+        echo -e "\nPushing to remote $remote"
         git push $remote main
     end
 end
@@ -56,7 +56,7 @@ function dotpull
     set -l remotes (eval $git_cmd remote)
     set -l current_branch (eval $git_cmd symbolic-ref --short HEAD)
     for remote in $remotes
-        echo "Pulling from $remote..."
+        echo -e "\nPulling from $remote..."
         eval $git_cmd pull $remote $current_branch
     end
 end
@@ -65,7 +65,7 @@ function dotpush
     set -l remotes (eval $git_cmd remote)
     set -l current_branch (eval $git_cmd symbolic-ref --short HEAD)
     for remote in $remotes
-        echo "Pushing from $remote..."
+        echo -e "\nPushing to $remote..."
         eval $git_cmd push $remote $current_branch
     end
 end
