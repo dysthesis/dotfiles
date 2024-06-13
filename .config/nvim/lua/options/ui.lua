@@ -30,3 +30,44 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
+
+-- Markdown
+-- Define default symbols
+local bullet_symbol = '•'
+
+-- Function to set custom bullet symbol
+function SetBulletSymbol(symbol)
+  bullet_symbol = symbol
+end
+
+-- Function to update extmarks in a buffer
+local function update_extmarks(bufnr, ns_id)
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, true)
+  for lnum, line in ipairs(lines) do
+    lnum = lnum - 1
+    -- Match bullet points
+    if string.match(line, '^%s*[-%*%+] ') then
+      local indent = string.match(line, '^%s*')
+      vim.api.nvim_buf_set_extmark(bufnr, ns_id, lnum, #indent, {
+        end_col = #indent + 1,
+        conceal = bullet_symbol,
+      })
+    end
+  end
+end
+
+-- Function to setup the extmarks autocommand
+local function setup_extmarks_autocmd()
+  local ns_id = vim.api.nvim_create_namespace 'MarkdownStyling'
+  vim.api.nvim_create_autocmd({ 'BufEnter', 'TextChanged', 'TextChangedI', 'TextChangedP' }, {
+    pattern = '*.md',
+    callback = function(ev)
+      update_extmarks(ev.buf, ns_id)
+    end,
+  })
+end
+
+-- Setup the autocommand on Vim startup
+vim.api.nvim_create_autocmd('VimEnter', {
+  callback = setup_extmarks_autocmd,
+})
