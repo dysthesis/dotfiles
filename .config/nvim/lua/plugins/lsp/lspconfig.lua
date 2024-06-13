@@ -259,6 +259,7 @@ return { -- LSP Configuration & Plugins
     vim.list_extend(ensure_installed, {
       'stylua', -- Used to format Lua code
       'zk',
+      'glow',
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 

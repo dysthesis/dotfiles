@@ -38,4 +38,18 @@ return {
       end)
     end,
   },
+  {
+    'ellisonleao/glow.nvim',
+    keys = {
+      { '<leader>mp', '<CMD>Glow<CR>', desc = '[M]arkdown [P]review', mode = 'n' },
+    },
+    config = function()
+      require('glow').setup {
+        style = 'dark',
+        width = 120,
+        width_ratio = 0.9,
+        height_ratio = 0.9,
+      }
+    end,
+  },
 }

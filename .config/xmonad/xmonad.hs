@@ -44,7 +44,7 @@ import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppExtras, ppHidden, ppLayout, p
 import XMonad.Hooks.WindowSwallowing (swallowEventHook)
 import XMonad.Layout.BinarySpacePartition (ResizeDirectional (..), Rotate (Rotate), Swap (Swap), emptyBSP)
 import qualified XMonad.Layout.Renamed as XLR
-import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, position, searchPredicate, sorter), XPPosition (Bottom))
+import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, historySize, maxComplRows, position, searchPredicate, sorter), XPPosition (Bottom))
 import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
 import XMonad.Prompt.Input (inputPrompt, (?+))
 import XMonad.Util.Hacks (windowedFullscreenFixEventHook)
@@ -97,7 +97,6 @@ myKeys =
     , ("M-s f", namedScratchpadAction myScratchpads "fm")
     , ("M-s s", namedScratchpadAction myScratchpads "signal")
     , ("M-s n", namedScratchpadAction myScratchpads "notes")
-    , ("M-s v", namedScratchpadAction myScratchpads "vit")
     , ("M-s c", namedScratchpadAction myScratchpads "khal")
     , ("M-p", spawn "flameshot gui")
     , ("M-a t", taskPrompt myXPConfig)
@@ -106,6 +105,7 @@ myKeys =
     , ("M-f h", promptSearch myXPConfig hackage)
     , ("M-f o", promptSearch myXPConfig hoogle)
     , ("M-f b", promptSearch myXPConfig braveSearch)
+    , ("M-f s", promptSearch myXPConfig searx)
     , -- Layout keybinds
       ("M-; t", switchToLayout "Spacing Tabbed Tall")
     , ("M-; w", switchToLayout "Mirror Spacing Tall")
@@ -142,6 +142,9 @@ gentooWiki = searchEngine "Gentoo Linux Wiki" "https://wiki.gentoo.org/index.php
 braveSearch :: SearchEngine
 braveSearch = searchEngine "Brave Search" "https://search.brave.com/search?q="
 
+searx :: SearchEngine
+searx = searchEngine "SearXNG" "https://searx.be/?preferences=eJx1WEuP5DYO_jVbl8IUspsFghzqFCDXLLC5G7RE2xpLokaSq8r960P6UZbaPYc2Sh8piuJbrSBjT9FguvfoMYK9WPD9BD3ewfKCFFi8o7_AlEmRCxYz3nui3uLFOOZrQqTXfP87TnhxmAfS9__99f-_Lwk6TAhRDfdfLnlAh_dkZP8lYppsTg35xuOzydDe_wSb8KLJNEwk-8B4T8p8G6b2xjglBfFbyjOrYqk3ijQ-vmmI42UV2aw00fGi0GeMDVjTe8e_V81AP8Ar1M2m0nrgjwnj3BjfZJN5_8JpfGe8ySxTRbJ2BdddorFaLTazIIsqb4IGyiPO6a6xA77bRZsEreXj0PfGs3V_76FvmkTKgL061Ab-9Z8_wHtIV5FsHtg0nbGYBA7j1ZkYKZYYX_PK32vKFEtmD4q8hqYxWZYxG8W_xTMLOY1Ns7mWl62xRv6a5mE0knC0oa04sjZ9f8ingJ7dkbAQuuh_U0rdNBaSVAgRO4zIht7UYROmxCBfXRnBV-ypH4Y9Xxw7Y_i0vK7HFccKyAHDkHxF0hStwUp7GPxAXQlpxA-Oh8ZNyahl_TDgMxuqEK11f2XfieMN-VTuf5rRaMhQYqs3HATm5C8jmb08V6r8-1XI73Qkow-rdtaoMZYMEfGaqMtPiHjVJnJsSZStZuyi8aOB0rFrCl6DhVnCIh2yS4ojNnQqfOQ4fKPEICeRL43bB9K6tNMAbQT5bDoM-Np-GddPpe7GQ3ECB1iEOF-pu_IRPedzeYxQMUfwybImpb24doAK4LdDHH0MpqI_XWtLwM8ARZzqOWEZjRK4EQMVlgmgRuhNytsZwQRO0WMLh--W6MUxb_AckAdpFfH1tipkA1c0jsBdgal1osGRHOseNydTWydhMLAr91Z4BaQcXuWzSc00zpQpDTSKOffbc101moOK8zMXRslymaQGmMrzSnRTffKJYyoNZUbSlKe2tPobeacbGDs7krQq2B7GIRXrp2nnKsEsvsBrjtTPqdgSjaf8_DFRbS4BE01RndGAakmJn8CHKwSWymfy_Jn7QbN0vhIl20VwYMNQqayNyh_k68rw66-_vQq_4IcHVzLEqZ17dGmPEsT4ycxLBeamOkodfWJbegBUpa-sz6EbJ84mrNL2gYkTBKvwwjHW8btCJ3ErvGfBIYAzXeUqjh-9JGWxVezpuPCWXFzC3ssL-rqVLklljZ9eV9n7bnwv8yjd13L8KHDhCEXhDmK4uiP6_vP6fL8FrQyxIKcLtya3kxpxrzBqwG4kyVlib8W1Z0mDnOsWlTJkkw4uTSwkXnn-2QQhN01pIG8GPkX-eqoEvdHzFQraSe2CVl2ywJ8o8RYPDdDR992cbyxzqnv2DR5YN8-F3qyrmdLhE15ncfZyyZ6nMGiPxXF9qW4txn6nEemIoAuLrV3vUxBJHzwZYsOri27YyTAbzoWQLMQyvAYQD61C1v64KbC1SN0euhnPAg1NpeQC223x3XDJPnaNPCJAKiq1RedmLvTOTTKnLNWqHihXjilx1foJjfth_hlNJK-94TN5a-li22QKjT6-baRCSc6LR5VhltqU8RZ3QzngEVaT_4meb_LAvYbb0Bcc-j0kmJeyNOnDhj649zE8MuE-vcg0ADxVySSXMFeFfqdxN-axDLYJsKbzdIKFbwTi4oaYefzbZ8CgpUYf-wK_CqTrbVQj7xJM5di5DCC3RffjCsFEHo1aKIzKs5lisxivZQjblQhz2KvfjyePtKXRF6CO8RU6pcMKnyI_AkfnteWyk8qpkC2oTT65JFLOksk8XhIWWck9mKtw7SKudWok7qydpedevdM4tZPP054_YivPE-H6Nvoi_9IUME7p7eCE7HB--3yVq0mm_fCpY-cqRWcYiOq2yUBtQOkfnwEJliX-d0HCJInEMXQ72boknixeEmFi69edayctMXGEhpsdV2JOzvdQreuOoNEf2nHN5k5djdXyQgjGUj64PDzEruV0E7U3Y3FLepmRPI-y1zR78qxE4fTv4Raexalc4XMnwRtPgfPgZ9HSyzc3PsHagY_3pdVyjjdTyJsn52xhcy5Bj_oZKMDZ_Ct8btoLXHmWy9pRsNZBcpj2pt7m_xYP5DD2t572of54-Qc78byS7jKjv27b6qbAqom9RIuhKlJC2zXGd3SiMHfDk4QaTxRpBA0_s9hfnDDvUenrs6WgbqSToIH7Ak-h2HAZtPB-ihwMBM3675ln5KfJWcW49MOGX-TM4yS9L_wO4Sp5_weHnvNQ&q="
+
 {-- Scratchpads --}
 myScratchpads :: [NamedScratchpad]
 myScratchpads =
@@ -151,7 +154,6 @@ myScratchpads =
     , NS "fm" spawnFM findFM manageFM
     , NS "notes" spawnNotes findNotes manageNotes
     , NS "signal" spawnSignal findSignal manageSignal
-    , NS "vit" spawnVit findVit manageVit
     , NS "khal" spawnKhal findKhal manageKhal
     ]
   where
@@ -190,14 +192,6 @@ myScratchpads =
     spawnNotes = "st -c notes -e tmux new-session -s notes -c ~/Documents/Notes/"
     findNotes = className =? "notes"
     manageNotes = customFloating $ W.RationalRect l t w h
-      where
-        h = 0.9
-        w = 0.9
-        t = 0.95 - h
-        l = 0.95 - w
-    spawnVit = "st -c vit -e vit"
-    findVit = className =? "vit"
-    manageVit = customFloating $ W.RationalRect l t w h
       where
         h = 0.9
         w = 0.9
@@ -292,30 +286,55 @@ myTabConfig =
         , inactiveTextColor = "#ffffff"
         , inactiveBorderWidth = 2
         , fontName = "xft:JetBrainsMono Nerd Font:size=10:antialias=true:hinting=true"
-        , decoHeight = 12
+        , decoHeight = 14
         , decoWidth = maxBound
         }
 
 -- Here, `mkToggle` (NBFULL ?? NOBORDERS ?? EOT) is used to enable fullscreen toggling.
-myLayout = avoidStruts $ mkToggle (NBFULL ?? NOBORDERS ?? EOT) $ bsp ||| tiled ||| Mirror tiled ||| monocle ||| threeCol ||| tabs
+myLayout =
+    avoidStruts $
+        mkToggle (NBFULL ?? NOBORDERS ?? EOT) $ -- Add the option to toggle fullscreen (no gaps nor borders) on any layout
+            bsp -- Binary space partition (spiral, bspwm style)
+                ||| tiled -- Master and stack layout (vertical)
+                ||| Mirror tiled -- Master and stack layout (horizontal)
+                ||| monocle -- almost-fullscreen
+                ||| threeCol -- three columns of window, one large one on the centre and two smaller ones on each side
+                ||| tabs -- fullscreen with tabs
   where
     {-- Here are some custom layouts --}
     tabs = tabbed shrinkText myTabConfig
-    tiled = spacing gaps $ windowNavigation $ subTabbed $ boringWindows $ Tall nmaster delta ratio
-    threeCol = spacing gaps $ ThreeColMid nmaster delta ratio
+    tiled = 
+      spacing gaps $                    -- add gaps to the layout
+      windowNavigation $                -- simplifies window navigation keybindings 
+      addTabs shrinkText myTabConfig $  -- add tabbed sublayout
+      boringWindows $                   -- skips navigation for non-visible windws 
+      Tall                              -- use the Tall layout as the base for this custom layout 
+        nmaster                         -- define how many windows can be in the master stack 
+        delta                           -- define how much the ratio of window sizes can be incremented each time
+        ratio                           -- define the initial ratio of window sizes
+    threeCol = 
+      spacing gaps $                    -- add gaps to the layout
+      addTabs shrinkText myTabConfig $  -- simplifies window navigation keybindings 
+      boringWindows $                   -- skips navigation for non-visible windws 
+        ThreeColMid                     -- use the Tall layout as the base for this custom layout 
+          nmaster                       -- define how many windows can be in the master stack 
+          delta                         -- define how much the ratio of window sizes can be incremented each time
+          ratio                         -- define the initial ratio of window sizes
     bsp =
         renamed [XLR.Replace "BSP"] $
-            avoidStruts $
-                windowNavigation $
-                    addTabs shrinkText myTabConfig $
-                        subLayout [] tabs $
-                            spacing gaps emptyBSP
+        smartBorders $
+        windowNavigation $
+        addTabs shrinkText myTabConfig $
+        subLayout [] tabs $
+        spacing 
+          gaps 
+          emptyBSP
     monocle =
         renamed [Replace "monocle"] $
-            smartBorders $
-                windowNavigation $
-                    addTabs shrinkText myTabConfig $
-                        subLayout [] (smartBorders Simplest) Full
+        smartBorders $
+        windowNavigation $
+        addTabs shrinkText myTabConfig $
+        subLayout [] (smartBorders Simplest) Full
 
     {-- and here are some general configurations for all of these layouts. --}
     nmaster = 1 -- Default number of windows in the master pane
@@ -338,6 +357,7 @@ myXPConfig =
         , searchPredicate = fuzzyMatch
         , sorter = fuzzySort
         , alwaysHighlight = True
+        , historySize = 10
         }
 
 {-- MANAGE HOOK --}
