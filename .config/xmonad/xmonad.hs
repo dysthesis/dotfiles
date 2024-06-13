@@ -42,6 +42,8 @@ import XMonad.Hooks.ManageHelpers (doCenterFloat, doFullFloat, isDialog, isFulls
 import XMonad.Hooks.StatusBar (StatusBarConfig, dynamicSBs, statusBarProp, statusBarPropTo, withEasySB)
 import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppExtras, ppHidden, ppLayout, ppOrder, ppOutput, ppSep, ppTitle, ppTitleSanitize, ppUrgent, ppVisible, ppVisibleNoWindows, ppWsSep), filterOutWsPP, shorten, wrap, xmobarBorder, xmobarColor, xmobarFont, xmobarStrip)
 import XMonad.Hooks.WindowSwallowing (swallowEventHook)
+import XMonad.Layout.BinarySpacePartition (emptyBSP)
+import qualified XMonad.Layout.Renamed as XLR
 import XMonad.Prompt (XPConfig (alwaysHighlight, autoComplete, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, position, searchPredicate, sorter), XPPosition (Bottom))
 import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
 import XMonad.Prompt.Input (inputPrompt, (?+))
@@ -263,6 +265,7 @@ myXmobarPP =
                         "monocle" -> "<icon=monocle.xpm/>"
                         "Spacing ThreeCol" -> "<icon=threecol.xpm/>"
                         "Tabbed Simplest" -> "<icon=tabbed.xpm/>"
+                        "BSP" -> "<icon=bsp.xpm/>"
                   )
         }
   where
@@ -288,12 +291,19 @@ myTabConfig =
         }
 
 -- Here, `mkToggle` (NBFULL ?? NOBORDERS ?? EOT) is used to enable fullscreen toggling.
-myLayout = avoidStruts $ mkToggle (NBFULL ?? NOBORDERS ?? EOT) $ tiled ||| Mirror tiled ||| monocle ||| threeCol ||| tabs
+myLayout = avoidStruts $ mkToggle (NBFULL ?? NOBORDERS ?? EOT) $ bsp ||| tiled ||| Mirror tiled ||| monocle ||| threeCol ||| tabs
   where
     {-- Here are some custom layouts --}
     tabs = tabbed shrinkText myTabConfig
     tiled = spacing gaps $ windowNavigation $ subTabbed $ boringWindows $ Tall nmaster delta ratio
     threeCol = spacing gaps $ ThreeColMid nmaster delta ratio
+    bsp =
+        renamed [XLR.Replace "BSP"] $
+            avoidStruts $
+                windowNavigation $
+                    addTabs shrinkText myTabConfig $
+                        subLayout [] tabs $
+                            spacing gaps emptyBSP
     monocle =
         renamed [Replace "monocle"] $
             smartBorders $
