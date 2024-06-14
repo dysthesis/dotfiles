@@ -3,7 +3,7 @@
 if [[ $# -eq 1 ]]; then
 	selected=$1
 else
-	selected="$(cat <(echo ~/Documents/Projects/) <(fd --type directory . --max-depth 3 ~/Documents/University/) | while read -r p; do zoxide query -l -s "$p"; done | sort -rnk1 | fzf --no-sort | awk '{print $2}')"
+	selected="$(cat <(echo ~/Documents/Projects/) <(fd --type directory . --max-depth 3 ~/Documents/University/) | while read -r p; do zoxide query -l -s "$p"; done | sort -rnk1 | fzf --no-sort | awk '{for (i=2; i<=NF; i++) printf $i (i<NF ? OFS : ORS)}')"
 fi
 
 if [[ -z $selected ]]; then
