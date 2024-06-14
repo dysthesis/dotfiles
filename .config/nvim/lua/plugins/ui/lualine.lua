@@ -23,7 +23,7 @@ return {
             {
               'mode',
               fmt = fmt_mode,
-              icon = { '' },
+              icon = { '󰹻 ' },
               separator = { left = '█', right = '█' },
               right_padding = 2,
             },
