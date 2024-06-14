@@ -36,6 +36,44 @@ alias tm='task modify'
 # yt-fzf
 alias subs='ytfzf -t -c SI --sort'
 
+# automatically clone and set up mirror
+function gclone -d "Clone a repo name and set up both mirrors to GitHub and Codeberg"
+    set repo $argv
+    set username 'dysthesis'
+    set forges 'git@github.com' 'git@codeberg.org'
+
+    echo "Cloning repository $repo"
+    echo "Getting from initial repository at $forges[1]:$username/$repo.git"
+    echo "" 
+
+    git clone $forges[1]:$username/$repo.git
+    cd $repo
+
+    echo "Removing the 'origin' remote"
+    git remote rm origin
+    echo ""
+
+    echo "Forges to set up:"
+    for f in $forges
+        echo "- $f"
+    end
+
+    echo ""
+    
+    for f in $forges
+        echo "Setting up forge $f"
+        set forge_url $f:$username/$repo.git
+        set forge_name $(echo "$f" | sed 's/.*@\(.*\)\..*/\1/')
+        echo "Adding remote $forge_name with URL $forge_url"
+        echo "" 
+        git remote add $forge_name $forge_url
+    end
+    # sync
+    gpull
+    gpush
+    cd ..
+end
+
 function gpull
     set remotes (git remote)
     for remote in $remotes
@@ -51,6 +89,7 @@ function gpush
         git push $remote main
     end
 end
+
 function dotpull
     set -l git_cmd 'git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
     set -l remotes (eval $git_cmd remote)
@@ -60,6 +99,7 @@ function dotpull
         eval $git_cmd pull $remote $current_branch
     end
 end
+
 function dotpush
     set -l git_cmd 'git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
     set -l remotes (eval $git_cmd remote)
