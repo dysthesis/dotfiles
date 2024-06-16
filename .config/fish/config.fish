@@ -74,19 +74,21 @@ function gclone -d "Clone a repo name and set up both mirrors to GitHub and Code
     cd ..
 end
 
-function gpull
+function gpull -d "Pull from all mirrors"
     set remotes (git remote)
+    set -l current_branch (eval /usr/bin/git symbolic-ref --short HEAD)
     for remote in $remotes
-        echo -e "\nPulling from $remote..."
-        git pull $remote main
+        echo -e "\nPulling from $remote/$current_branch..."
+        git pull $remote $current_branch
     end
 end
 
-function gpush
+function gpush -d "Push to all mirrors"
     set remotes (git remote)
+    set -l current_branch (eval /usr/bin/git symbolic-ref --short HEAD)
     for remote in $remotes
-        echo -e "\nPushing to remote $remote"
-        git push $remote main
+        echo -e "\nPushing to remote $remote/$current_branch"
+        git push $remote $current_branch
     end
 end
 
