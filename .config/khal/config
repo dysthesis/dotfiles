@@ -20,6 +20,10 @@ color = light magenta
 path = ~/.local/share/calendars/Study
 color = light red
 
+[[COMP3121]]
+path = ~/.local/share/calendars/COMP3121
+color = light green
+
 [locale]
 timeformat = %H:%M
 dateformat = %d/%m/%Y

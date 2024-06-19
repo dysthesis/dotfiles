@@ -64,3 +64,19 @@ url = "https://calendar.proton.me/api/calendar/v1/url/mnftSHU1mIFmBPxRVNpPvCYwER
 type = "filesystem"
 fileext = ".ics"
 path = "~/.local/share/calendars/Study"
+
+[pair COMP3121]
+a = "COMP3121_remote"
+b = "COMP3121_local"
+conflict_resolution = "a wins"
+collections = null
+
+[storage COMP3121_remote]
+type = "http"
+# The URL to your iCalendar file.
+url = "https://calendar.proton.me/api/calendar/v1/url/6Q3LhyKCF_lwYIYZpz1tK_9RTYh-pxFJ1IOKkGvK93ueBAIS_nmJA0AhLRsIkzhoSUiC2gzCcC2F9CdMnvcijg==/calendar.ics?CacheKey=aOXGRHOi7ptHeIMwrokP9A%3D%3D&PassphraseKey=_Zfq_kRs23dxdB6n5qKuIIXdYfF2i3Bvrs4qIEbqSvk%3D"
+
+[storage COMP3121_local]
+type = "filesystem"
+fileext = ".ics"
+path = "~/.local/share/calendars/COMP3121"

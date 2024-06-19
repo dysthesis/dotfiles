@@ -12,3 +12,9 @@ https://sthbrx.github.io/rss.xml cs
 https://blog.regehr.org/feed cs compilers
 https://neomutt.org/feed.xml tools
 https://neovim.io/news.xml tools
+https://lore.kernel.org/rust-for-linux/new.atom linux
+https://lore.kernel.org/linux-hardening/new.atom linux
+https://lore.kernel.org/linux-security-module/new.atom linux
+https://lore.kernel.org/linux-crypto/new.atom linux
+https://lore.kernel.org/llvm/new.atom linux
+https://lore.kernel.org/selinux/new.atom linux
