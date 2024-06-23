@@ -90,6 +90,8 @@ myKeys =
     , ("M-t b", sendMessage ToggleGaps >> spawn "polybar-msg cmd toggle")
     , ("M-n", nextScreen)
     , ("M-S-n", shiftNextScreen)
+    , ("<XF86AudioRaiseVolume>", spawn increaseVolCmd)
+    , ("<XF86AudioLowerVolume>", spawn decreaseVolCmd)
     , -- Scratchpads
       ("M-s t", namedScratchpadAction myScratchpads "terminal")
     , ("M-s b", namedScratchpadAction myScratchpads "btop")
@@ -131,6 +133,10 @@ myKeys =
     , -- Projects
       ("M-g p", switchProjectPrompt myXPConfig)
     ]
+    where
+      audioDelta = 5
+      increaseVolCmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ " ++ show audioDelta ++ "%+"
+      decreaseVolCmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ " ++ show audioDelta ++ "%-"
 
 {-- Search engines --}
 archWiki :: SearchEngine
@@ -415,6 +421,7 @@ myStartupHook = do
     spawnOnce "dunst"
     spawnOnce "parcellite"
     spawnOnce "flameshot"
+    spawnOnce "udiskie"
     spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
     -- spawn "~/.local/bin/polybar-xmonad.sh"
     spawn "killall conky"
