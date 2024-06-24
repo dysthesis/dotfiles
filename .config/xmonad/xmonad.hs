@@ -36,7 +36,7 @@ import System.Environment (getEnv)
 import System.Process (callCommand, readProcess)
 import XMonad.Actions.CycleWS (nextScreen, shiftNextScreen)
 import XMonad.Actions.DynamicProjects (Project (Project, projectDirectory, projectName, projectStartHook), dynamicProjects, switchProjectPrompt)
-import XMonad.Actions.Search (SearchEngine, hackage, hoogle, promptSearch, searchEngine)
+import XMonad.Actions.Search (SearchEngine, hackage, hoogle, promptSearch, searchEngine, rustStd, cratesIo, alpha, aur, stackage)
 import XMonad.Hooks.DynamicLog (PP (ppSort), xmobarPP)
 import XMonad.Hooks.ManageHelpers (doCenterFloat, doFullFloat, isDialog, isFullscreen, isInProperty)
 import XMonad.Hooks.StatusBar (StatusBarConfig, dynamicSBs, statusBarProp, statusBarPropTo, withEasySB)
@@ -82,34 +82,13 @@ switchToLayout = sendMessage . JumpToLayout
 
 myKeys :: [(String, X ())]
 myKeys =
+
+    {-- XMONAD --}
+
     [ ("M-S-r", spawn "xmonad --recompile && xmonad --restart")
-    , ("M-<Return>", spawn myTerminal)
-    , ("M-r", spawn myLauncher)
-    , ("M-q", kill)
-    , ("M-t f", sendMessage $ Toggle NBFULL)
-    , ("M-t b", sendMessage ToggleGaps >> spawn "polybar-msg cmd toggle")
-    , ("M-n", nextScreen)
-    , ("M-S-n", shiftNextScreen)
-    , ("<XF86AudioRaiseVolume>", spawn increaseVolCmd)
-    , ("<XF86AudioLowerVolume>", spawn decreaseVolCmd)
-    , -- Scratchpads
-      ("M-s t", namedScratchpadAction myScratchpads "terminal")
-    , ("M-s b", namedScratchpadAction myScratchpads "btop")
-    , ("M-s i", namedScratchpadAction myScratchpads "irc")
-    , ("M-s f", namedScratchpadAction myScratchpads "fm")
-    , ("M-s s", namedScratchpadAction myScratchpads "signal")
-    , ("M-s n", namedScratchpadAction myScratchpads "notes")
-    , ("M-s c", namedScratchpadAction myScratchpads "khal")
-    , ("M-p", spawn "flameshot gui")
-    , ("M-a t", taskPrompt myXPConfig)
-    , ("M-f a", promptSearch myXPConfig archWiki)
-    , ("M-f g", promptSearch myXPConfig gentooWiki)
-    , ("M-f h", promptSearch myXPConfig hackage)
-    , ("M-f o", promptSearch myXPConfig hoogle)
-    , ("M-f b", promptSearch myXPConfig braveSearch)
-    , ("M-f s", promptSearch myXPConfig searx)
-    , -- Layout keybinds
-      ("M-; t", switchToLayout "Spacing Tabbed Tall")
+
+    -- Layout keybinds
+    , ("M-; t", switchToLayout "Spacing Tabbed Tall")
     , ("M-; w", switchToLayout "Mirror Spacing Tall")
     , ("M-; f", switchToLayout "monocle")
     , ("M-; 3", switchToLayout "Spacing ThreeCol")
@@ -129,12 +108,62 @@ myKeys =
     , ("M-M1-C-k", sendMessage $ ShrinkFrom D)
     , ("M-M1-C-j", sendMessage $ ExpandTowards D)
     , ("M-M1-S", sendMessage Swap)
-    , ("M-M1-s", sendMessage Rotate)
-    , -- Projects
-      ("M-g p", switchProjectPrompt myXPConfig)
+    , ("M-M1-s", sendMessage Rotate)    
+
+    {-- DESKTOP --}
+    , ("M-r", spawn myLauncher)
+    , ("M-<Return>", spawn myTerminal)
+    , ("M-q", kill)
+    , ("M-n", nextScreen)
+    , ("M-S-n", shiftNextScreen)
+    , ("M-t f", sendMessage $ Toggle NBFULL)
+    , ("<XF86AudioRaiseVolume>", spawn increaseVolCmd)
+    , ("<XF86AudioLowerVolume>", spawn decreaseVolCmd)
+    , ("M-p", spawn "flameshot gui")
+    , ("M-t b", sendMessage ToggleGaps >> spawn "polybar-msg cmd toggle")
+
+    {-- SCRATCHPADS --}
+
+    , ("M-s t", namedScratchpadAction myScratchpads "terminal")
+    , ("M-s b", namedScratchpadAction myScratchpads "btop")
+    , ("M-s i", namedScratchpadAction myScratchpads "irc")
+    , ("M-s f", namedScratchpadAction myScratchpads "fm")
+    , ("M-s s", namedScratchpadAction myScratchpads "signal")
+    , ("M-s n", namedScratchpadAction myScratchpads "notes")
+    , ("M-s c", namedScratchpadAction myScratchpads "khal")
+
+    {-- TASKWARRIOR --}
+
+    , ("M-a t", taskPrompt myXPConfig)
+
+    {-- SEARCH KEYBINDS --}
+
+    -- Linux
+    , ("M-f a", promptSearch myXPConfig archWiki)
+    , ("M-f g", promptSearch myXPConfig gentooWiki)
+    , ("M-f u", promptSearch myXPConfig aur)
+
+    -- Haskell
+    , ("M-f h s", promptSearch myXPConfig stackage)
+    , ("M-f h h", promptSearch myXPConfig hoogle)
+    , ("M-f h w", promptSearch myXPConfig haskellWiki)
+
+    -- Rust
+    , ("M-f r s", promptSearch myXPConfig rustStd)
+    , ("M-f r c", promptSearch myXPConfig cratesIo)
+
+    -- Miscelaneous
+    , ("M-f w", promptSearch myXPConfig alpha)
+
+    -- General
+    , ("M-f b", promptSearch myXPConfig braveSearch)
+    , ("M-f s", promptSearch myXPConfig searx)
+
+    -- Projects
+    , ("M-g p", switchProjectPrompt myXPConfig)
     ]
     where
-      audioDelta = 5
+      audioDelta = 5 -- configures how much each command should change the volume by
       increaseVolCmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ " ++ show audioDelta ++ "%+"
       decreaseVolCmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ " ++ show audioDelta ++ "%-"
 
@@ -150,6 +179,9 @@ braveSearch = searchEngine "Brave Search" "https://search.brave.com/search?q="
 
 searx :: SearchEngine
 searx = searchEngine "SearXNG" "https://searx.be/?preferences=eJx1WEuP5DYO_jVbl8IUspsFghzqFCDXLLC5G7RE2xpLokaSq8r960P6UZbaPYc2Sh8piuJbrSBjT9FguvfoMYK9WPD9BD3ewfKCFFi8o7_AlEmRCxYz3nui3uLFOOZrQqTXfP87TnhxmAfS9__99f-_Lwk6TAhRDfdfLnlAh_dkZP8lYppsTg35xuOzydDe_wSb8KLJNEwk-8B4T8p8G6b2xjglBfFbyjOrYqk3ijQ-vmmI42UV2aw00fGi0GeMDVjTe8e_V81AP8Ar1M2m0nrgjwnj3BjfZJN5_8JpfGe8ySxTRbJ2BdddorFaLTazIIsqb4IGyiPO6a6xA77bRZsEreXj0PfGs3V_76FvmkTKgL061Ab-9Z8_wHtIV5FsHtg0nbGYBA7j1ZkYKZYYX_PK32vKFEtmD4q8hqYxWZYxG8W_xTMLOY1Ns7mWl62xRv6a5mE0knC0oa04sjZ9f8ingJ7dkbAQuuh_U0rdNBaSVAgRO4zIht7UYROmxCBfXRnBV-ypH4Y9Xxw7Y_i0vK7HFccKyAHDkHxF0hStwUp7GPxAXQlpxA-Oh8ZNyahl_TDgMxuqEK11f2XfieMN-VTuf5rRaMhQYqs3HATm5C8jmb08V6r8-1XI73Qkow-rdtaoMZYMEfGaqMtPiHjVJnJsSZStZuyi8aOB0rFrCl6DhVnCIh2yS4ojNnQqfOQ4fKPEICeRL43bB9K6tNMAbQT5bDoM-Np-GddPpe7GQ3ECB1iEOF-pu_IRPedzeYxQMUfwybImpb24doAK4LdDHH0MpqI_XWtLwM8ARZzqOWEZjRK4EQMVlgmgRuhNytsZwQRO0WMLh--W6MUxb_AckAdpFfH1tipkA1c0jsBdgal1osGRHOseNydTWydhMLAr91Z4BaQcXuWzSc00zpQpDTSKOffbc101moOK8zMXRslymaQGmMrzSnRTffKJYyoNZUbSlKe2tPobeacbGDs7krQq2B7GIRXrp2nnKsEsvsBrjtTPqdgSjaf8_DFRbS4BE01RndGAakmJn8CHKwSWymfy_Jn7QbN0vhIl20VwYMNQqayNyh_k68rw66-_vQq_4IcHVzLEqZ17dGmPEsT4ycxLBeamOkodfWJbegBUpa-sz6EbJ84mrNL2gYkTBKvwwjHW8btCJ3ErvGfBIYAzXeUqjh-9JGWxVezpuPCWXFzC3ssL-rqVLklljZ9eV9n7bnwv8yjd13L8KHDhCEXhDmK4uiP6_vP6fL8FrQyxIKcLtya3kxpxrzBqwG4kyVlib8W1Z0mDnOsWlTJkkw4uTSwkXnn-2QQhN01pIG8GPkX-eqoEvdHzFQraSe2CVl2ywJ8o8RYPDdDR992cbyxzqnv2DR5YN8-F3qyrmdLhE15ncfZyyZ6nMGiPxXF9qW4txn6nEemIoAuLrV3vUxBJHzwZYsOri27YyTAbzoWQLMQyvAYQD61C1v64KbC1SN0euhnPAg1NpeQC223x3XDJPnaNPCJAKiq1RedmLvTOTTKnLNWqHihXjilx1foJjfth_hlNJK-94TN5a-li22QKjT6-baRCSc6LR5VhltqU8RZ3QzngEVaT_4meb_LAvYbb0Bcc-j0kmJeyNOnDhj649zE8MuE-vcg0ADxVySSXMFeFfqdxN-axDLYJsKbzdIKFbwTi4oaYefzbZ8CgpUYf-wK_CqTrbVQj7xJM5di5DCC3RffjCsFEHo1aKIzKs5lisxivZQjblQhz2KvfjyePtKXRF6CO8RU6pcMKnyI_AkfnteWyk8qpkC2oTT65JFLOksk8XhIWWck9mKtw7SKudWok7qydpedevdM4tZPP054_YivPE-H6Nvoi_9IUME7p7eCE7HB--3yVq0mm_fCpY-cqRWcYiOq2yUBtQOkfnwEJliX-d0HCJInEMXQ72boknixeEmFi69edayctMXGEhpsdV2JOzvdQreuOoNEf2nHN5k5djdXyQgjGUj64PDzEruV0E7U3Y3FLepmRPI-y1zR78qxE4fTv4Raexalc4XMnwRtPgfPgZ9HSyzc3PsHagY_3pdVyjjdTyJsn52xhcy5Bj_oZKMDZ_Ct8btoLXHmWy9pRsNZBcpj2pt7m_xYP5DD2t572of54-Qc78byS7jKjv27b6qbAqom9RIuhKlJC2zXGd3SiMHfDk4QaTxRpBA0_s9hfnDDvUenrs6WgbqSToIH7Ak-h2HAZtPB-ihwMBM3675ln5KfJWcW49MOGX-TM4yS9L_wO4Sp5_weHnvNQ&q="
+
+haskellWiki :: SearchEngine
+haskellWiki = searchEngine "Haskell Wiki" "https://wiki.haskell.org/index.php?title=Special:Search&search="
 
 {-- Scratchpads --}
 myScratchpads :: [NamedScratchpad]
@@ -237,14 +269,7 @@ myProjects =
         }
     ]
 
-{-- XMobar --}
--- Create a command to spawn xmobar for the given screen ID
--- xmobarCmd :: ScreenId -> String
--- xmobarCmd screen = "xmobar ~/.config/xmobar/xmobar.hs -x " ++ show screen
---
--- -- Spawn an xmobar for the given screen
--- barSpawner :: ScreenId -> IO StatusBarConfig
--- barSpawner screen = pure $ statusBarProp (xmobarCmd screen) (pure myXmobarPP)
+{-- XMOBAR --}
 
 xmobarProp = withEasySB (statusBarProp "xmobar -x 0 ~/.config/xmobar/xmobar.hs" (pure (filterOutWsPP [scratchpadWorkspaceTag] myXmobarPP))) toggleStrutsKey
   where
@@ -279,7 +304,8 @@ myXmobarPP =
     white = xmobarColor "#ffffff" ""
     blue = xmobarColor "#89b4fa" ""
 
-{-- Tabbed layouts --}
+{-- TABBED LAYOUTS --}
+
 myTabConfig :: Theme
 myTabConfig =
     def
