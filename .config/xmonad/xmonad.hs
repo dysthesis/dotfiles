@@ -236,10 +236,10 @@ termScratchpad ::
 termScratchpad 
   name cmd windowClass = scratchpad name command cName
   where
-    command = "st -c " ++ show cName ++ verb  -- Use `st` as our terminal
+    command = "st -c " ++ cName ++ verb  -- Use `st` as our terminal
       where
         verb = case cmd of
-          Just x -> " -e " ++ show x          -- If `cmd` exists, add an argument to spawn it inside the terminal
+          Just x -> " -e " ++  x          -- If `cmd` exists, add an argument to spawn it inside the terminal
           Nothing -> ""
     cName = fromMaybe name windowClass        -- If windowClass is Nothing, use the scratchpad name instead as the class
 
@@ -264,7 +264,7 @@ myScratchpads =
       Nothing
     , termScratchpad
       "notes"
-      ( Just "tmux new-session -s notes -c ~/Documents/Notes/" )
+      ( Just "sh -c 'tmux attach-session -t notes || tmux new-session -s notes -c ~/Documents/Notes/'" )
       Nothing
     , termScratchpad
       "khal"
