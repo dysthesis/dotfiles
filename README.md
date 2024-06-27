@@ -1,7 +1,7 @@
-These are dotfiles for my PC running Gentoo Linux, with the following details:
+These are dotfiles for my PC running Arch Linux, with the following details:
 
 - **Window manager:** XMonad
-- **Bar:** Polybar
+- **Bar:** XMobar
 - **Notification daemon:** dunst
 - **Editor:** Neovim
 - **Terminal emulator:** st-flexipatch
