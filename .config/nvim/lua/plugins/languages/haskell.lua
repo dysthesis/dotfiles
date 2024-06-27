@@ -21,13 +21,12 @@ return {
       local ht = require 'haskell-tools'
       local bufnr = vim.api.nvim_get_current_buf()
       local opts = { noremap = true, silent = true, buffer = bufnr }
-      local keys = {
-        { 'n', '<leader>cl', vim.lsp.codelens.run, desc = '[C]ode [L]ens', opts },
-        { 'n', '<leader>hs', ht.hoogle.hoogle_signature, desc = '[H]oogle [S]ignature', opts },
-        { 'n', '<leader>ea', ht.lsp.buf_eval_all, desc = '[E]valuate [A]ll snippets', opts },
-        { 'n', '<leader>trp', ht.repl.toggle, desc = '[T]oggle [R]epl for [P]ackage', opts },
+      return {
+        { '<leader>rcl', vim.lsp.codelens.run, desc = '[R]un [C]ode [L]ens', opts },
+        { '<leader>hs', ht.hoogle.hoogle_signature, desc = '[H]oogle [S]ignature', opts },
+        { '<leader>ea', ht.lsp.buf_eval_all, desc = '[E]valuate [A]ll snippets', opts },
+        { '<leader>trp', ht.repl.toggle, desc = '[T]oggle [R]epl for [P]ackage', opts },
         {
-          'n',
           '<leader>trb',
           function()
             ht.repl.toggle(vim.api.nvim_buf_get_name(0))
@@ -35,9 +34,8 @@ return {
           desc = '[T]oggle [R]epl for [B]uffer',
           opts,
         },
-        { 'n', '<leader>rq', ht.repl.quit, '[R]epl [Q]uit', opts },
+        { '<leader>rq', ht.repl.quit, desc = '[R]epl [Q]uit', opts },
       }
-      return keys
     end,
   },
 
