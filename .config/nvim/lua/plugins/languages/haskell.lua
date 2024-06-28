@@ -23,7 +23,7 @@ return {
       local opts = { noremap = true, silent = true, buffer = bufnr }
       return {
         { '<leader>rcl', vim.lsp.codelens.run, desc = '[R]un [C]ode [L]ens', opts },
-        { '<leader>hs', ht.hoogle.hoogle_signature, desc = '[H]oogle [S]ignature', opts },
+        -- { '<leader>hs', ht.hoogle.hoogle_signature, desc = '[H]oogle [S]ignature', opts },
         { '<leader>ea', ht.lsp.buf_eval_all, desc = '[E]valuate [A]ll snippets', opts },
         { '<leader>trp', ht.repl.toggle, desc = '[T]oggle [R]epl for [P]ackage', opts },
         {
@@ -84,19 +84,19 @@ return {
     end,
   },
 
-  {
-    'luc-tielen/telescope_hoogle',
-    ft = { 'haskell', 'lhaskell', 'cabal', 'cabalproject' },
-    dependencies = {
-      { 'nvim-telescope/telescope.nvim' },
-    },
-    config = function()
-      local ok, telescope = pcall(require, 'telescope')
-      if ok then
-        telescope.load_extension 'hoogle'
-      end
-    end,
-  },
+  -- {
+  --   'luc-tielen/telescope_hoogle',
+  --   ft = { 'haskell', 'lhaskell', 'cabal', 'cabalproject' },
+  --   dependencies = {
+  --     { 'nvim-telescope/telescope.nvim' },
+  --   },
+  --   config = function()
+  --     local ok, telescope = pcall(require, 'telescope')
+  --     if ok then
+  --       telescope.load_extension 'hoogle'
+  --     end
+  --   end,
+  -- },
 
   -- Make sure lspconfig doesn't start hls,
   -- as it conflicts with haskell-tools
