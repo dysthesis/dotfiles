@@ -123,16 +123,6 @@ myKeys =
     , ("M-p", spawn "flameshot gui")
     , ("M-t b", sendMessage ToggleGaps >> spawn "polybar-msg cmd toggle")
 
-    {-- SCRATCHPADS --}
-
-    , ("M-s t", namedScratchpadAction myScratchpads "terminal")
-    , ("M-s b", namedScratchpadAction myScratchpads "btop")
-    , ("M-s i", namedScratchpadAction myScratchpads "irc")
-    , ("M-s f", namedScratchpadAction myScratchpads "fm")
-    , ("M-s s", namedScratchpadAction myScratchpads "signal")
-    , ("M-s n", namedScratchpadAction myScratchpads "notes")
-    , ("M-s c", namedScratchpadAction myScratchpads "khal")
-
     {-- TASKWARRIOR --}
 
     , ("M-a t", taskPrompt myXPConfig)
@@ -154,6 +144,7 @@ myKeys =
     ++ [("M-f h " ++ prefix, promptSearch myXPConfig engine) | (prefix, engine) <- haskellSearchList]
     ++ [("M-f a " ++ prefix, promptSearch myXPConfig engine) | (prefix, engine) <- archSearchList]
     ++ [("M-f g " ++ prefix, promptSearch myXPConfig engine) | (prefix, engine) <- gentooSearchList]
+    ++ map toScratchKeybinds scratchpadList
     where
       audioDelta = 5 -- configures how much each command should change the volume by
       increaseVolCmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ " ++ show audioDelta ++ "%+"
@@ -207,6 +198,19 @@ searx = searchEngine "SearXNG" "https://searx.be/?preferences=eJx1WEuP5DYO_jVbl8
 
 {-- Scratchpads --}
 
+data ScratchpadType = 
+  Term  
+    (Maybe String)  -- Command
+  | Gui 
+    String  -- Class
+    String  -- Command
+
+data Scratchpad =
+  Scratchpad  { name :: String
+              , prefix :: Char
+              , category :: ScratchpadType
+              }
+
 -- Generic function to generate NamedScratchpad given a name, command, and class
 scratchpad :: 
   String              -- Scratchpad name (to define keybind)
@@ -243,38 +247,57 @@ termScratchpad
           Nothing -> ""
     cName = fromMaybe name windowClass        -- If windowClass is Nothing, use the scratchpad name instead as the class
 
+toScratchpad :: Scratchpad -> NamedScratchpad
+toScratchpad s =
+  case category s of
+    Term command      -> termScratchpad (name s) command Nothing
+    Gui cName command -> scratchpad     (name s) command cName
+
+toScratchKeybinds :: Scratchpad -> ( String, X() )
+toScratchKeybinds s =
+  (cmd <> " " <> [prefix s], namedScratchpadAction myScratchpads (name s))
+  where
+    cmd = "M-s" -- Key prefix for scratchpads
+
+scratchpadList :: [Scratchpad]
+scratchpadList =
+  [ Scratchpad  { name      = "terminal"
+                , prefix    = 't'
+                , category  = Term Nothing
+                }
+  , Scratchpad  { name      = "btop"
+                , prefix    = 'b'
+                , category  = Term ( Just "btop" ) 
+                }
+  , Scratchpad  { name      = "irc"
+                , prefix    = 'i'
+                , category  = Term ( Just "weechat" ) 
+                }
+  , Scratchpad  { name      = "task"
+                , prefix    = 'd'
+                , category  = Term ( Just "taskwarrior-tui" ) 
+                }
+  , Scratchpad  { name      = "fm"
+                , prefix    = 'f'
+                , category  = Term ( Just "yazi" ) 
+                }
+  , Scratchpad  { name      = "notes"
+                , prefix    = 'n'
+                , category  = Term ( Just "sh -c 'tmux attach-session -t notes || tmux new-session -s notes -c ~/Documents/Notes/'" ) 
+                }
+  , Scratchpad  { name      = "khal"
+                , prefix    = 'c'
+                , category  = Term ( Just "ikhal" ) 
+                }
+  , Scratchpad  { name      = "signal"
+                , prefix    = 's'
+                , category  = Gui "Signal" "signal-desktop" 
+                }
+  ]
 
 myScratchpads :: [NamedScratchpad]
 myScratchpads =
-    [ termScratchpad 
-      "terminal" 
-      Nothing 
-      Nothing
-    , termScratchpad 
-      "btop" 
-      ( Just "btop" ) 
-      Nothing
-    , termScratchpad
-      "irc"
-      ( Just "weechat" )
-      Nothing
-    , termScratchpad
-      "fm"
-      ( Just "yazi" )
-      Nothing
-    , termScratchpad
-      "notes"
-      ( Just "sh -c 'tmux attach-session -t notes || tmux new-session -s notes -c ~/Documents/Notes/'" )
-      Nothing
-    , termScratchpad
-      "khal"
-      ( Just "ikhal" )
-      Nothing
-    , scratchpad 
-      "signal" 
-      "signal-desktop" 
-      "Signal"
-    ]
+    map toScratchpad scratchpadList
 
 {-- Projects --}
 myProjects :: [Project]
