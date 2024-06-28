@@ -8,6 +8,7 @@ return {
       { '<leader>ff', fzf.files, desc = '[F]ind [F]iles' },
       { '<leader>fw', fzf.live_grep_native, desc = '[F]ind [W]ord' },
       { '<leader>fq', fzf.quickfix, desc = '[F]ind [Q]uickfix' },
+      { '<leader>fa', fzf.lsp_code_actions, desc = '[F]ind [A]ctions' },
       { '<leader>fdd', fzf.lsp_document_diagnostics, desc = '[F]ind [D]iagnostic in [D]ocuments' },
       { '<leader>fdw', fzf.lsp_workspace_diagnostics, desc = '[F]ind [D]iagnostic in [W]orkspace' },
       { '<leader>fgc', fzf.git_commits, desc = '[F]ind [G]it [C]ommits' },
