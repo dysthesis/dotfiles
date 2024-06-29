@@ -151,3 +151,4 @@ end
 # Variables
 export VDIRSYNCER_CONFIG=$HOME/.config/vdirsyncer/config
 export ZK_NOTEBOOK_DIR=~/Documents/Notes
+export PATH="$HOME/.cabal/bin:$HOME/.ghcup/bin:$PATH"
