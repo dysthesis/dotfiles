@@ -1,5 +1,6 @@
-module Utils.Taskwarrior where
+module Utils.Taskwarrior (taskwarriorKeybinds) where
 
+import Config.Prompt (myXPConfig)
 import System.Process (callCommand, readProcess)
 import XMonad (X)
 import XMonad.Core (io)
@@ -13,3 +14,7 @@ addTaskAndNotify task = do
         io $ callCommand $ "notify-send 'Task Added' '" <> output <> "'"
 taskPrompt :: XPConfig -> X ()
 taskPrompt config = inputPrompt config "Task" ?+ addTaskAndNotify
+
+taskwarriorKeybinds :: [(String, X ())]
+taskwarriorKeybinds =
+        [("M-a t", taskPrompt myXPConfig)]

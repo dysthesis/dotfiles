@@ -1,4 +1,4 @@
-module Config.Layout where
+module Config.Layout (myLayout, myLayoutKeybinds) where
 
 import XMonad (X, sendMessage, withFocused)
 import XMonad.Hooks.ManageDocks (Direction2D (D, L, R, U), avoidStruts)

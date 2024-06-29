@@ -1,4 +1,4 @@
-module Config.Prompt where
+module Config.Prompt (myXPConfig) where
 
 import XMonad.Prompt (XPConfig (alwaysHighlight, bgColor, bgHLight, borderColor, fgColor, fgHLight, font, height, historySize, position, searchPredicate, sorter), XPPosition (Bottom), def)
 import XMonad.Prompt.FuzzyMatch (fuzzyMatch, fuzzySort)
