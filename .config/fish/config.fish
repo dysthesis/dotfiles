@@ -4,7 +4,7 @@ if status is-interactive
     set -x GPG_TTY (tty)
     set -x SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
     gpgconf --launch gpg-agent
-    khal list now
+    khal list now tomorrow
     task next
 end
 
@@ -42,23 +42,23 @@ function gclone -d "Clone a repo name and set up both mirrors to GitHub and Code
     set username 'dysthesis'
     set forges 'git@github.com' 'git@codeberg.org'
 
-    echo "Cloning repository $repo"
-    echo "Getting from initial repository at $forges[1]:$username/$repo.git"
-    echo "" 
+    echo "Cloning repository $repo" &&
+    echo "Getting from initial repository at $forges[1]:$username/$repo.git" &&
+    echo "" &&
 
-    git clone $forges[1]:$username/$repo.git
-    cd $repo
+    git clone $forges[1]:$username/$repo.git &&
+    cd $repo &&
 
-    echo "Removing the 'origin' remote"
-    git remote rm origin
-    echo ""
+    echo "Removing the 'origin' remote" &&
+    git remote rm origin &&
+    echo "" &&
 
-    echo "Forges to set up:"
+    echo "Forges to set up:" &&
     for f in $forges
         echo "- $f"
-    end
+    end &&
 
-    echo ""
+    echo "" &&
     
     for f in $forges
         echo "Setting up forge $f"
@@ -67,10 +67,10 @@ function gclone -d "Clone a repo name and set up both mirrors to GitHub and Code
         echo "Adding remote $forge_name with URL $forge_url"
         echo "" 
         git remote add $forge_name $forge_url
-    end
+    end &&
     # sync
-    gpull
-    gpush
+    gpull &&
+    gpush &&
     cd ..
 end
 
