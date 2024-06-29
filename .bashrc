@@ -25,5 +25,3 @@ fi
 
 export VDIRSYNCER_CONFIG=/home/faust/.config/vdirsyncer/config
 # Put your fun stuff here.
-
-[ -f "/home/demiurge/.ghcup/env" ] && . "/home/demiurge/.ghcup/env" # ghcup-env
