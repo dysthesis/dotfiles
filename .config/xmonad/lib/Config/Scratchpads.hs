@@ -1,4 +1,4 @@
-module Config.Scratchpads where
+module Config.Scratchpads (myScratchpadKeybinds, myScratchpadManageHook) where
 
 import Data.Maybe (fromMaybe)
 import XMonad (X, className, (=?))

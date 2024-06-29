@@ -2,7 +2,6 @@ import XMonad
 
 {-- Utilities --}
 import XMonad.Util.EZConfig (additionalKeysP)
-import XMonad.Util.SpawnOnce (spawnOnce)
 
 {-- Layouts --}
 import XMonad.Layout.Fullscreen (fullscreenSupport)
@@ -13,7 +12,6 @@ import XMonad.Hooks.ManageDocks (docks)
 
 {-- System --}
 
-import XMonad.Actions.CycleWS (nextScreen, shiftNextScreen)
 import XMonad.Hooks.WindowSwallowing (swallowEventHook)
 import XMonad.Util.Hacks (windowedFullscreenFixEventHook)
 
@@ -21,8 +19,7 @@ import Config.Autostart (myStartupHook)
 import Config.Keybinds (DefaultPrograms (..), myKeys)
 import Config.Layout (myLayout)
 import Config.ManageHook (myManageHook)
-import Config.Scratchpads
-import Config.XMobar
+import Config.XMobar (xmobarProp)
 import Utils.Taskwarrior (taskwarriorKeybinds)
 
 {-- VARIABLES:
@@ -62,8 +59,6 @@ myConfig =
       startupHook = myStartupHook
     , manageHook = myManageHook
     , handleEventHook = myHandleEventHook
-    -- , handleEventHook =
-    --     handleEventHook def
     }
     `additionalKeysP` myKeys defaultPrograms
 

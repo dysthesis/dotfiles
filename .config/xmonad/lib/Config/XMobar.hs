@@ -1,7 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
-module Config.XMobar where
+module Config.XMobar (xmobarProp) where
 
 import XMonad (KeyMask, KeySym, Layout, XConfig (XConfig, modMask), xK_b)
 import XMonad.Hooks.DynamicLog (PP (ppSort), xmobarPP)
