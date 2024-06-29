@@ -30,6 +30,7 @@ mySearchKebinds =
                 , ('r', rustSearchList)
                 , ('a', archSearchList)
                 , ('g', gentooSearchList)
+                , ('v', voidSearchList)
                 ]
         standalone :: [(String, X ())]
         standalone =
@@ -71,6 +72,17 @@ gentooSearchList =
     where
         gentooWiki = searchEngine "Gentoo Linux Wiki" "https://wiki.gentoo.org/index.php?title=Special:Search&search="
         gentooPackages = searchEngine "Gentoo Linux Packages" "https://packages.gentoo.org/packages/search?q="
+
+voidSearchList :: SearchList
+voidSearchList =
+        [ ("d", voidDocs)
+        , ("w", voidWiki)
+        , ("p", voidPackages)
+        ]
+        where
+                voidDocs        = searchEngine "Void Linux Documentation" "https://docs.voidlinux.org/?search="
+                voidWiki        = searchEngine "Void Linux Wiki" "https://wiki.voidlinux.org/search?pattern="
+                voidPackages    = searchEngine "Void Linux Packages" "https://voidlinux.org/packages/?arch=x86_64&q="
 
 braveSearch :: SearchEngine
 braveSearch = searchEngine "Brave Search" "https://search.brave.com/search?q="
