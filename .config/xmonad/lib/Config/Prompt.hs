@@ -17,5 +17,5 @@ myXPConfig =
                 , searchPredicate = fuzzyMatch
                 , sorter = fuzzySort
                 , alwaysHighlight = True
-                , historySize = 10
+                , historySize = 0
                 }

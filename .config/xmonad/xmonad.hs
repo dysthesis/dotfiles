@@ -40,7 +40,7 @@ defaultPrograms :: DefaultPrograms
 defaultPrograms =
   DefaultPrograms
     { term = "st"
-    , launcher = "dmenu_run -p ' \62645  '"
+    , launcher = "rofi -show drun -matching fuzzy -sort -sort-method fzf"
     , editor = "nvim"
     , screenshot = "flameshot gui"
     }
