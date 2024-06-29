@@ -1,7 +1,4 @@
-{-# LANGUAGE LambdaCase #-}
-
 import XMonad
-import XMonad.Util.NamedScratchpad (scratchpadWorkspaceTag)
 
 {-- Utilities --}
 import XMonad.Util.EZConfig (additionalKeysP)
@@ -19,10 +16,7 @@ import XMonad.Hooks.ManageDocks (avoidStruts, docks, manageDocks)
 {-- System --}
 
 import XMonad.Actions.CycleWS (nextScreen, shiftNextScreen)
-import XMonad.Hooks.DynamicLog (PP (ppSort), xmobarPP)
 import XMonad.Hooks.ManageHelpers (doCenterFloat, doFullFloat, isDialog, isFullscreen, isInProperty)
-import XMonad.Hooks.StatusBar (StatusBarConfig, dynamicSBs, statusBarProp, statusBarPropTo, withEasySB)
-import XMonad.Hooks.StatusBar.PP (PP (ppCurrent, ppExtras, ppHidden, ppLayout, ppOrder, ppOutput, ppSep, ppTitle, ppTitleSanitize, ppUrgent, ppVisible, ppVisibleNoWindows, ppWsSep), filterOutWsPP, shorten, wrap, xmobarBorder, xmobarColor, xmobarFont, xmobarStrip)
 import XMonad.Hooks.WindowSwallowing (swallowEventHook)
 import XMonad.Util.Hacks (windowedFullscreenFixEventHook)
 
@@ -30,6 +24,7 @@ import Config.Layout
 import Config.Prompt
 import Config.Scratchpads
 import Config.Search
+import Config.XMobar
 
 import Utils.Taskwarrior
 
@@ -84,41 +79,6 @@ myKeys =
   audioDelta = 5 -- configures how much each command should change the volume by
   increaseVolCmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ " ++ show audioDelta ++ "%+"
   decreaseVolCmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ " ++ show audioDelta ++ "%-"
-
-{-- XMOBAR --}
-
-xmobarProp = withEasySB (statusBarProp "xmobar -x 0 ~/.config/xmobar/xmobar.hs" (pure (filterOutWsPP [scratchpadWorkspaceTag] myXmobarPP))) toggleStrutsKey
- where
-  toggleStrutsKey :: XConfig Layout -> (KeyMask, KeySym)
-  toggleStrutsKey XConfig{modMask = m} = (m, xK_b)
-
-myXmobarPP :: PP
-myXmobarPP =
-  def
-    { ppSep = grey "  \xf01d9  "
-    , ppCurrent = blue . wrap "" "" . xmobarBorder "Top" "#89b4fa" 3
-    , -- , ppCurrent = blue
-      ppHidden = grey
-    , ppVisible = white
-    , ppWsSep = "  "
-    , ppTitleSanitize = xmobarStrip . shorten 30 -- `shorten` defines the max length
-    , ppTitle = wrap "\xf0570 " ""
-    , ppLayout =
-        white
-          . ( \case
-                "Spacing Tabbed Tall" -> "<icon=tiled.xpm/>"
-                "Mirror Spacing Tabbed Tall" -> "<icon=mirrortiled.xpm/>"
-                "Full" -> "<icon=full.xpm/>"
-                "monocle" -> "<icon=monocle.xpm/>"
-                "Spacing ThreeCol" -> "<icon=threecol.xpm/>"
-                "Tabbed Simplest" -> "<icon=tabbed.xpm/>"
-                "BSP" -> "<icon=bsp.xpm/>"
-            )
-    }
- where
-  grey = xmobarColor "#6c7086" ""
-  white = xmobarColor "#ffffff" ""
-  blue = xmobarColor "#89b4fa" ""
 
 {-- MANAGE HOOK --}
 myManageHook :: ManageHook

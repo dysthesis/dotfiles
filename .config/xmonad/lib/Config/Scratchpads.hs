@@ -6,9 +6,9 @@ import XMonad.StackSet qualified as W
 import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), customFloating, namedScratchpadAction, namedScratchpadManageHook)
 
 data ScratchpadType
-        = Term
+        = Term -- Terminal scratchpads
                 (Maybe String) -- Command
-        | Gui
+        | Gui -- GUI Scratchpads
                 String -- Class
                 String -- Command
 
