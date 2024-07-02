@@ -23,8 +23,6 @@ if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTI
 	exec fish $LOGIN_OPTION
 fi
 
-export VDIRSYNCER_CONFIG=/home/faust/.config/vdirsyncer/config
-export PATH=$HOME/.local/bin:$PATH
 # Put your fun stuff here.
 
 [ -f "/home/demiurge/.ghcup/env" ] && . "/home/demiurge/.ghcup/env" # ghcup-env
