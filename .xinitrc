@@ -39,6 +39,7 @@ if [ -f "$usermodmap" ]; then
     xmodmap "$usermodmap"
 fi
 ~/.local/scripts/dwm-bar.sh &
+/usr/libexec/polkit-gnome-authentication-agent-1 &
 redshift -l -33.9166485:151.2233364 &
 dunst &
 pipewire &
