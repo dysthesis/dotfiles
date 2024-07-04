@@ -23,6 +23,7 @@ if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTI
 	exec fish $LOGIN_OPTION
 fi
 
+alias irssi="/usr/bin/irssi --home=~/.config/irssi"
 # Put your fun stuff here.
 
 [ -f "/home/demiurge/.ghcup/env" ] && . "/home/demiurge/.ghcup/env" # ghcup-env

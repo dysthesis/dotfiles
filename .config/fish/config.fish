@@ -10,6 +10,9 @@ end
 
 zoxide init fish | source
 
+# IRC
+alias irssi="/usr/bin/irssi --home=~/.config/irssi"
+
 # Podman
 alias docker=podman
 
