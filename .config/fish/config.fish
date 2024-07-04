@@ -1,5 +1,6 @@
 if status is-interactive
     starship init fish | source
+    enable_transience
     zoxide init fish --cmd cd | source
     set -x GPG_TTY (tty)
     set -x SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
@@ -10,8 +11,7 @@ end
 
 zoxide init fish | source
 
-# IRC
-alias irssi="/usr/bin/irssi --home=~/.config/irssi"
+
 
 # Podman
 alias docker=podman
