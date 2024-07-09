@@ -11,7 +11,8 @@ end
 
 zoxide init fish | source
 
-
+# Make temporary directory
+alias temp="cd $(mktemp -d)"
 
 # Podman
 alias docker=podman
