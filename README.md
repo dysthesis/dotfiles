@@ -1,7 +1,7 @@
 These are dotfiles for my PC running Arch Linux, with the following details:
 
-- **Window manager:** XMonad
-- **Bar:** XMobar
+- **Window manager:** bspwm
+- **Bar:** Polybar
 - **Notification daemon:** dunst
 - **Editor:** Neovim
 - **Terminal emulator:** st-flexipatch
