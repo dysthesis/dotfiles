@@ -37,4 +37,6 @@ bspc rule -a term sticky=on state=floating
 bspc rule -a task sticky=on state=floating
 bspc rule -a files sticky=on state=floating
 bspc rule -a notes sticky=on state=floating 
-bspc rule -a Signal sticky=on state=floating rectangle=900x600
+bspc rule -a notes sticky=on state=floating 
+bspc rule -a calendar sticky=on state=floating 
+bspc rule -a Signal sticky=on state=floating rectangle=600x400

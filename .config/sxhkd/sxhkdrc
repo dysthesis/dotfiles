@@ -67,8 +67,8 @@ super + {p,b,comma,period}
 	bspc node -f @{parent,brother,first,second}
 
 # focus the next/previous window in the current desktop
-super + {_,shift + }c
-	bspc node -f {next,prev}.local.!hidden.window
+# super + {_,shift + }c
+# 	bspc node -f {next,prev}.local.!hidden.window
 
 # focus the next/previous desktop in the current monitor
 super + bracket{left,right}
@@ -138,5 +138,5 @@ XF86AudioLowerVolume
 XF86AudioRaiseVolume
 	wpctl set-volume @DEFAULT_AUDIO_SINK@  5%+
 
-super + {t,n,d,f,s}
-	$HOME/.config/bspwm/scratchpad.sh {term,notes,task,files,Signal}
+super + {t,n,d,f,s,c}
+	$HOME/.config/bspwm/scratchpad.sh {term,notes,task,files,Signal,calendar}
