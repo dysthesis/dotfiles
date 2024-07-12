@@ -38,13 +38,13 @@ fi
 if [ -f "$usermodmap" ]; then
     xmodmap "$usermodmap"
 fi
-~/.local/scripts/dwm-bar.sh &
-/usr/libexec/polkit-gnome-authentication-agent-1 &
-redshift -l -33.9166485:151.2233364 &
-dunst &
+# ~/.local/scripts/dwm-bar.sh &
+# /usr/libexec/polkit-gnome-authentication-agent-1 &
+# redshift -l -33.9166485:151.2233364 &
+# dunst &
 pipewire &
-parcellite &
-flameshot &
-hsetroot -cover ~/.config/wallpaper.png &
-xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1
-dbus-run-session dwm
+# parcellite &
+# flameshot &
+# hsetroot -cover ~/.config/wallpaper.png &
+# xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1
+dbus-run-session bspwm

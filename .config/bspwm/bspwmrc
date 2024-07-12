@@ -2,18 +2,21 @@
 
 pgrep -x sxhkd > /dev/null || sxhkd &
 
-xrandr --output Virtual-1 --mode 1920x1080 --primary
-
+xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1
 
 # Set wallpaper
 hsetroot -cover ~/.config/wallpaper.png &
+/usr/libexec/polkit-gnome-authentication-agent-1 &
 polybar &
 dunst &
 flameshot &
+parcellite &
+redshift -l -33.9166485:151.2233364 &
 
-bspc monitor -d 1 2 3 4 5 6 7 8 9 10
+bspc monitor DisplayPort-1 -d 1 2 3 4 5
+bspc monitor DisplayPort-0 -d 6 7 8 9 10
 
-bspc config border_width         	2
+bspc config border_width         	1
 bspc config window_gap          	10
 
 bspc config split_ratio          	0.5
@@ -24,7 +27,14 @@ bspc config normal_border_color		"#4c566a"
 bspc config active_border_color		"#1e1e1e"
 bspc config focused_border_color 	"#ffffff"
 bspc config presel_feedback_color	"#ffffff"
-bspc config urgent_border_color 	"#dd2727"
+bspc config urgent_border_color 	"#f38ba8"
 
-
+bspc rule -a 'Pinentry'                 state=floating sticky=on
 bspc rule -a firefox desktop='^1'
+
+# Scratchpad rules
+bspc rule -a term sticky=on state=floating
+bspc rule -a task sticky=on state=floating
+bspc rule -a files sticky=on state=floating
+bspc rule -a notes sticky=on state=floating 
+bspc rule -a Signal sticky=on state=floating rectangle=900x600
