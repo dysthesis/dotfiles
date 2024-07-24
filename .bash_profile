@@ -10,7 +10,7 @@ export PATH=~/.local/share/flatpak/exports/bin:$PATH
 export TERM=screen-256color
 
 if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-	exec startx
+	Hyprland
 fi
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc

@@ -22,10 +22,10 @@ return {
       local bufnr = vim.api.nvim_get_current_buf()
       local opts = { noremap = true, silent = true, buffer = bufnr }
       return {
-        { '<leader>rcl', vim.lsp.codelens.run, desc = '[R]un [C]ode [L]ens', opts },
+        { '<leader>rcl', vim.lsp.codelens.run, desc = '[R]un [C]ode [L]ens',           opts },
         -- { '<leader>hs', ht.hoogle.hoogle_signature, desc = '[H]oogle [S]ignature', opts },
-        { '<leader>ea', ht.lsp.buf_eval_all, desc = '[E]valuate [A]ll snippets', opts },
-        { '<leader>trp', ht.repl.toggle, desc = '[T]oggle [R]epl for [P]ackage', opts },
+        { '<leader>ea',  ht.lsp.buf_eval_all,  desc = '[E]valuate [A]ll snippets',     opts },
+        { '<leader>trp', ht.repl.toggle,       desc = '[T]oggle [R]epl for [P]ackage', opts },
         {
           '<leader>trb',
           function()
@@ -61,18 +61,18 @@ return {
     },
   },
 
-  {
-    'nvim-neotest/neotest',
-    optional = true,
-    dependencies = {
-      { 'mrcjkb/neotest-haskell' },
-    },
-    opts = {
-      adapters = {
-        ['neotest-haskell'] = {},
-      },
-    },
-  },
+  -- {
+  --   'nvim-neotest/neotest',
+  --   optional = true,
+  --   dependencies = {
+  --     { 'mrcjkb/neotest-haskell' },
+  --   },
+  --   opts = {
+  --     adapters = {
+  --       ['neotest-haskell'] = {},
+  --     },
+  --   },
+  -- },
 
   {
     'mrcjkb/haskell-snippets.nvim',
