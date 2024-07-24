@@ -6,3 +6,5 @@ x-scheme-handler/https=firefox.desktop;
 text/html=firefox.desktop;
 application/xhtml+xml=firefox.desktop;
 application/xhtml_xml=firefox.desktop;
+image/jpeg=nsxiv.desktop
+image/png=nsxiv.desktop
