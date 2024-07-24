@@ -29,6 +29,8 @@ elif [ "$1" = "btop" ]; then
     toggle_scratchpad $1 "foot -- btop"
 elif [ "$1" = "calendar" ]; then
     toggle_scratchpad $1 "foot -- ikhal"
+elif [ "$1" = "music" ]; then
+    toggle_scratchpad $1 "foot -- ncmpcpp"
 elif [ "$1" = "notes" ]; then
     toggle_scratchpad $1 "foot -- sh -c 'tmux attach-session -t notes || tmux new-session -s notes -c ~/Documents/Notes/'"
 fi
