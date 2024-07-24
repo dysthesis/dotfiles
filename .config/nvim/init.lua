@@ -1,5 +1,6 @@
 -- Basic options
 require 'options.ui'
+require 'options.neovide'
 require 'options.keymap'
 require 'options.behaviour'
 require 'options.autocommands'
