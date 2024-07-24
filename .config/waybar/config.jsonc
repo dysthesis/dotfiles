@@ -1,0 +1,207 @@
+{
+  "layer": "top",
+  "position": "top",
+  "modules-left": [
+    "custom/launcher",
+    "tray",
+    "hyprland/workspaces",
+  ],
+  "modules-center": [
+    "custom/weather",
+    "clock",
+  ],
+  "modules-right": [
+    "disk",
+    "network",
+    "memory",
+    "backlight",
+    "pulseaudio",
+    "battery",
+    "cpu",
+  ],
+  "custom/launcher": {
+    "format": "󰣇",
+    "on-click": "rofi -show drun",
+  },
+  "custom/cava-internal": {
+    "exec": "~/.config/waybar/Cava.sh",
+    "tooltip": false
+  },
+  "hyprland/workspaces": {
+    "all-outputs": true,
+    // "active-only": true,
+    "format": "{icon}",
+    "format-icons": {
+      "1": "➊",
+      "2": "➋",
+      "3": "➌",
+      "4": "➍",
+      "5": "➎",
+      "6": "➏",
+      "7": "➐",
+      "8": "➑",
+      "9": "➒",
+      "10": "➓",
+      "urgent": "",
+      "focused": "󪤰",
+    }
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "deactivated": "󪤨",
+      "activated": "󪤾"
+    },
+    "tooltip": false,
+    "on-click": "sleep 0.1 && ~/.local/bin/idle-lock.sh"
+  },
+  "backlight": {
+    "device": "nvidia_wmi_ec_backlight",
+    "on-scroll-up": "light -A 7",
+    "on-scroll-down": "light -U 7",
+    "format": "{icon} {percent}%",
+    "format-icons": [
+      "󰃚",
+      "󰃛",
+      "󰃜",
+      "󰃝",
+      "󰃞",
+      "󰃟",
+      "󰃠"
+    ]
+  },
+  "disk": {
+    "interval": 30,
+    "format": "󰒋 {used}",
+    "path": "/home",
+    "tooltip": true,
+    "on-click": "sleep 0.1 && kitty ncdu",
+    "tooltip-format": "{used}/{total} => {path} {percentage_used}%",
+  },
+  "pulseaudio": {
+    "scroll-step": 1,
+    "format": "{icon} {volume}%",
+    "format-muted": "󪤑 Muted",
+    "format-icons": {
+      "default": [
+        "",
+        "",
+        "󰕾"
+      ]
+    },
+    /* "states": { */
+    /*   "warning": 100, */
+    /* }, */
+    "scroll-step": 1,
+    "on-click": "sleep 0.1 && pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "tooltip": false,
+  },
+  "battery": {
+    "interval": 10,
+    "states": {
+      "warning": 20,
+      "critical": 10
+    },
+    "format": "{icon} {capacity}%",
+    "format-icons": [
+      "󰂎",
+      "󰁺",
+      "󰁻",
+      "󰁼",
+      "󰁽",
+      "󰁾",
+      "󰁿",
+      "󰂀",
+      "󰂁",
+      "󰂂",
+      "󱟢"
+    ],
+    "format-full": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "tooltip": true,
+    "on-click-middle": "echo 0 > /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode",
+    "on-click-right": "echo 1 > /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode"
+
+  },
+  "clock": {
+    "interval": 1,
+    "format": "<span foreground='#9ECE6A'>󰥔</span> {:%I:%M %p  %A %b %d}",
+    "tooltip": true,
+    "tooltip-format": "{:%A, %d %B %Y}\n<tt>{calendar}</tt>",
+    "calendar": {
+      "format": {
+        "months":     "<span color='#BB9AF7'><b>{}</b></span>",
+				"weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
+				"weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
+				"today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
+      },
+    },
+  },
+  "memory": {
+    "on-click": "sleep 0.1 && kitty btm",
+    "interval": 1,
+    "format": "󰨣 {used} GiB",
+    "states": {
+      "warning": 85,
+    },
+  },
+  "cpu": {
+    "interval": 1,
+    "format": "󰻠 {usage}%"
+  },
+  "mpd": {
+    "max-length": 25,
+    "format": "<span foreground='#bb9af7'></span> {title}",
+    "format-paused": " {title}",
+    "format-stopped": "<span foreground='#bb9af7'></span>",
+    "format-disconnected": "",
+    "on-click": "mpc --quiet toggle",
+    "on-click-right": "mpc ls | mpc add",
+    "on-click-middle": "kitty ncmpcpp",
+    "on-scroll-up": "mpc --quiet prev",
+    "on-scroll-down": "mpc --quiet next",
+    "smooth-scrolling-threshold": 5,
+    "tooltip-format": "{title} - {artist} ({elapsedTime:%M:%S}/{totalTime:%H:%M:%S})"
+  },
+  "network": {
+    "interval": 1,
+    "format-wifi": "󰖩 {essid}",
+    "format-ethernet": "󰈀  {ifname} ({ipaddr})",
+    "format-linked": "󪤅 {essid} (No IP)",
+    "format-disconnected": "󰖪 Disconnected",
+    "on-click": "sleep 0.1 && kitty nmtui",
+    "tooltip": true
+  },
+  "temperature": {
+    "hwmon-path": "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon5/temp1_input",
+    "critical-threshold": 80,
+    "tooltip": false,
+    "format": " {temperatureC}°C"
+  },
+  "custom/powermenu": {
+    "format": "",
+    "on-click": "sleep 0.1 && /home/narmis/.config/rofi/powermenu/type-1/powermenu.sh",
+    "tooltip": false
+  },
+  "tray": {
+    "icon-size": 15,
+    "spacing": 5
+  },
+  "custom/pacman": {
+    "format": "{icon} {}",
+    "return-type": "json",
+    "format-icons": {
+      "has-updates": "󪤱",
+      "updated": "󪥛"
+    },
+    "exec": "waybar-module-pacman-updates",
+    "on-click": "sleep 0.1 && update-notifier"
+  },
+  "custom/weather": {
+    "format": "{}° C",
+    "tooltip": true,
+    "interval": 3600,
+    "exec": "wttrbar --location Sydney",
+    "return-type": "json"
+  }, 
+}
