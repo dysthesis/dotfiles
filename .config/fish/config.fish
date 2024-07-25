@@ -9,6 +9,9 @@ if status is-interactive
     task next
 end
 
+# UNSW stuff
+alias cse="ssh z5437039@login.cse.unsw.edu.au"
+
 zoxide init fish | source
 
 # Make temporary directory
