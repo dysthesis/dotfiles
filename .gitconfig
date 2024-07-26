@@ -2,8 +2,8 @@
 	email = antheoraviel@protonmail.com
 	name = Dysthesis
 
-#[commit]
-#	gpgsign = true
+[commit]
+	gpgsign = true
 
 [core]
     pager = delta
