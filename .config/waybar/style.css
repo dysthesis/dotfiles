@@ -164,5 +164,5 @@ tooltip label {
   color: @yellow
 }
 #custom-weather {
-  color: @red;
+  color: @foreground;
 }
