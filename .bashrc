@@ -25,4 +25,5 @@ fi
 
 # Put your fun stuff here.
 
+
 [ -f "/home/demiurge/.ghcup/env" ] && . "/home/demiurge/.ghcup/env" # ghcup-env
