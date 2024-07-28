@@ -1,0 +1,21 @@
+feeds:
+  - url: https://archlinux.org/feeds/news/
+    name: Arch Linux
+  - url: https://planet.gentoo.org/atom.xml
+    name: Gentoo Linux
+  - url: https://morss.it/jeremykun.com/feed/
+    name: Math ∩ Programming
+  - url: https://morss.it/faultlore.com/blah/rss.xml
+    name: FaultLore
+  - url: https://morss.it/mitchellh.com/feed.xml
+    name: Mitchell Hashimoto
+  - url: https://morss.it/lwn.net/headlines/rss
+    name: LWN
+  - url: https://xeiaso.net/blog.rss
+    name: Xe Iaso's blog
+  - url: https://sthbrx.github.io/rss.xml
+    name: Store Halfword Byte-Reverse Indexed
+  - url: https://blog.regehr.org/feed
+    name: Embedded in Academia
+  - url: https://morss.it/without.boats/index.xml
+    name: Without boats, dreams dry up

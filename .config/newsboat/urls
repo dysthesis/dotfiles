@@ -1,6 +1,12 @@
+"query:Unread Articles:(unread = \"yes\") and (age < 7)
+"query:Computer Science:tags # \"cs\""
+"query:Linux:tags # \"linux\""
+"query:Rust:tags # \"rust\""
+"query:Tools:tags # \"tools\""
+
 https://archlinux.org/feeds/news/ linux
 https://morss.it/mitchellh.com/feed.xml
-https://morss.it/hyprland.org/rss.xml
+https://morss.it/hyprland.org/rss.xml tools
 https://morss.it/jeremykun.com/feed/ cs
 https://morss.it/lwn.net/headlines/rss linux
 https://morss.it/faultlore.com/blah/rss.xml cs
@@ -14,9 +20,9 @@ https://sthbrx.github.io/rss.xml cs
 https://blog.regehr.org/feed cs compilers
 https://neomutt.org/feed.xml tools
 https://neovim.io/news.xml tools
-https://lore.kernel.org/rust-for-linux/new.atom linux
-https://lore.kernel.org/linux-hardening/new.atom linux
-https://lore.kernel.org/linux-security-module/new.atom linux
-https://lore.kernel.org/linux-crypto/new.atom linux
-https://lore.kernel.org/llvm/new.atom linux
-https://lore.kernel.org/selinux/new.atom linux
+#https://lore.kernel.org/rust-for-linux/new.atom linux-kernel
+#https://lore.kernel.org/linux-hardening/new.atom linux-kernel
+#https://lore.kernel.org/linux-security-module/new.atom linux-kernel
+#https://lore.kernel.org/linux-crypto/new.atom linux-kernel
+#https://lore.kernel.org/llvm/new.atom linux-kernel
+#https://lore.kernel.org/selinux/new.atom linux-kernel
