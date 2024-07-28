@@ -40,4 +40,4 @@ include dark-16.theme
 #include solarized-light-256.theme
 #include no-color.theme
 weekstart=monday
-news.version=3.0.2
+news.version=2.6.0

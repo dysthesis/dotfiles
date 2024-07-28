@@ -26,3 +26,8 @@ bind-key l open
 bind-key H prev-feed
 bind-key L next-feed
 bind-key c toggle-show-read-feeds
+
+
+highlight feedlist "---.*---" color0 default bold
+highlight feedlist ".*0/0.." default default invis
+reload-threads 100
