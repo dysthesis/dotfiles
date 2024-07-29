@@ -32,5 +32,5 @@ elif [ "$1" = "calendar" ]; then
 elif [ "$1" = "music" ]; then
     toggle_scratchpad $1 "foot -- ncmpcpp"
 elif [ "$1" = "notes" ]; then
-    toggle_scratchpad $1 "foot -- sh -c 'tmux attach-session -t notes || tmux new-session -s notes -c ~/Documents/Notes/'"
+    toggle_scratchpad $1 "foot -- sh -c 'tmux new-session -A -s Notes -c ~/Documents/Notes/'"
 fi
