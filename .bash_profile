@@ -12,5 +12,4 @@ export ELECTRON_OZONE_PLATFORM_HINT=wayland
 if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
 	Hyprland
 fi
-
 [[ -f ~/.bashrc ]] && . ~/.bashrc
