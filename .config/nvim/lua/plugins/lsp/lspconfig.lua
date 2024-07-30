@@ -9,7 +9,7 @@ return { -- LSP Configuration & Plugins
 
     -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
-    { 'folke/neodev.nvim', opts = {} },
+    { 'folke/neodev.nvim',       opts = {} },
   },
   opts = {
     inlay_hints = {
@@ -195,16 +195,17 @@ return { -- LSP Configuration & Plugins
         },
         root_dir = function(fname)
           return require('lspconfig.util').root_pattern(
-            'Makefile',
-            'configure.ac',
-            'configure.in',
-            'config.h.in',
-            'meson.build',
-            'meson_options.txt',
-            'build.ninja'
-          )(fname) or require('lspconfig.util').root_pattern('compile_commands.json', 'compile_flags.txt')(fname) or require('lspconfig.util').find_git_ancestor(
-            fname
-          )
+                'Makefile',
+                'configure.ac',
+                'configure.in',
+                'config.h.in',
+                'meson.build',
+                'meson_options.txt',
+                'build.ninja'
+              )(fname) or require('lspconfig.util').root_pattern('compile_commands.json', 'compile_flags.txt')(fname) or
+              require('lspconfig.util').find_git_ancestor(
+                fname
+              )
         end,
         capabilities = {
           offsetEncoding = { 'utf-16' },
@@ -264,6 +265,7 @@ return { -- LSP Configuration & Plugins
       'hlint',
       'prettierd',
       'prettier',
+      'texlab',
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
