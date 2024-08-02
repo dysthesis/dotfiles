@@ -1,25 +1,25 @@
 set default-fg                	#FFFFFF
 set default-bg 			rgba(0,0,0,0.5)
 
-set completion-bg		#313244
+set completion-bg		#11111B
 set completion-fg		#FFFFFF
 set completion-highlight-bg	#575268
 set completion-highlight-fg	#FFFFFF
-set completion-group-bg		#313244
+set completion-group-bg		#11111B
 set completion-group-fg		#89B4FA
 
 set statusbar-fg		#FFFFFF
-set statusbar-bg		#313244
+set statusbar-bg		#11111B
 
-set notification-bg		#313244
+set notification-bg		#11111B
 set notification-fg		#FFFFFF
-set notification-error-bg	#313244
+set notification-error-bg	#11111B
 set notification-error-fg	#F38BA8
-set notification-warning-bg	#313244
+set notification-warning-bg	#11111B
 set notification-warning-fg	#FAE3B0
 
 set inputbar-fg			#FFFFFF
-set inputbar-bg 		#313244
+set inputbar-bg 		#11111B
 
 set recolor                   	"true"
 set recolor-lightcolor		rgba(0,0,0,0.5)
@@ -28,7 +28,7 @@ set recolor-darkcolor		#FFFFFF
 set index-fg			#FFFFFF
 set index-bg			#1E1E2E
 set index-active-fg		#FFFFFF
-set index-active-bg		#313244
+set index-active-bg		#11111B
 
 set render-loading-bg		#1E1E2E
 set render-loading-fg		#FFFFFF
