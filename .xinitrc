@@ -47,4 +47,11 @@ pipewire &
 # flameshot &
 # hsetroot -cover ~/.config/wallpaper.png &
 # xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1
+#
+# turn off Display Power Management Service (DPMS)
+xset -dpms
+setterm -blank 0 -powerdown 0
+
+# turn off black Screensaver
+xset s off
 dbus-run-session bspwm
