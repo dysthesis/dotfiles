@@ -44,7 +44,7 @@ alias tat='task add scheduled:tomorrow until:sch+14d'
 alias tm='task modify'
 
 # yt-fzf
-alias subs='ytfzf -c SI --sort'
+alias subs='torsocks ytfzf -c SI --sort'
 
 # automatically clone and set up mirror
 function gclone -d "Clone a repo name and set up both mirrors to GitHub and Codeberg"
