@@ -23,7 +23,7 @@ set ssl_starttls  = "yes"
 set sidebar_visible
 set sidebar_format = "%B%<F? [%F]>%* %<N?%N/>%S"
 set mail_check_stats
-
+set sleep_time = 0
 set sort=threads
 set sort_aux=reverse-last-date-received
 
