@@ -27,6 +27,10 @@ set mail_check_stats
 set sort=threads
 set sort_aux=reverse-last-date-received
 
+# HTML emails
+set mailcap_path   = ~/.config/neomutt/mailcap
+auto_view text/html
+
 ## h to exit in every menu, l to go deeper, j and k for up and down, g and G for top and bottom
 bind pager,browser			h			exit
 bind attach,alias			h			exit
