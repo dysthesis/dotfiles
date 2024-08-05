@@ -28,16 +28,32 @@ return {
     end,
   },
 
+  -- {
+  --   'lukas-reineke/headlines.nvim',
+  --   ft = { 'markdown' },
+  --   config = function(_, opts)
+  --     -- PERF: schedule to prevent headlines slowing down opening a file
+  --     vim.schedule(function()
+  --       require('headlines').setup(opts)
+  --       require('headlines').refresh()
+  --     end)
+  --   end,
+  -- },
+  --
   {
-    'lukas-reineke/headlines.nvim',
+    'MeanderingProgrammer/markdown.nvim',
     ft = { 'markdown' },
-    config = function(_, opts)
-      -- PERF: schedule to prevent headlines slowing down opening a file
-      vim.schedule(function()
-        require('headlines').setup(opts)
-        require('headlines').refresh()
-      end)
-    end,
+    main = "render-markdown",
+    name = 'render-markdown', -- Only needed if you have another plugin named markdown.nvim
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      heading = {
+        icons = { ' 󰫈 ', ' 󰫇 ', ' 󰫆 ', ' 󰫅 ', ' 󰫄 ', ' 󰫃 ' },
+      },
+      bullet = {
+        right_pad = 1
+      }
+    }
   },
   {
     'ellisonleao/glow.nvim',

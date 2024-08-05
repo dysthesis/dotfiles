@@ -20,8 +20,6 @@ set smtp_authenticators=${imap_authenticators}
 set smtp_oauth_refresh_command=${imap_oauth_refresh_command}
 set ssl_force_tls = "yes"
 set ssl_starttls  = "yes"
-set sidebar_visible
-set sidebar_format = "%B%<F? [%F]>%* %<N?%N/>%S"
 set mail_check_stats
 set sleep_time = 0
 set sort=threads
