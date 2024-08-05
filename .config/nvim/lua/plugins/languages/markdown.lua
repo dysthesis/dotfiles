@@ -52,6 +52,10 @@ return {
       },
       bullet = {
         right_pad = 1
+      },
+      code = {
+        right_pad = 3,
+        left_pad = 3
       }
     }
   },
