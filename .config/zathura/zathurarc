@@ -1,6 +1,6 @@
 set selection-clipboard	clipboard
-set sandbox 		strict
-set font		"JetBrainsMono Nerd Font 10"
+#set sandbox 		strict
+set font		"JetBrainsMono Nerd Font 8"
 set smooth-scroll 	true
 set guioptions		"sv"
 set adjust-open		"width"

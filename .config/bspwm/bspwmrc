@@ -32,7 +32,6 @@ bspc config urgent_border_color 	"#f38ba8"
 
 bspc rule -a 'Pinentry'		state=floating 	sticky=on
 bspc rule -a firefox 		desktop=1
-bspc rule -a mpv 		desktop=4
 bspc rule -a vesktop		desktop=2
 
 # Scratchpad rules
