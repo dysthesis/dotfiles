@@ -1,13 +1,18 @@
 #! /bin/sh
-
+bspc rule -r "*"
 pgrep -x sxhkd > /dev/null || sxhkd &
-
-xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1
+killall bspswallow
+pidof bspswallow | ~/.local/scripts/bspswallow &
 
 # Set wallpaper
 hsetroot -cover ~/.config/wallpaper.png &
 polybar bar1 &
 polybar bar0 &
+
+bspc config focus_follows_pointer true
+bspc config remove_disabled_monitors true
+bspc config remove_unplugged_monitors true
+bspc config merge_overlapping_monitors true
 
 bspc monitor DisplayPort-1 -d 1 2 3 4 5
 bspc monitor DisplayPort-0 -d 6 7 8 9 10
@@ -26,9 +31,9 @@ bspc config presel_feedback_color	"#ffffff"
 bspc config urgent_border_color 	"#f38ba8"
 
 bspc rule -a 'Pinentry'		state=floating 	sticky=on
-bspc rule -a firefox 		desktop='^1'
-bspc rule -a mpv 		desktop='^4'
-bspc rule -a vesktop		desktop='^2'
+bspc rule -a firefox 		desktop=1
+bspc rule -a mpv 		desktop=4
+bspc rule -a vesktop		desktop=2
 
 # Scratchpad rules
 bspc rule -a term 		sticky=on 	state=floating
