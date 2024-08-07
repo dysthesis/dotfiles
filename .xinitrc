@@ -38,6 +38,7 @@ fi
 if [ -f "$usermodmap" ]; then
     xmodmap "$usermodmap"
 fi
+
 # ~/.local/scripts/dwm-bar.sh &
 # /usr/libexec/polkit-gnome-authentication-agent-1 &
 # redshift -l -33.9166485:151.2233364 &
@@ -54,4 +55,13 @@ setterm -blank 0 -powerdown 0
 
 # turn off black Screensaver
 xset s off
+dunst &
+mpd &
+redshift &
+syncthing -no-browser &
+/usr/libexec/polkit-gnome-authentication-agent-1 &
+redshift -l -33.9166485:151.2233364 &
+flameshot &
+gentoo-pipewire-launcher &
+gnome-keyring-agent &
 dbus-run-session bspwm

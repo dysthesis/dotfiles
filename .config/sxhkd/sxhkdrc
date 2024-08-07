@@ -63,8 +63,8 @@ super + {_,shift + }{h,j,k,l}
 	bspc node -{f,s} {west,south,north,east}
 
 # focus the node for the given path jump
-super + {u,b,comma,period}
-	bspc node -f @{parent,brother,first,second}
+# super + {u,b,comma,period}
+# 	bspc node -f @{parent,brother,first,second}
 
 # focus the next/previous window in the current desktop
 # super + {_,shift + }c
@@ -139,5 +139,5 @@ XF86AudioRaiseVolume
 	wpctl set-volume @DEFAULT_AUDIO_SINK@  5%+
 
 # Scratchpads
-super + {t,n,d,f,s,c}
-	$HOME/.config/bspwm/scratchpad.sh {term,notes,task,files,Signal,calendar}
+super + {b,t,n,d,f,s,c}
+	$HOME/.config/bspwm/scratchpad.sh {btop,term,notes,task,files,Signal,calendar}

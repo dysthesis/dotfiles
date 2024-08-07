@@ -8,8 +8,9 @@ export EDITOR=nvim
 export PATH=~/.local/share/flatpak/exports/bin:$PATH
 export TERM=screen-256color
 export ELECTRON_OZONE_PLATFORM_HINT=wayland
+export SXHKD_SHELL sh
 
-if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-	Hyprland
-fi
+# if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
+# 	exec startx
+# fi
 [[ -f ~/.bashrc ]] && . ~/.bashrc
