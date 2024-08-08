@@ -10,7 +10,7 @@ set -e
 set -v
 
 # Export environment variables
-export RESTIC_REPOSITORY='/mnt/backup'
+export RESTIC_REPOSITORY='/run/media/demiurge/6618d1ee-95c6-49c6-8b41-7d58d3f5bf95/'
 export RESTIC_PASSWORD_COMMAND='pass backup/restic'
 export RESTIC_COMPRESSION='auto'
 export RESTIC_CACHE_DIR="$HOME/.cache/restic"

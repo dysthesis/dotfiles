@@ -1,10 +1,16 @@
 #!/bin/sh
-#!/bin/sh
 
     
-case "$(echo "Shutdown\nRestart" | dmenu \
+case "$(echo "Shutdown\nRestart\nLock" | dmenu \
     -p "Power:" \
-    -l 5)" in
-        Shutdown) exec loginctl poweroff;;
-        Restart) exec loginctl reboot;;
+    -l 3)" in
+        Shutdown) 
+            exec loginctl poweroff
+            ;;
+        Restart) 
+            exec loginctl reboot
+            ;;
+        Lock)
+            exec betterlockscreen -l blur
+            ;;
 esac
