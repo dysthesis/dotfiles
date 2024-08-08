@@ -1,0 +1,10 @@
+#!/bin/sh
+#!/bin/sh
+
+    
+case "$(echo "Shutdown\nRestart" | dmenu \
+    -p "Power:" \
+    -l 5)" in
+        Shutdown) exec loginctl poweroff;;
+        Restart) exec loginctl reboot;;
+esac

@@ -21,9 +21,6 @@ else
         calendar)
             st -g 180x30 -c calendar -e ikhal
             ;;
-        btop)
-            st -g 180x30 -c btop -e btop
-            ;;
         Signal)
             signal-desktop
             ;;

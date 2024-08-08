@@ -4,8 +4,6 @@ pgrep -x sxhkd > /dev/null || sxhkd &
 killall bspswallow
 pidof bspswallow | ~/.local/scripts/bspswallow &
 
-# Set wallpaper
-hsetroot -cover ~/.config/wallpaper.png &
 polybar bar1 &
 polybar bar0 &
 
@@ -37,6 +35,7 @@ bspc rule -a mpv		desktop=4
 
 # Scratchpad rules
 bspc rule -a term 		sticky=on 	state=floating
+bspc rule -a music 		sticky=on 	state=floating
 bspc rule -a task 		sticky=on 	state=floating
 bspc rule -a files 		sticky=on 	state=floating
 bspc rule -a notes 		sticky=on 	state=floating 
