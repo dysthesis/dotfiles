@@ -25,7 +25,7 @@ else
             st -g 180x30 -c btop -e btop
             ;;
         Signal)
-            $HOME/.local/share/flatpak/exports/bin/org.signal.Signal
+            signal-desktop
             ;;
     esac
 fi

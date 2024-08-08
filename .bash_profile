@@ -10,7 +10,8 @@ export TERM=screen-256color
 export ELECTRON_OZONE_PLATFORM_HINT=wayland
 export SXHKD_SHELL sh
 
-# if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-# 	exec startx
-# fi
+if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
+	exec startx
+fi
+
 [[ -f ~/.bashrc ]] && . ~/.bashrc
