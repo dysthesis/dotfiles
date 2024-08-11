@@ -11,6 +11,8 @@ end
 
 alias sudo=doas
 
+alias ':q'=exit
+
 # UNSW stuff
 alias cse="ssh z5437039@login.cse.unsw.edu.au"
 
