@@ -1,7 +1,6 @@
 #
 # wm independent hotkeys
 #
-
 # terminal emulator
 super + Return
 	st
@@ -138,6 +137,10 @@ super + {_,shift + }p
 
 XF86Audio{Raise,Lower}Volume
 	wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%{+,-}; $HOME/.local/scripts/notify-volume.sh
+
+
+XF86MonBrightness{Up,Down}
+	brightnessctl set 5%{+,-}; $HOME/.local/scripts/notify-brightness.sh
 # Scratchpads
 super + {b,t,n,d,f,s,c,m}
 	$HOME/.config/bspwm/scratchpad.sh {btop,term,notes,task,files,Signal,calendar,music}

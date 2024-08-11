@@ -59,7 +59,6 @@ gentoo-pipewire-launcher &
 gnome-keyring-agent &
 killall picom
 picom -b &
-xrandr --output DisplayPort-1 --mode 1920x1080 --rate 165 --primary --output DisplayPort-0 --left-of DisplayPort-1
 gnome-keyring-daemon -r -d &
 udiskie &
 hsetroot -cover ~/.config/wallpaper.png &

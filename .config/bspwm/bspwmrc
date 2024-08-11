@@ -3,7 +3,14 @@ dbus-update-activation-environment --all
 bspc rule -r "*"
 pgrep -x sxhkd > /dev/null || sxhkd &
 killall bspswallow
+<<<<<<< HEAD
 (ps x | grep bspswallow | grep -v grep) || $HOME/.local/scripts/bspswallow &
+||||||| f156e63b
+pidof bspswallow | ~/.local/scripts/bspswallow &
+=======
+pidof bspswallow | ~/.local/scripts/bspswallow &
+polybar bar &
+>>>>>>> aa8cd1bd929d68b77f23fd4fb5043f0655648fec
 
 polybar bar1 &
 polybar bar0 &
