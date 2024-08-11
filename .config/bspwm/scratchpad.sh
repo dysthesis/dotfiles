@@ -12,7 +12,7 @@ elif xdotool search --class "$1" >/dev/null 2>&1; then
 else
     case "$1" in
         notes)
-            st -g 180x30 -c notes -e sh -c 'tmux attach-session -t notes || tmux new-session -s notes -c ~/Documents/Notes/'
+            st -g 180x30 -c notes -e sh -c 'tmux attach-session -t Notes || tmux new-session -s Notes -c ~/Documents/Notes/'
             ;;
         term)
             st -g 180x30 -c term
