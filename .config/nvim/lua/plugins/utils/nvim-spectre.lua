@@ -1,5 +1,6 @@
 return {
   'nvim-pack/nvim-spectre',
+  enabled = false,
   keys = {
     -- { '<leader>gg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
     {
