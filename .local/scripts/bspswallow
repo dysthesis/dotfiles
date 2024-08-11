@@ -20,12 +20,28 @@ get_ppid() {
 	ps -o ppid= -p $1
 }
 
+get_ancestors() {
+    local pid=$1
+    while [ "$pid" -ne 1 ]; do
+        pid=$(get_ppid "$pid")
+        echo "$pid"
+    done
+}
+
 check_swallowing_process() {
-	pid=$(get_pid $1)
-	[ -z $pid ] && return 0
-	gppid=$(get_ppid $(get_ppid $pid))
-	grep -i "^$(ps -o cmd= -p $gppid | awk '{print $1}' | sed 's_^.*/__')$" ~/.config/bspwm/terminals && return 0
-	[ "$(get_ppid "$(get_ppid "$(get_pid "$1")")")" = "$(get_pid "$2")" ] && return 0 || return 1
+    pid=$(get_pid "$1")
+    [ -z "$pid" ] && return 0
+
+    local ancestors=$(get_ancestors "$pid")
+    local termcmd=$(grep -i "^$(ps -o cmd= -p $(echo "$ancestors" | awk 'NR==1') | awk '{print $1}' | sed 's_^.*/__')$" ~/.config/bspwm/terminals)
+
+    if echo "$ancestors" | grep -q "$(get_pid "$2")"; then
+        return 0
+    elif [ -n "$termcmd" ]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 swallow() {
