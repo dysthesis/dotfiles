@@ -3,25 +3,25 @@ dbus-update-activation-environment --all
 bspc rule -r "*"
 pgrep -x sxhkd > /dev/null || sxhkd &
 killall bspswallow
-<<<<<<< HEAD
-(ps x | grep bspswallow | grep -v grep) || $HOME/.local/scripts/bspswallow &
-||||||| f156e63b
 pidof bspswallow | ~/.local/scripts/bspswallow &
-=======
-pidof bspswallow | ~/.local/scripts/bspswallow &
-polybar bar &
->>>>>>> aa8cd1bd929d68b77f23fd4fb5043f0655648fec
 
-polybar bar1 &
-polybar bar0 &
+if [ "$(hostname)" = "noesis" ]; then            # PC
+    polybar bar1 &
+    polybar bar0 &
+    sleep 1
+    bspc monitor DisplayPort-1 -d 1 3 5 7 9
+    bspc monitor DisplayPort-0 -d 2 4 6 8 10
+elif [ "$(hostname)" = "mastema" ]; then          # Laptop
+    polybar bar &
+    sleep 1
+    bspc monitor eDP -d 1 2 3 4 5 6 7 8 9 10
+fi
 
-bspc config focus_follows_pointer true
-bspc config remove_disabled_monitors true
-bspc config remove_unplugged_monitors true
-bspc config merge_overlapping_monitors true
 
-bspc monitor DisplayPort-1 -d 1 3 5 7 9
-bspc monitor DisplayPort-0 -d 2 4 6 8 10
+bspc config focus_follows_pointer	true
+bspc config remove_disabled_monitors	true
+bspc config remove_unplugged_monitors	true
+bspc config merge_overlapping_monitors	true
 
 bspc config border_width         	1
 bspc config window_gap          	6
