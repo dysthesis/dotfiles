@@ -9,7 +9,7 @@ ls.add_snippets('lua', {
 			"{",
 			"    'williamboman/mason.nvim',",
 			"    dependencies = {",
-			"      'williamboman/mason-tool-installer.nvim',",
+			"      'WhoIsSethDaniel/mason-tool-installer.nvim',",
 			"      opts = function(_, opts)",
 			"        require('mason-tool-installer').setup { ensure_installed = opts.ensure_installed }",
 			"      end,",
