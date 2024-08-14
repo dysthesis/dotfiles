@@ -3,12 +3,6 @@ return {
   -- Add C/C++ to treesitter
   {
     'nvim-treesitter/nvim-treesitter',
-    dependencies = {
-      'williamboman/mason-tool-installer.nvim',
-      opts = function(_, opts)
-        require('mason-tool-installer').setup { ensure_installed = opts.ensure_installed }
-      end,
-    },
     opts = function(_, opts)
       if type(opts.ensure_installed) == 'table' then
         vim.list_extend(opts.ensure_installed, { 'c', 'cpp' })
