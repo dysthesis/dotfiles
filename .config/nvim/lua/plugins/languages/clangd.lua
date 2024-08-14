@@ -3,11 +3,15 @@ return {
   -- Add C/C++ to treesitter
   {
     'nvim-treesitter/nvim-treesitter',
-    dependencies = { 'williamboman/mason-tool-installer.nvim' },
+    dependencies = {
+      'williamboman/mason-tool-installer.nvim',
+      opts = function(_, opts)
+        require('mason-tool-installer').setup { ensure_installed = opts.ensure_installed }
+      end,
+    },
     opts = function(_, opts)
       if type(opts.ensure_installed) == 'table' then
         vim.list_extend(opts.ensure_installed, { 'c', 'cpp' })
-        require('mason-tool-installer').setup { ensure_installed = opts.ensure_installed }
       end
     end,
   },
@@ -55,17 +59,17 @@ return {
           },
           root_dir = function(fname)
             return require('lspconfig.util').root_pattern(
-              'Makefile',
-              'configure.ac',
-              'configure.in',
-              'config.h.in',
-              'meson.build',
-              'meson_options.txt',
-              'build.ninja'
-            )(fname) or require('lspconfig.util').root_pattern('compile_commands.json', 'compile_flags.txt')(fname) or
-            require('lspconfig.util').find_git_ancestor(
-              fname
-            )
+                  'Makefile',
+                  'configure.ac',
+                  'configure.in',
+                  'config.h.in',
+                  'meson.build',
+                  'meson_options.txt',
+                  'build.ninja'
+                )(fname) or require('lspconfig.util').root_pattern('compile_commands.json', 'compile_flags.txt')(fname) or
+                require('lspconfig.util').find_git_ancestor(
+                  fname
+                )
           end,
           capabilities = {
             offsetEncoding = { 'utf-16' },
