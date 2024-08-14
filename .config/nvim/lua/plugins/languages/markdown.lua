@@ -27,19 +27,16 @@ return {
       vim.cmd [[do FileType]]
     end,
   },
-
-  -- {
-  --   'lukas-reineke/headlines.nvim',
-  --   ft = { 'markdown' },
-  --   config = function(_, opts)
-  --     -- PERF: schedule to prevent headlines slowing down opening a file
-  --     vim.schedule(function()
-  --       require('headlines').setup(opts)
-  --       require('headlines').refresh()
-  --     end)
-  --   end,
-  -- },
-  --
+  {
+    'williamboman/mason.nvim',
+    dependencies = { 'williamboman/mason-tool-installer.nvim' },
+    optional = true,
+    opts = function(_, opts)
+      opts.ensure_installed = opts.ensure_installed or {}
+      vim.list_extend(opts.ensure_installed, { 'markdownlint', 'glow' })
+      require('mason-tool-installer').setup { ensure_installed = opts.ensure_installed }
+    end,
+  },
   {
     'MeanderingProgrammer/markdown.nvim',
     ft = { 'markdown' },

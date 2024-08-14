@@ -49,7 +49,7 @@ alias tm='task modify'
 
 # yt-fzf
 alias subs='ytfzf -t -c SI --sort'
-alias torsubs='torsocks ytfzf -t -c SI --sort'
+alias torsubs='torsocks ytfzf -c SI --sort'
 
 alias yt='mpv --ytdl-format=bestvideo+bestaudio'
 

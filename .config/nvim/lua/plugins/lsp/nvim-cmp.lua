@@ -41,9 +41,10 @@ return { -- Autocompletion
     local cmp = require 'cmp'
     local luasnip = require 'luasnip'
     local lspkind = require 'lspkind'
-    local defaults = require 'cmp.config.default'()
+    local defaults = require 'cmp.config.default' ()
     vim.api.nvim_set_hl(0, 'CmpGhostText', { link = 'Comment', default = true })
     luasnip.config.setup {}
+    require('snippets')
 
     cmp.setup {
       snippet = {

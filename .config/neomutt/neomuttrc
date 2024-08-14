@@ -45,6 +45,8 @@ bind index				l			display-message
 bind attach				l			view-attach
 bind browser,alias			l			select-entry
 bind index				/			search
+# Reply to all recipients
+bind index,pager 			R			group-reply
 ## default binding for limit is l
 bind index				?			limit
 ## default binding for help is ?

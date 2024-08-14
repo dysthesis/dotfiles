@@ -1,6 +1,5 @@
 return {
   -- Stolen from https://github.com/LazyVim/LazyVim/blob/530e94a9fa19577401e968a9673282c3d79f01e3/lua/lazyvim/plugins/extras/lang/rust.lua
-  -- Extend auto completion
   {
     'hrsh7th/nvim-cmp',
     dependencies = {
@@ -20,8 +19,6 @@ return {
       table.insert(opts.sources, { name = 'crates' })
     end,
   },
-
-  -- Add Rust & related to treesitter
   {
     'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
@@ -29,17 +26,15 @@ return {
       vim.list_extend(opts.ensure_installed, { 'ron', 'rust', 'toml' })
     end,
   },
-
-  -- Ensure Rust debugger is installed
   {
     'williamboman/mason.nvim',
-    optional = true,
+    dependencies = { 'williamboman/mason-tool-installer.nvim' },
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { 'codelldb' })
+      vim.list_extend(opts.ensure_installed, { 'codelldb', 'rust-analyzer' })
+      require('mason-tool-installer').setup { ensure_installed = opts.ensure_installed }
     end,
   },
-
   {
     'mrcjkb/rustaceanvim',
     version = '^4', -- Recommended
@@ -128,8 +123,6 @@ return {
     end,
     ft = { 'rust' },
   },
-
-  -- Correctly setup lspconfig for Rust 🚀
   {
     'neovim/nvim-lspconfig',
     opts = {
@@ -158,7 +151,6 @@ return {
       },
     },
   },
-
   {
     'nvim-neotest/neotest',
     optional = true,
