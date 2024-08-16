@@ -1,35 +1,27 @@
 [calendars]
 
-[[private]]
-path = ~/.local/share/khal/calendars/private
+[[Personal]]
+path = /home/demiurge/.local/share/calendars/Personal/
 type = calendar
-
-[[university]]
-path = ~/.local/share/calendars/UNSW
-color = yellow
-
-[[personal]]
-path = ~/.local/share/calendars/Personal
 color = light blue
 
-[[home]]
-path = ~/.local/share/calendars/Home
-color = light magenta
-
-[[study]]
-path = ~/.local/share/calendars/Study
-color = light red
-
-[[COMP3121]]
-path = ~/.local/share/calendars/COMP3121
-color = light green
+[[University]]
+path = /home/demiurge/.local/share/calendars/UNSW/
+type = calendar
+color = yellow
 
 [locale]
+local_timezone = Australia/Sydney
 timeformat = %H:%M
-dateformat = %d/%m/%Y
-longdateformat = %d/%m/%Y
-datetimeformat = %d/%m/%Y %H:%M
-longdatetimeformat = %d/%m/%Y %H:%M
+dateformat = %b %d %Y
+longdateformat = %b %d %Y
+datetimeformat = %b %d %Y %H:%M
+longdatetimeformat = %b %d %Y %H:%M
+weeknumbers = right
 
 [default]
-default_calendar = private
+default_calendar = Personal
+timedelta = 1d
+
+[view]
+theme = dark
