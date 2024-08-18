@@ -10,7 +10,6 @@ if status is-interactive
 end
 
 alias sudo=doas
-
 alias ':q'=exit
 
 # UNSW stuff
