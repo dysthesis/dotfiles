@@ -11,6 +11,7 @@ end
 
 alias sudo=doas
 alias ':q'=exit
+alias ping=gping
 
 # UNSW stuff
 alias cse="ssh z5437039@login.cse.unsw.edu.au"
