@@ -74,28 +74,10 @@ return {
         },
         code_blocks = { hl = 'CursorColumn' },
         inline_codes = { hl = 'CursorColumn' },
+        list_items = { shift_width = 2 },
       }
     end,
   },
-  -- {
-  --   'MeanderingProgrammer/markdown.nvim',
-  --   ft = { 'markdown' },
-  --   main = "render-markdown",
-  --   name = 'render-markdown', -- Only needed if you have another plugin named markdown.nvim
-  --   dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
-  --   opts = {
-  --     heading = {
-  --       icons = { ' 󰫈 ', ' 󰫇 ', ' 󰫆 ', ' 󰫅 ', ' 󰫄 ', ' 󰫃 ' },
-  --     },
-  --     bullet = {
-  --       right_pad = 1
-  --     },
-  --     code = {
-  --       right_pad = 3,
-  --       left_pad = 3
-  --     }
-  --   }
-  -- },
   {
     'ellisonleao/glow.nvim',
     keys = {
