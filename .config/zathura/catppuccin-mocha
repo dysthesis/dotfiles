@@ -1,5 +1,5 @@
 set default-fg                	#FFFFFF
-set default-bg 			rgba(0,0,0,0.25)
+set default-bg 			rgba(0,0,0,0.4)
 
 set completion-bg		#11111B
 set completion-fg		#FFFFFF
@@ -22,7 +22,7 @@ set inputbar-fg			#FFFFFF
 set inputbar-bg 		#11111B
 
 set recolor                   	"true"
-set recolor-lightcolor		rgba(0,0,0,0.25)
+set recolor-lightcolor		rgba(0,0,0,0.4)
 set recolor-darkcolor		#FFFFFF
 
 set index-fg			#FFFFFF

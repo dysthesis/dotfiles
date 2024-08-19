@@ -38,24 +38,64 @@ return {
     end,
   },
   {
-    'MeanderingProgrammer/markdown.nvim',
-    ft = { 'markdown' },
-    main = "render-markdown",
-    name = 'render-markdown', -- Only needed if you have another plugin named markdown.nvim
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
-    opts = {
-      heading = {
-        icons = { ' 󰫈 ', ' 󰫇 ', ' 󰫆 ', ' 󰫅 ', ' 󰫄 ', ' 󰫃 ' },
-      },
-      bullet = {
-        right_pad = 1
-      },
-      code = {
-        right_pad = 3,
-        left_pad = 3
+    'OXY2DEV/markview.nvim',
+    lazy = false, -- Recommended
+    -- ft = "markdown" -- If you decide to lazy-load anyway
+
+    dependencies = {
+      -- You will not need this if you installed the
+      -- parsers manually
+      -- Or if the parsers are in your $RUNTIMEPATH
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function()
+      require('markview').setup {
+        modes = { 'n', 'i', 'no', 'c' },
+        hybrid_modes = { 'i' },
+
+        -- This is nice to have
+        callbacks = {
+          on_enable = function(_, win)
+            vim.wo[win].conceallevel = 2
+            vim.wo[win].concealcursor = 'nc'
+          end,
+        },
+        headings = {
+          enable = true,
+          shift_width = 0,
+
+          heading_1 = { icon = ' 󰫈 ' },
+          heading_2 = { icon = ' 󰫇 ' },
+          heading_3 = { icon = ' 󰫆 ' },
+          heading_4 = { icon = ' 󰫅 ' },
+          heading_5 = { icon = ' 󰫄 ' },
+          heading_6 = { icon = ' 󰫃 ' },
+        },
+        code_blocks = { hl = 'CursorColumn' },
+        inline_codes = { hl = 'CursorColumn' },
       }
-    }
+    end,
   },
+  -- {
+  --   'MeanderingProgrammer/markdown.nvim',
+  --   ft = { 'markdown' },
+  --   main = "render-markdown",
+  --   name = 'render-markdown', -- Only needed if you have another plugin named markdown.nvim
+  --   dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+  --   opts = {
+  --     heading = {
+  --       icons = { ' 󰫈 ', ' 󰫇 ', ' 󰫆 ', ' 󰫅 ', ' 󰫄 ', ' 󰫃 ' },
+  --     },
+  --     bullet = {
+  --       right_pad = 1
+  --     },
+  --     code = {
+  --       right_pad = 3,
+  --       left_pad = 3
+  --     }
+  --   }
+  -- },
   {
     'ellisonleao/glow.nvim',
     keys = {
