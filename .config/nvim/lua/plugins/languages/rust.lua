@@ -35,6 +35,15 @@ return {
       require('mason-tool-installer').setup { ensure_installed = opts.ensure_installed }
     end,
   },
+  { -- Linting
+    'mfussenegger/nvim-lint',
+    optional = true,
+    opts = {
+      linters_by_ft = {
+        rust = { 'clippy' },
+      },
+    },
+  },
   {
     'mrcjkb/rustaceanvim',
     version = '^4', -- Recommended

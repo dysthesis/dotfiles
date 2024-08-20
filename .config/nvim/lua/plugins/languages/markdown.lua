@@ -9,31 +9,12 @@ return {
   },
   -- Markdown preview
   {
-    'iamcco/markdown-preview.nvim',
-    ft = { 'markdown' },
-    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    build = function()
-      vim.fn['mkdp#util#install']()
-    end,
-    keys = {
-      {
-        '<leader>cp',
-        ft = 'markdown',
-        '<cmd>MarkdownPreviewToggle<cr>',
-        desc = 'Markdown Preview',
-      },
-    },
-    config = function()
-      vim.cmd [[do FileType]]
-    end,
-  },
-  {
     'williamboman/mason.nvim',
     dependencies = { 'WhoIsSethDaniel/mason-tool-installer.nvim' },
     optional = true,
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { 'markdownlint', 'glow' })
+      vim.list_extend(opts.ensure_installed, { 'markdownlint', 'prettier' })
       require('mason-tool-installer').setup { ensure_installed = opts.ensure_installed }
     end,
   },
@@ -78,18 +59,22 @@ return {
       }
     end,
   },
-  {
-    'ellisonleao/glow.nvim',
-    keys = {
-      { '<leader>mp', '<CMD>Glow<CR>', desc = '[M]arkdown [P]review', mode = 'n' },
+  { -- Autoformat
+    'stevearc/conform.nvim',
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        markdown = { 'prettier' },
+      },
     },
-    config = function()
-      require('glow').setup {
-        style = 'dark',
-        width = 120,
-        width_ratio = 0.9,
-        height_ratio = 0.9,
-      }
-    end,
+  },
+  { -- Linting
+    'mfussenegger/nvim-lint',
+    optional = true,
+    opts = {
+      linters_by_ft = {
+        markdown = { 'markdownlint' },
+      },
+    },
   },
 }

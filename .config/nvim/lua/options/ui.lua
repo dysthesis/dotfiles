@@ -34,15 +34,17 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 
 -- Markdown
--- Define default symbols
 local bullet_symbol = '•'
 
--- Function to set custom bullet symbol
+--- Function to update the bullet symbol
+---@param symbol string Bullet symbol to use
 function SetBulletSymbol(symbol)
   bullet_symbol = symbol
 end
 
--- Function to update extmarks in a buffer
+--- Function to update extmarks in a buffer
+---@param bufnr number buffer to update the extmarks in
+---@param ns_id number ID
 local function update_extmarks(bufnr, ns_id)
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, true)
   for lnum, line in ipairs(lines) do
@@ -58,7 +60,7 @@ local function update_extmarks(bufnr, ns_id)
   end
 end
 
--- Function to setup the extmarks autocommand
+--- Autocommand to update extmarks in markdown
 local function setup_extmarks_autocmd()
   local ns_id = vim.api.nvim_create_namespace 'MarkdownStyling'
   vim.api.nvim_create_autocmd({ 'BufEnter', 'TextChanged', 'TextChangedI', 'TextChangedP' }, {
