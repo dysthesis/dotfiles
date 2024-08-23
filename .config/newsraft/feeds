@@ -3,6 +3,7 @@ https://archlinux.org/feeds/news/ "Arch Linux"
 https://planet.gentoo.org/atom.xml linux "Gentoo Linux"
 https://voidlinux.org/atom.xml "Void Linux"
 https://morss.it/lwn.net/headlines/rss "LWN"
+https://nixos.org/blog/announcements-rss.xml "NixOS Announcements"
 
 @CS
 https://morss.it/mitchellh.com/feed.xml "Mitchell Hashimoto"

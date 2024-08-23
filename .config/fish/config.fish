@@ -1,4 +1,5 @@
 if status is-interactive
+    atuin init fish | source
     starship init fish | source
     enable_transience
     zoxide init fish --cmd cd | source

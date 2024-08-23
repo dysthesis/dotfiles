@@ -20,6 +20,7 @@ return { -- Useful plugin to show you pending keybinds.
       { '<leader>h', group = '[H]arpoon', icon = { icon = '󱡀 ', color = 'azure' } },
       { '<leader>s', group = '[S]how', icon = { icon = ' ', color = 'yellow' } },
       { '<leader>t', group = '[T]oggle', icon = { icon = ' ', color = 'green' } },
+      { '<leader>d', group = '[D]ebug', icon = { icon = ' ', color = 'orange' } },
     }
   end,
 }
