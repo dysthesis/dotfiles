@@ -8,7 +8,7 @@ TOMORROW=$(date -d "tomorrow" +"%a, %b %d")
 DESCRIPTION=$(calcurse -d 7 --format-apt='%m' | sed -n 2p)
 
 # Retrieve the time of the next event and replace with "Today" or "Tomorrow"
-TIME=$(calcurse -d 7 --format-apt='%(start:%a, %b %d) %(start:%H:%M) - %(end:%H:%M)\n' | sed -n 2p | sed -e "s/$TODAY/Today/" -e "s/$TOMORROW/Tomorrow/")
+TIME=$(calcurse -d 7 --format-apt='%(start:%a, %b %d) %(start:%H:%M) - %(end:%H:%M)\n' | sed -n 2p | sed -e "s/$TODAY/Today,/" -e "s/$TOMORROW/Tomorrow,/")
 
 # Function to print usage
 print_usage() {

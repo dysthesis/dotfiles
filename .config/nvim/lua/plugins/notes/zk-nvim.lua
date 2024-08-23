@@ -2,11 +2,14 @@ local path = vim.fn.expand '~' .. '/Documents/Notes'
 return {
   {
     'zk-org/zk-nvim',
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    },
     event = {
       -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
       'BufReadPre '
-      .. path
-      .. '**.md',
+        .. path
+        .. '**.md',
       'BufNewFile ' .. path .. '/**.md',
     },
     keys = {
@@ -31,7 +34,7 @@ return {
       {
         '<leader>nn',
         "<Cmd>ZkNew { dir = vim.fn.expand('%:p:h'), title = vim.fn.input('Title: ') }<CR>",
-        desc = '[N]ew [N]ote',
+        desc = '[N]ote [N]ew',
         mode = 'n',
       },
       {
@@ -90,5 +93,5 @@ return {
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, { 'zk' })
     end,
-  }
+  },
 }

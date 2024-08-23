@@ -9,7 +9,7 @@ return { -- LSP Configuration & Plugins
 
     -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
-    { 'folke/neodev.nvim',       opts = {} },
+    { 'folke/neodev.nvim', opts = {} },
   },
   opts = {
     inlay_hints = {
@@ -76,7 +76,7 @@ return { -- LSP Configuration & Plugins
         local map = function(keys, func, desc)
           vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
-        local finder = require('fzf-lua')
+        local finder = require 'fzf-lua'
 
         -- Jump to the definition of the word under your cursor.
         --  This is where a variable was first declared, or where a function is defined, etc.
@@ -93,11 +93,11 @@ return { -- LSP Configuration & Plugins
         -- Jump to the type of the word under your cursor.
         --  Useful when you're not sure what type a variable is and you want to see
         --  the definition of its *type*, not where it was *defined*.
-        map('<leader>D', finder.lsp_typedefs, 'Type [D]efinition')
+        map('<leader>cD', finder.lsp_typedefs, '[C]ode Type [D]efinition')
 
         -- Fuzzy find all the symbols in your current document.
         --  Symbols are things like variables, functions, types, etc.
-        map('<leader>ds', finder.lsp_document_symbols, '[D]ocument [S]ymbols')
+        map('<leader>cds', finder.lsp_document_symbols, '[C]ode [D]ocument [S]ymbols')
 
         -- Fuzzy find all the symbols in your current workspace.
         --  Similar to document symbols, except searches over your entire project.
@@ -196,17 +196,16 @@ return { -- LSP Configuration & Plugins
         },
         root_dir = function(fname)
           return require('lspconfig.util').root_pattern(
-                'Makefile',
-                'configure.ac',
-                'configure.in',
-                'config.h.in',
-                'meson.build',
-                'meson_options.txt',
-                'build.ninja'
-              )(fname) or require('lspconfig.util').root_pattern('compile_commands.json', 'compile_flags.txt')(fname) or
-              require('lspconfig.util').find_git_ancestor(
-                fname
-              )
+            'Makefile',
+            'configure.ac',
+            'configure.in',
+            'config.h.in',
+            'meson.build',
+            'meson_options.txt',
+            'build.ninja'
+          )(fname) or require('lspconfig.util').root_pattern('compile_commands.json', 'compile_flags.txt')(fname) or require('lspconfig.util').find_git_ancestor(
+            fname
+          )
         end,
         capabilities = {
           offsetEncoding = { 'utf-16' },

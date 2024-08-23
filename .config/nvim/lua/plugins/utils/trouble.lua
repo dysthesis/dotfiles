@@ -21,11 +21,11 @@ return {
       '<cmd>Trouble diagnostics toggle<cr>',
       desc = '[C]ode [D]iagnostics (Trouble)',
     },
-    {
-      '<leader>xX',
-      '<cmd>Trouble diagnostics toggle filter.buf=0<cr>',
-      desc = 'Buffer Diagnostics (Trouble)',
-    },
+    -- {
+    --   '<leader>xX',
+    --   '<cmd>Trouble diagnostics toggle filter.buf=0<cr>',
+    --   desc = 'Buffer Diagnostics (Trouble)',
+    -- },
     {
       '<leader>cs',
       '<cmd>Trouble symbols toggle focus=false<cr>',

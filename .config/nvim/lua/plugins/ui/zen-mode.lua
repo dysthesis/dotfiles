@@ -14,7 +14,7 @@ return {
     {
       '<leader>tz',
       '<CMD>ZenMode<CR>',
-      '[T]oggle [Z]en mode',
+      desc = '[T]oggle [Z]en',
       mode = 'n',
     },
   },
