@@ -1,11 +1,5 @@
 #!/bin/dash
 
-if [ -z is_ready ]
-then
-  printf "No tasks"
-else
-  next_id=$(timeout 10s task next limit:1 | tail -n +4 | head -n 1 | sed 's/^ //' | cut -d ' ' -f1)
-  next_desc=$(timeout 10s task _get ${next_id}.description)
-  next_due=$(timeout 10s task _get ${next_id}.due | cut -dT -f1)
-  printf "$next_desc due $next_due"
-fi
+next_desc=$(task rc.verbose: rc.report.next.columns:description rc.report.next.labels:1 limit:1 next)
+next_due=$(task rc.verbose: rc.report.next.columns:due.relative rc.report.next.labels:1 limit:1 next)
+echo "$next_desc, due in $next_due"

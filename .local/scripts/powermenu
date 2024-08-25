@@ -1,8 +1,8 @@
 #!/bin/sh
 
     
-case "$(echo "Shutdown\nRestart\nLock" | dmenu \
-    -p "Power:" \
+case "$(printf "Shutdown\nRestart\nLock" | bemenu -b --fn "JetBrainsMono Nerd Font 10" --fb "#000000" --ff "#ffffff" --nb "#000000" --nf "#ffffff" --tb "#89b4fa" --hb "#1111b" --tf "#000000" --hf "#89b4fa" --ab "#000000" -p "" -i -H 34 --hp 8 \
+    -p "" \
     -l 3)" in
         Shutdown) 
             exec loginctl poweroff

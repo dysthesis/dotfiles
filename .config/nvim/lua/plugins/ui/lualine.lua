@@ -15,7 +15,7 @@ return {
       lualine.setup {
         options = {
           component_separators = '',
-          section_separators = { left = '█', right = '█' },
+          section_separators = { right = '', left = '' },
           disabled_filetypes = { 'alpha' },
         },
         sections = {
@@ -24,7 +24,7 @@ return {
               'mode',
               fmt = fmt_mode,
               icon = { '󰹻 ' },
-              separator = { left = '█', right = '█' },
+              separator = { right = '', left = '' },
               right_padding = 2,
             },
           },
@@ -58,7 +58,7 @@ return {
             {
               'progress',
               icon = { '', align = 'left' },
-              separator = { right = '█', left = '█' },
+              separator = { right = '', left = '' },
             },
           },
         },
