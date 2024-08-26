@@ -50,7 +50,7 @@ alias tat='task add scheduled:tomorrow until:sch+14d'
 alias tm='task modify'
 
 # yt-fzf
-alias subs='ytfzf -c SI --sort'
+alias subs='nix shell nixpkgs#ueberzugpp --command ytfzf -t -T iterm2 -cSI --sort'
 alias torsubs='torsocks ytfzf -c SI --sort'
 
 alias yt='mpv --ytdl-format=bestvideo+bestaudio'

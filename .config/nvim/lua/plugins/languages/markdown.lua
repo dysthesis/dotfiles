@@ -59,15 +59,6 @@ return {
       }
     end,
   },
-  { -- Autoformat
-    'stevearc/conform.nvim',
-    optional = true,
-    opts = {
-      formatters_by_ft = {
-        markdown = { 'prettier' },
-      },
-    },
-  },
   { -- Linting
     'mfussenegger/nvim-lint',
     optional = true,
