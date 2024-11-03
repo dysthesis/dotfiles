@@ -77,7 +77,7 @@ return {
 
     config = function()
       require('zk').setup {
-        picker = 'fzf_lua',
+        picker = 'telescope',
       }
     end,
   },

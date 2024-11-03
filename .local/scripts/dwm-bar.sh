@@ -37,9 +37,20 @@ taskwarrior() {
   fi
 }
 
+battery() {
+  printf "^b#a6e3a1^^c#000000^   "
+  get_capacity="$(cat /sys/class/power_supply/BAT1/capacity)"
+  printf "^c#ffffff^^b#000000^  $get_capacity%s" " %"
+}
+
+brightness() {
+  printf "^b#f2cdcd^^c#000000^   "
+  printf "^c#ffffff^^b#000000^  %.0f%s\n" $(cat /sys/class/backlight/*/brightness) " % "
+}
+
 while true; do
   [ $interval = 0 ] || [ $(($interval % 3600)) = 0 ] 
   interval=$((interval + 1))
 
-  sleep 1 && xsetroot -name "$(cpu) $(mem) $(clock)"
+  sleep 1 && xsetroot -name "$(brightness) $(battery) $(cpu) $(mem) $(clock)"
 done

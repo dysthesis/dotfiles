@@ -76,7 +76,7 @@ return { -- LSP Configuration & Plugins
         local map = function(keys, func, desc)
           vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
-        local finder = require 'fzf-lua'
+        local finder = require 'telescope'
 
         -- Jump to the definition of the word under your cursor.
         --  This is where a variable was first declared, or where a function is defined, etc.
@@ -253,11 +253,7 @@ return { -- LSP Configuration & Plugins
     --    :Mason
     --
     --  You can press `g?` for help in this menu.
-    require('mason').setup {
-      registries = {
-        'file:~/.config/nvim/mason-registry',
-      },
-    }
+    require('mason').setup {}
 
     -- You can add other tools here that you want Mason to install
     -- for you, so that they are available from within Neovim.
@@ -265,6 +261,7 @@ return { -- LSP Configuration & Plugins
     vim.list_extend(ensure_installed, {
       'stylua',
     })
+
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
     require('mason-lspconfig').setup {
