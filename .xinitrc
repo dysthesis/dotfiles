@@ -46,22 +46,19 @@ setterm -blank 0 -powerdown 0
 # turn off black Screensaver
 xset s off
 
-pipewire &
-parcellite &
+gentoo-pipewire-launcher &
 dunst &
-mpd &
-redshift &
-syncthing -no-browser &
+#mpd &
+#syncthing -no-browser &
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 redshift -l -33.9166485:151.2233364 &
 flameshot &
-gentoo-pipewire-launcher &
-gnome-keyring-agent &
+#gnome-keyring-agent &
 killall picom
 picom -b &
 gnome-keyring-daemon -r -d &
-udiskie &
 hsetroot -cover ~/.config/wallpaper.png &
 betterlockscreen -u ~/.config/wallpaper.png &
+./.local/scripts/dwm-bar.sh &
 
-dbus-run-session bspwm
+dbus-run-session dwm

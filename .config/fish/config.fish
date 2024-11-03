@@ -3,11 +3,11 @@ if status is-interactive
     starship init fish | source
     enable_transience
     zoxide init fish --cmd cd | source
-    set -x GPG_TTY (tty)
-    set -x SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
-    gpgconf --launch gpg-agent
-    khal list now tomorrow
-    task next
+    # set -x GPG_TTY (tty)
+    # set -x SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
+    # gpgconf --launch gpg-agent
+    # khal list now tomorrow
+    # task next
 end
 
 alias sudo=doas
@@ -18,8 +18,6 @@ alias notes='tmux attach-session -t Notes || tmux new-session -s Notes -c ~/Docu
 # UNSW stuff
 alias cse="ssh z5437039@login.cse.unsw.edu.au"
 
-zoxide init fish | source
-
 # Make temporary directory
 alias temp="cd $(mktemp -d)"
 
@@ -29,9 +27,6 @@ alias docker=podman
 # Neovim
 alias vim=nvim
 alias v=nvim
-
-# Doom emacs
-alias doom='~/.config/emacs/bin/doom'
 
 # Bat (better cat)
 alias cat=bat
@@ -49,9 +44,8 @@ alias tan='task add scheduled:today'
 alias tat='task add scheduled:tomorrow until:sch+14d'
 alias tm='task modify'
 
-# yt-fzf
-alias subs='nix shell nixpkgs#ueberzugpp --command ytfzf -t -T iterm2 -cSI --sort'
 alias torsubs='torsocks ytfzf -c SI --sort'
+alias subs='ytfzf -t -c SI --sort'
 
 alias yt='mpv --ytdl-format=bestvideo+bestaudio'
 
