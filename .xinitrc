@@ -8,15 +8,7 @@ sysmodmap=/etc/X11/xinit/Xmodmap
 # merge in defaults and keymaps
 
 if [ -f $sysresources ]; then
-
-
-
-
-
-
-
     xrdb -merge $sysresources
-
 fi
 
 if [ -f $sysmodmap ]; then
@@ -24,13 +16,6 @@ if [ -f $sysmodmap ]; then
 fi
 
 if [ -f "$userresources" ]; then
-
-
-
-
-
-
-
     xrdb -merge "$userresources"
 
 fi
@@ -49,11 +34,11 @@ xset s off
 gentoo-pipewire-launcher &
 dunst &
 #mpd &
-#syncthing -no-browser &
+syncthing -no-browser &
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 redshift -l -33.9166485:151.2233364 &
 flameshot &
-#gnome-keyring-agent &
+gnome-keyring-agent &
 killall picom
 picom -b &
 gnome-keyring-daemon -r -d &
