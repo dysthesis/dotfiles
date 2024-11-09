@@ -3,7 +3,10 @@
 	name = Dysthesis
 
 [commit]
-	gpgsign = true
+	;;gpgsign = true
+
+[diff]
+    external = difft
 
 [core]
     pager = delta
@@ -23,7 +26,7 @@
     # light = true
 
 [merge]
-    conflictstyle = diff3
+    conflictstyle = zdiff3
 
 [diff]
     colorMoved = default

@@ -3,5 +3,5 @@
 case "$(echo "Shutdown\nRestart\nLock" | dmenu  -p "" -l 5)" in
         Shutdown) exec loginctl poweroff;;
         Restart) exec loginctl reboot;;
-        Lock) exec i3lock-fancy;;
+        Lock) exec betterlockscreen -l;;
 esac

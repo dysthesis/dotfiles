@@ -76,28 +76,29 @@ return { -- LSP Configuration & Plugins
         local map = function(keys, func, desc)
           vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
-        local finder = require 'telescope'
+
+        local telescope = require 'telescope.builtin'
 
         -- Jump to the definition of the word under your cursor.
         --  This is where a variable was first declared, or where a function is defined, etc.
         --  To jump back, press <C-t>.
-        map('gd', finder.lsp_definitions, '[G]oto [D]efinition')
+        map('gd', telescope.lsp_definitions, '[G]oto [D]efinition')
 
         -- Find references for the word under your cursor.
-        map('gr', finder.lsp_references, '[G]oto [R]eferences')
+        map('gr', telescope.lsp_references, '[G]oto [R]eferences')
 
         -- Jump to the implementation of the word under your cursor.
         --  Useful when your language has ways of declaring types without an actual implementation.
-        map('gI', finder.lsp_implementations, '[G]oto [I]mplementation')
+        map('gI', telescope.lsp_implementations, '[G]oto [I]mplementation')
 
         -- Jump to the type of the word under your cursor.
         --  Useful when you're not sure what type a variable is and you want to see
         --  the definition of its *type*, not where it was *defined*.
-        map('<leader>cD', finder.lsp_typedefs, '[C]ode Type [D]efinition')
+        map('<leader>cD', telescope.lsp_type_definitions, '[C]ode Type [D]efinition')
 
         -- Fuzzy find all the symbols in your current document.
         --  Symbols are things like variables, functions, types, etc.
-        map('<leader>cds', finder.lsp_document_symbols, '[C]ode [D]ocument [S]ymbols')
+        map('<leader>cds', telescope.lsp_document_symbols, '[C]ode [D]ocument [S]ymbols')
 
         -- Fuzzy find all the symbols in your current workspace.
         --  Similar to document symbols, except searches over your entire project.
@@ -109,7 +110,7 @@ return { -- LSP Configuration & Plugins
 
         -- Execute a code action, usually your cursor needs to be on top of an error
         -- or a suggestion from your LSP for this to activate.
-        map('<leader>ca', finder.lsp_code_actions, '[C]ode [A]ction')
+        map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
         -- Opens a popup that displays documentation about the word under your cursor
         --  See `:help K` for why this keymap.

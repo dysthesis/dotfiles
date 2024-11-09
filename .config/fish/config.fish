@@ -10,6 +10,9 @@ if status is-interactive
     # task next
 end
 
+# Git stuff
+alias gc="git commit -S -am"
+
 alias sudo=doas
 alias ':q'=exit
 alias ping=gping
