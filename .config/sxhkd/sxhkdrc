@@ -3,11 +3,11 @@
 #
 # terminal emulator
 super + Return
-	st
+	wezterm start --always-new-process
 
 # program launcher
 super + r
-	dmenu_run
+	rofi -show drun
 
 # make sxhkd reload its configuration files:
 super + Escape

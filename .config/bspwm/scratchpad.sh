@@ -11,25 +11,16 @@ elif xdotool search --class "$1" >/dev/null 2>&1; then
 else
     case "$1" in
     notes)
-        st -g 180x30 -c notes -e sh -c 'tmux attach-session -t Notes || tmux new-session -s Notes -c ~/Documents/Notes/'
+        wezterm start --class=notes -e sh -c 'tmux attach-session -t Notes || tmux new-session -s Notes -c ~/Documents/Notes/'
         ;;
     term)
-        st -g 180x30 -c term
+        wezterm start --class=term
         ;;
     btop)
-        st -g 180x30 -c btop -e btop
-        ;;
-    music)
-        st -g 180x30 -c music -e ncmpcpp
-        ;;
-    task)
-        st -g 180x30 -c task -e taskwarrior-tui
+        wezterm start --class=btop -- btop
         ;;
     files)
-        st -g 180x30 -c files -e yazi
-        ;;
-    calendar)
-        st -g 180x30 -c calendar -e calcurse
+        wezterm start --class=files -- yazi
         ;;
     Signal)
         signal-desktop

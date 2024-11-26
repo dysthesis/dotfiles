@@ -33,8 +33,7 @@ xset s off
 
 gentoo-pipewire-launcher &
 dunst &
-#mpd &
-syncthing -no-browser &
+nm-applet &
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 redshift -l -33.9166485:151.2233364 &
 flameshot &
@@ -44,6 +43,5 @@ picom -b &
 gnome-keyring-daemon -r -d &
 hsetroot -cover ~/.config/wallpaper.png &
 betterlockscreen -u ~/.config/wallpaper.png &
-./.local/scripts/dwm-bar.sh &
 
-dbus-run-session dwm
+dbus-run-session bspwm

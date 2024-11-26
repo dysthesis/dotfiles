@@ -13,7 +13,6 @@ end
 # Git stuff
 alias gc="git commit -S -am"
 
-alias sudo=doas
 alias ':q'=exit
 alias ping=gping
 alias notes='tmux attach-session -t Notes || tmux new-session -s Notes -c ~/Documents/Notes/'

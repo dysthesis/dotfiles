@@ -17,7 +17,6 @@ config.font = wezterm.font({
 	weight = "Regular",
 	stretch = "Normal",
 	style = "Normal",
-	size = 12,
 	harfbuzz_features = {
 		"calt",
 		"clig",

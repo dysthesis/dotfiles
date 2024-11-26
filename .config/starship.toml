@@ -22,38 +22,38 @@ success_symbol = "[┃](green)"
 error_symbol = "[┃](bright-red)"
 
 [username]
-format = 'on [█](fg:surface0)[ ](fg:green bg:surface0 bold)[█](fg:surface0)[█](fg:mantle)[$user]($style)[█](fg:mantle)'
+format = 'on [](fg:surface0)[ ](bg:surface0 fg:green bold)[](bg:mantle fg:surface0)[ $user]($style)[](fg:mantle)'
 style_user = 'fg:#ffffff bold bg:mantle'
 style_root = 'fg:red bold bg:mantle'
 show_always = true
 disabled = false
 
 [hostname]
-format = 'at [█](fg:surface0)[󰍹 ](fg:lavender bg:surface0 bold)[█](fg:surface0)[█](fg:mantle)[$hostname]($style)[█](fg:mantle)'
+format = 'at [](fg:surface0)[󰍹 ](fg:lavender bg:surface0 bold)[](bg:mantle fg:surface0)[$hostname]($style)[](fg:mantle)'
 ssh_only = true
 style = 'fg:#ffffff bold bg:mantle'
 
 [directory]
-format = '[█](fg:surface0)[ ](fg:blue bg:surface0 bold)[█](fg:surface0)[█](fg:mantle)[$read_only]($read_only_style)[$repo_root]($repo_root_style)[$path]($style)[█](fg:mantle)'
+format = '[](fg:surface0)[ ](fg:blue bg:surface0 bold)[](fg:surface0 bg:mantle)[$read_only]($read_only_style)[$repo_root]($repo_root_style)[ $path]($style)[](fg:mantle)'
 style = 'fg:#ffffff bold bg:mantle'
 read_only = ' ' # ' ' # ' ''
 read_only_style = 'fg:#ffffff bg:mantle'
 truncation_length = 3
 truncation_symbol = '…/'
 truncate_to_repo = true
-repo_root_format = '[█](fg:surface0)[ ](fg:blue bg:surface0 bold)[█](fg:surface0)[█](fg:mantle)[$read_only]($read_only_style)[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[█](fg:mantle)[ ]()'
+repo_root_format = '[](fg:surface0)[ ](fg:blue bg:surface0 bold)[](bg:mantle fg:surface0)[$read_only]($read_only_style)[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[](fg:mantle)[ ]()'
 repo_root_style	= 'fg:#ffffff bold bg:mantle'
 use_os_path_sep = true
 disabled = false
 
 
 [git_branch]
-format = 'on branch [█](fg:surface0)[$symbol](bg:surface0 fg:mauve)[█](fg:surface0)[█](fg:mantle)[$branch]($style)[█](fg:mantle) '
+format = 'on branch [](fg:surface0)[$symbol](bg:surface0 fg:mauve)[](fg:surface0 bg:mantle)[ $branch]($style)[](fg:mantle) '
 style = 'bold fg:#ffffff bg:mantle'
 symbol = ''
 
 [git_status]
-format = 'with [█](fg:surface0)[󱖫](bg:surface0 fg:#ffffff bold)[█](fg:surface0)[█](fg:mantle)[$all_status$ahead_behind]($style)[█](fg:mantle)'
+format = 'with [](fg:surface0)[󱖫](bg:surface0 fg:#ffffff bold)[](bg:mantle fg:surface0)[ $all_status$ahead_behind]($style)[](fg:mantle)'
 conflicted = ' [$count](fg:#ffffff bg:mantle bold) '
 ahead = '[﯁ ](fg:blue bg:mantle)[$count](fg:white bg:mantle bold) '
 behind = '[﮾ ](fg:peach bg:mantle white)[$count](fg:white bg:mantle bold) '
@@ -67,7 +67,7 @@ deleted = '[ ](bg:mantle fg:red)[$count](fg:white bg:mantle bold) '
 style = 'bg:mantle'
 
 [shell]
-format = '[█](fg:surface0)[](bg:surface0 fg:peach)[█](fg:surface0)[█](fg:mantle)[$indicator]($style)[█](fg:mantle)'
+format = '[](fg:surface0)[ ](bg:surface0 fg:peach)[](fg:surface0 bg:mantle)[ $indicator]($style)[](fg:mantle)'
 style = 'fg:#ffffff bg:mantle bold'
 disabled = false
 
