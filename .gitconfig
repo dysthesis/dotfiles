@@ -3,7 +3,7 @@
 	name = Dysthesis
 
 [commit]
-	;;gpgsign = true
+    gpgsign = true
 
 [diff]
     external = difft
