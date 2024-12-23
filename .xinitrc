@@ -43,5 +43,6 @@ picom -b &
 gnome-keyring-daemon -r -d &
 hsetroot -cover ~/.config/wallpaper.png &
 betterlockscreen -u ~/.config/wallpaper.png &
+~/.local/scripts/dwm-bar.sh &
 
-dbus-run-session bspwm
+dbus-run-session dwm

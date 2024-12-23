@@ -35,7 +35,8 @@ config.font = wezterm.font({
 		"cv17",
 	},
 })
-config.font_size = size
+config.max_fps = 120
+config.font_size = 12
 config.line_height = 1.2
 config.color_scheme = "Catppuccin Mocha"
 config.window_background_opacity = 0.75

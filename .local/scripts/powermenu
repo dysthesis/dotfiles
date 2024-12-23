@@ -1,7 +1,13 @@
 #!/bin/sh
 
-case "$(echo "Shutdown\nRestart\nLock" | rofi -dmenu -p " " -l 5)" in
-Shutdown) exec systemctl poweroff ;;
-Restart) exec systemctl reboot ;;
-Lock) exec betterlockscreen -l ;;
+case "$(echo "Shutdown\nRestart\nLock" | dmenu -b \
+        -fn "JBMono Nerd Font:size=10" \
+        -nb "#000000" \
+        -nf "#ffffff" \
+        -sb "#11111b" \
+        -sf "#89b4fa" \
+        -p "" -l 5)" in
+        Shutdown) exec loginctl poweroff;;
+        Restart) exec loginctl reboot;;
+        Lock) exec betterlockscreen -l;;
 esac

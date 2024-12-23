@@ -10,6 +10,7 @@ if status is-interactive
     # task next
 end
 
+alias sudo=doas
 # Git stuff
 alias gc="git commit -S -am"
 
