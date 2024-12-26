@@ -40,6 +40,7 @@ flameshot &
 gnome-keyring-agent &
 killall picom
 picom -b &
+udiskie &
 gnome-keyring-daemon -r -d &
 hsetroot -cover ~/.config/wallpaper.png &
 betterlockscreen -u ~/.config/wallpaper.png &

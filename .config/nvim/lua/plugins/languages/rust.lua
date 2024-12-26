@@ -31,7 +31,7 @@ return {
     dependencies = { 'WhoIsSethDaniel/mason-tool-installer.nvim' },
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { 'codelldb', 'rust-analyzer' })
+      vim.list_extend(opts.ensure_installed, { 'codelldb' })
       require('mason-tool-installer').setup { ensure_installed = opts.ensure_installed }
     end,
   },
