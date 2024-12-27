@@ -10,7 +10,7 @@ export ELECTRON_OZONE_PLATFORM_HINT=wayland
 export SXHKD_SHELL sh
 
 if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-	startx
+	dbus-run-session dwl -s $HOME/.local/scripts/start
 fi
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc

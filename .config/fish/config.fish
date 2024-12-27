@@ -48,7 +48,7 @@ alias tat='task add scheduled:tomorrow until:sch+14d'
 alias tm='task modify'
 
 alias torsubs='torsocks ytfzf -c SI --sort'
-alias subs='ytfzf -t -c SI --sort'
+alias subs='ytfzf -t -T kitty -c SI --sort'
 
 alias yt='mpv --ytdl-format=bestvideo+bestaudio'
 
@@ -167,5 +167,5 @@ end
 # Variables
 export VDIRSYNCER_CONFIG=$HOME/.config/vdirsyncer/config
 export ZK_NOTEBOOK_DIR=~/Documents/Notes
-export PATH="$HOME/.cabal/bin:$HOME/.ghcup/bin:$HOME/.local/share/flatpak/exports/bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$HOME/.cabal/bin:$HOME/.ghcup/bin:$HOME/.local/share/flatpak/exports/bin:$HOME/.local/bin:$PATH"
 export EDITOR=nvim
