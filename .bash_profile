@@ -10,7 +10,9 @@ export ELECTRON_OZONE_PLATFORM_HINT=wayland
 export SXHKD_SHELL sh
 
 if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-	dbus-run-session dwl -s $HOME/.local/scripts/start
+	startx
 fi
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc
+
+if [ -e /home/demiurge/.nix-profile/etc/profile.d/nix.sh ]; then . /home/demiurge/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer

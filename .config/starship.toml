@@ -81,6 +81,10 @@ disabled = false
 style = 'fg:#505050'
 symbol = '─'
 
+
+[nix_shell]
+disabled = false
+
 [custom.git_host]
 command = """
 URL=$(command git ls-remote --get-url 2> /dev/null)
