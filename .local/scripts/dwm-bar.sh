@@ -40,14 +40,20 @@ battery() {
   printf "$get_capacity%s" " %"
 }
 
-brightness() {
-  printf "  ^fg(f9e2af) ^fg()"
-  printf "%.0f%s" $(cat /sys/class/backlight/*/brightness) " %"
+volume() {
+  printf "  ^fg(eba0ac)  ^fg()"
+  echo "$(echo "scale=2; $(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}') * 100" | bc  | cut -d '.' -f 1) %"
 }
 
+brightness() {
+  printf "  ^fg(f9e2af) ^fg()"
+  echo "$(echo "scale=2; $(cat /sys/class/backlight/*/brightness) / 255 * 100" | bc | cut -d '.' -f 1) %"
+}
+
+DELIMITER="  ^fg(313244)|^fg()"
 while true; do
   [ $interval = 0 ] || [ $(($interval % 3600)) = 0 ] 
   interval=$((interval + 1))
 
-  sleep 1 && echo "$(brightness) $(battery) $(cpu) $(mem) $(clock)"
+  sleep 1 && echo "$(volume)$DELIMITER$(brightness)$DELIMITER$(battery)$DELIMITER$(cpu)$DELIMITER$(mem)$DELIMITER$(clock)"
 done
