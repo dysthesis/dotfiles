@@ -4,3 +4,6 @@
 [submodule ".config/xmonad/xmonad"]
 	path = .config/xmonad/xmonad
 	url = https://github.com/xmonad/xmonad
+[submodule ".config/dwl"]
+	path = .config/dwl
+	url = git@github.com:dysthesis/dwl.git
