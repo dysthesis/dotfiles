@@ -46,7 +46,7 @@ volume() {
 }
 
 brightness() {
-  printf "  ^fg(f9e2af) ^fg()"
+  printf "  ^fg(f9e2af)  ^fg()"
   echo "$(echo "scale=2; $(cat /sys/class/backlight/*/brightness) / 255 * 100" | bc | cut -d '.' -f 1) %"
 }
 

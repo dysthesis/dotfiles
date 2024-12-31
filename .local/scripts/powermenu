@@ -4,5 +4,5 @@ case "$(echo "Shutdown\nRestart\nLock" | bemenu -b --fn "JBMono Nerd Font 10" -H
         -p "" -l 5)" in
         Shutdown) exec loginctl poweroff;;
         Restart) exec loginctl reboot;;
-        Lock) exec betterlockscreen -l;;
+        Lock) exec swaylock --clock -i ~/.config/wallpaper.png;;
 esac
