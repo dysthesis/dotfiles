@@ -1,11 +1,6 @@
 #!/bin/sh
 
-case "$(echo "Shutdown\nRestart\nLock" | dmenu -b \
-        -fn "JBMono Nerd Font:size=10" \
-        -nb "#000000" \
-        -nf "#ffffff" \
-        -sb "#11111b" \
-        -sf "#89b4fa" \
+case "$(echo "Shutdown\nRestart\nLock" | bemenu -b --fn "JBMono Nerd Font 10" -H         "32"      --hp "8"       --fb "#000000" --ff       "#ffffff" --nb "#000000" --nf "#ffffff" --tb       "#89b4fa" --hb "#11111b" --tf "#000000" --hf       "#89b4fa" --ab "#000000"    -fn "JBMono Nerd Font:size=10" \
         -p "" -l 5)" in
         Shutdown) exec loginctl poweroff;;
         Restart) exec loginctl reboot;;

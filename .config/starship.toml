@@ -5,7 +5,7 @@ palette = "catppuccin_mocha"
 
 # Customizing the prompt (and placing desired modules at desired position and sequence):
 format = """
-$character $shell $directory $username $hostname $git_branch $git_status $git_commit $fill
+$character $shell $directory $username $hostname $git_branch $git_status $git_commit $nix_shell $rust $fill
 $character [❯](red)[❯](yellow)[❯](green) 
 """
 
@@ -80,10 +80,6 @@ disabled = false
 [fill]
 style = 'fg:#505050'
 symbol = '─'
-
-
-[nix_shell]
-disabled = false
 
 [custom.git_host]
 command = """

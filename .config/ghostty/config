@@ -1710,7 +1710,7 @@ quick-terminal-autohide = true
 #   * `bash`, `elvish`, `fish`, `zsh` - Use this specific shell injection scheme.
 # 
 # The default value is `detect`.
-shell-integration = detect
+shell-integration = fish
 
 # Shell integration features to enable if shell integration itself is enabled.
 # The format of this is a list of features to enable separated by commas. If
