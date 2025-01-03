@@ -4,7 +4,7 @@ return {
     optional = true,
     config = function()
       require('lspconfig').nixd.setup {
-        cmd = { 'nixd' },
+        cmd = { 'nix run nixpkgs#nixd' },
         settings = {
           nixd = {
             nixpkgs = {
