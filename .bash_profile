@@ -9,7 +9,7 @@ export PATH=~/.local/share/flatpak/exports/bin:$PATH
 export ELECTRON_OZONE_PLATFORM_HINT=wayland
 export SXHKD_SHELL sh
 
-if [ "$TERM" != "xterm-256color" ] && [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
+if [ "$TERM" != "tmux-256color" ] && [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
 	exec ~/.config/dwl/start
 fi
 

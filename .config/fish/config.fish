@@ -3,6 +3,8 @@ if status is-interactive
     starship init fish | source
     enable_transience
     zoxide init fish --cmd cd | source
+    source "$GHOSTTY_RESOURCES_DIR"/shell-integration/fish/vendor_conf.d/ghostty-shell-integration.fish
+
     # set -x GPG_TTY (tty)
     # set -x SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
     # gpgconf --launch gpg-agent
