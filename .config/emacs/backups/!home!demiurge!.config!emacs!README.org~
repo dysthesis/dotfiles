@@ -212,6 +212,18 @@ Cheatsheet for keybinds.
   (setq which-key-idle-delay 0.3))
 #+END_SRC
 
+** Olivetti
+#+BEGIN_SRC emacs-lisp
+    (use-package olivetti
+      :ensure t
+      :config
+      (defun dysthesis/org-mode-setup ()
+        (org-indent-mode)
+        (olivetti-mode)
+        (display-line-numbers-mode 0)
+        (olivetti-set-width 90))
+      (add-hook 'org-mode-hook 'dysthesis/org-mode-setup)) 
+#+END_SRC
 ** Mixed pitch
 
 Allow the use of both variable pitch and fixed pitch fonts wherever appropriate.
@@ -280,18 +292,6 @@ Allow the use of both variable pitch and fixed pitch fonts wherever appropriate.
   (global-ligature-mode t))
 #+END_SRC
 
-** Olivetti
-#+BEGIN_SRC emacs-lisp
-(use-package olivetti
-  :ensure t
-  :config
-  (defun dysthesis/org-mode-setup ()
-    (olivetti-mode)
-    (display-line-numbers-mode 0)
-    (olivetti-set-width 90)
-    (setq-local company-backends (remove 'company-dabbrev company-backends))
-    (setq-local company-backends (remove 'company-ispell company-backends))) (add-hook 'org-mode-hook 'dysthesis/org-mode-setup)) 
-#+END_SRC
 * Navigation
 ** Evil mode
 
@@ -325,9 +325,9 @@ Enable Vim-like keybindings in Emacs.
     (global-set-key (kbd "C-j") #'evil-window-down)
     (global-set-key (kbd "C-k") #'evil-window-up)
     (global-set-key (kbd "C-l") #'evil-window-right)
-    (global-set-key (kbd "TAB") #'evil-toggle-fold)
 
     (use-package evil-collection ;; evilifies a bunch of things
+      :ensure t
       :after evil
       :init
       (setq evil-collection-outline-bind-tab-p t) ;; '<TAB>' cycles visibility in 'outline-minor-mode'
@@ -339,16 +339,19 @@ Enable Vim-like keybindings in Emacs.
       (evil-collection-init))
 
     (use-package evil-commentary
+      :ensure t
       :after evil
       :config
       (evil-commentary-mode)) ;; globally enable evil-commentary
 
     (use-package evil-surround
+      :ensure t
       :after evil
       :config
       (global-evil-surround-mode 1)) ;; globally enable evil-surround
 
     (use-package evil-goggles
+      :ensure t
       :after evil
       :config
       (evil-goggles-mode)

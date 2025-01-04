@@ -163,9 +163,8 @@
     (org-indent-mode)
     (olivetti-mode)
     (display-line-numbers-mode 0)
-    (olivetti-set-width 90)
-    (setq-local company-backends (remove 'company-dabbrev company-backends))
-    (setq-local company-backends (remove 'company-ispell company-backends))) (add-hook 'org-mode-hook 'dysthesis/org-mode-setup))
+    (olivetti-set-width 90))
+  (add-hook 'org-mode-hook 'dysthesis/org-mode-setup))
 
 (use-package mixed-pitch
   :ensure t
@@ -252,9 +251,9 @@
 (global-set-key (kbd "C-j") #'evil-window-down)
 (global-set-key (kbd "C-k") #'evil-window-up)
 (global-set-key (kbd "C-l") #'evil-window-right)
-(global-set-key (kbd "TAB") #'evil-toggle-fold)
 
 (use-package evil-collection ;; evilifies a bunch of things
+  :ensure t
   :after evil
   :init
   (setq evil-collection-outline-bind-tab-p t) ;; '<TAB>' cycles visibility in 'outline-minor-mode'
@@ -266,16 +265,19 @@
   (evil-collection-init))
 
 (use-package evil-commentary
+  :ensure t
   :after evil
   :config
   (evil-commentary-mode)) ;; globally enable evil-commentary
 
 (use-package evil-surround
+  :ensure t
   :after evil
   :config
   (global-evil-surround-mode 1)) ;; globally enable evil-surround
 
 (use-package evil-goggles
+  :ensure t
   :after evil
   :config
   (evil-goggles-mode)
@@ -605,10 +607,6 @@
   :commands (magit-status magit-get-current-branch)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-(use-package evil-magit
-  :ensure t
-  :after magit)
 
 (use-package rustic
   :mode ("\\.rs\\'" . rustic-mode)
