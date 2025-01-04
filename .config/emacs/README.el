@@ -39,9 +39,7 @@
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
-;; Install use-package support
 (elpaca elpaca-use-package
-  ;; Enable use-package :ensure support for Elpaca.
   (elpaca-use-package-mode))
 
 (use-package emacs
@@ -293,139 +291,105 @@
   :demand t
   :config
   (general-evil-setup)
-  ;; integrate general with evil
+  ;; Set up 'SPC' as the leader key
+  (general-create-definer start/leader-keys
+    :states '(normal insert visual motion emacs)
+    :keymaps 'override
+    :prefix "SPC"           ;; Set leader key
+    :global-prefix "C-SPC") ;; Set global leader key
 
-  ;; set up 'SPC' as the global leader key
-  (general-create-definer dysthesis/leader-keys
-			  :states '(normal insert visual emacs)
-			  :keymaps 'override
-			  :prefix "SPC" ;; set leader
-			  :global-prefix "M-SPC") ;; access leader in insert mode
+  (start/leader-keys
+    "." '(find-file :wk "Find file")
+    "TAB" '(comment-line :wk "Comment lines")
+    "p" '(projectile-command-map :wk "Projectile command map"))
 
-  ;; set up ',' as the local leader key
-  (general-create-definer dysthesis/local-leader-keys
-			  :states '(normal insert visual emacs)
-			  :keymaps 'override
-			  :prefix "," ;; set local leader
-			  :global-prefix "M-,") ;; access local leader in insert mode
+  (start/leader-keys
+    "f" '(:ignore t :wk "Find")
+    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+    "f r" '(consult-recent-file :wk "Recent files")
+    "f f" '(consult-fd :wk "Fd search for files")
+    "f g" '(consult-ripgrep :wk "Ripgrep search in files")
+    "f l" '(consult-line :wk "Find line")
+    "f i" '(consult-imenu :wk "Imenu buffer locations"))
 
-  (general-define-key
-   :states 'insert
-   "C-g" 'evil-normal-state) ;; don't stretch for ESC
+  (start/leader-keys
+    "b" '(:ignore t :wk "Buffer Bookmarks")
+    "b b" '(consult-buffer :wk "Switch buffer")
+    "b k" '(kill-this-buffer :wk "Kill this buffer")
+    "b i" '(ibuffer :wk "Ibuffer")
+    "b n" '(next-buffer :wk "Next buffer")
+    "b p" '(previous-buffer :wk "Previous buffer")
+    "b r" '(revert-buffer :wk "Reload buffer")
+    "b j" '(consult-bookmark :wk "Bookmark jump"))
 
-  ;; unbind some annoying default bindings
-  (general-unbind
-   "C-x C-r"   ;; unbind find file read only
-   "C-x C-z"   ;; unbind suspend frame
-   "C-x C-d"   ;; unbind list directory
-   "<mouse-2>") ;; pasting with mouse wheel click
+  (start/leader-keys
+    "d" '(:ignore t :wk "Dired")
+    "d v" '(dired :wk "Open dired")
+    "d j" '(dired-jump :wk "Dired jump to current"))
 
+  (start/leader-keys
+    "e" '(:ignore t :wk "Eglot Evaluate")
+    "e e" '(eglot-reconnect :wk "Eglot Reconnect")
+    "e f" '(eglot-format :wk "Eglot Format")
+    "e l" '(consult-flymake :wk "Consult Flymake")
+    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+    "e r" '(eval-region :wk "Evaluate elisp in region"))
 
-  (dysthesis/leader-keys
-   "SPC" '(execute-extended-command :wk "execute command") ;; an alternative to 'M-x'
-   "TAB" '(:keymap tab-prefix-map :wk "tab")) ;; remap tab bindings
+  (start/leader-keys
+    "g" '(:ignore t :wk "Git")
+    "g g" '(magit-status :wk "Magit status"))
 
-  (dysthesis/leader-keys
-   "w" '(:keymap evil-window-map :wk "window")) ;; window bindings
+  (start/leader-keys
+    "h" '(:ignore t :wk "Help") ;; To get more help use C-h commands (describe variable, function, etc.)
+    "h q" '(save-buffers-kill-emacs :wk "Quit Emacs and Daemon")
+    "h r" '((lambda () (interactive)
+              (load-file "~/.config/emacs/init.el"))
+            :wk "Reload Emacs config"))
 
-  (dysthesis/leader-keys
-   "c" '(:ignore t :wk "code"))
+  (start/leader-keys
+    "s" '(:ignore t :wk "Show")
+    "s e" '(eat :wk "Eat terminal"))
 
-  ;; help
-  ;; namespace mostly used by 'helpful'
-  (dysthesis/leader-keys
-   "h" '(:ignore t :wk "help"))
-
-  ;; file
-  (dysthesis/leader-keys
-   "f" '(:ignore t :wk "file")
-   "ff" '(find-file :wk "find file") ;; gets overridden by consult
-   "fs" '(save-buffer :wk "save file"))
-
-  ;; buffer
-  ;; see 'bufler' and 'popper'
-  (dysthesis/leader-keys
-   "b" '(:ignore t :wk "buffer")
-   "bb" '(switch-to-buffer :wk "switch buffer") ;; gets overridden by consult
-   "bk" '(kill-this-buffer :wk "kill this buffer")
-   "br" '(revert-buffer :wk "reload buffer"))
-
-  ;; bookmark
-  (dysthesis/leader-keys
-   "B" '(:ignore t :wk "bookmark")
-   "Bs" '(bookmark-set :wk "set bookmark")
-   "Bj" '(bookmark-jump :wk "jump to bookmark"))
-
-  ;; universal argument
-  (dysthesis/leader-keys
-   "u" '(universal-argument :wk "universal prefix"))
-
-  ;; notes
-  ;; see 'citar' and 'org-roam'
-  (dysthesis/leader-keys
-   "n" '(:ignore t :wk "notes")
-   ;; see org-roam and citar sections
-   "na" '(org-todo-list :wk "agenda todos")) ;; agenda
-
-  ;; code
-  ;; see 'flymake'
-  (dysthesis/leader-keys
-   "c" '(:ignore t :wk "code"))
-
-  ;; open
-  (dysthesis/leader-keys
-   "o" '(:ignore t :wk "open")
-   "os" '(speedbar t :wk "speedbar")
-   "op" '(elpaca-log t :wk "elpaca"))
-
-
-  ;; search
-  ;; see 'consult'
-  (dysthesis/leader-keys
-   "s" '(:ignore t :wk "search"))
-
-  ;; templating
-  ;; see 'tempel'
-  (dysthesis/leader-keys
-   "t" '(:ignore t :wk "template")))
-
-;; "c" '(org-capture :wk "capture")))
+  (start/leader-keys
+    "t" '(:ignore t :wk "Toggle")
+    "t t" '(visual-line-mode :wk "Toggle truncated lines (wrap)")
+    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")))
 
 (use-package avy
-    :ensure t
-    :init
-(defun patrl/avy-action-insert-newline (pt)
-      (save-excursion
-	(goto-char pt)
-	(newline))
+  :ensure t
+  :init
+  (defun dysthesis/avy-action-insert-newline (pt)
+    (save-excursion
+      (goto-char pt)
+      (newline))
+    (select-window
+     (cdr
+      (ring-ref avy-ring 0))))
+  (defun dysthesis/avy-action-kill-whole-line (pt)
+    (save-excursion
+      (goto-char pt)
+      (kill-whole-line))
+    (select-window
+     (cdr
+      (ring-ref avy-ring 0))))
+  (defun dysthesis/avy-action-embark (pt)
+    (unwind-protect
+        (save-excursion
+          (goto-char pt)
+          (embark-act))
       (select-window
-       (cdr
-	(ring-ref avy-ring 0))))
-    (defun patrl/avy-action-kill-whole-line (pt)
-      (save-excursion
-	(goto-char pt)
-	(kill-whole-line))
-      (select-window
-       (cdr
-	(ring-ref avy-ring 0))))
-    (defun patrl/avy-action-embark (pt)
-      (unwind-protect
-	  (save-excursion
-	    (goto-char pt)
-	    (embark-act))
-	(select-window
-	 (cdr (ring-ref avy-ring 0))))
-      t) ;; adds an avy action for embark
-    :general
-    (general-def '(normal motion)
-      "s" 'evil-avy-goto-char-timer
-      "f" 'evil-avy-goto-char-in-line
-      "gl" 'evil-avy-goto-line ;; this rules
-      ";" 'avy-resume)
-    :config
-    (setf (alist-get ?. avy-dispatch-alist) 'patrl/avy-action-embark ;; embark integration
-	  (alist-get ?i avy-dispatch-alist) 'patrl/avy-action-insert-newline
-	  (alist-get ?K avy-dispatch-alist) 'patrl/avy-action-kill-whole-line)) ;; kill lines with avy
+       (cdr (ring-ref avy-ring 0))))
+    t) ;; adds an avy action for embark
+  :general
+  (general-def '(normal motion)
+    "s" 'evil-avy-goto-char-timer
+    "f" 'evil-avy-goto-char-in-line
+    "gl" 'evil-avy-goto-line ;; this rules
+    ";" 'avy-resume)
+  :config
+  (setf (alist-get ?. avy-dispatch-alist) 'dysthesis/avy-action-embark ;; embark integration
+        (alist-get ?i avy-dispatch-alist) 'dysthesis/avy-action-insert-newline
+        (alist-get ?K avy-dispatch-alist) 'dysthesis/avy-action-kill-whole-line)) ;; kill lines with avy
 
 (use-package vertico
   :ensure t
@@ -585,11 +549,49 @@
   ;; load default config
   (require 'smartparens-config))
 
+;; Enable lsp support
+(use-package eglot
+  :defer t
+  :ensure nil
+  :hook ((prog-mode . (lambda ()
+                        (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode 'snippet-mode)
+                          (eglot-ensure)))))
+  :config
+
+  ;; Example - add rust support
+  ;; Rust is not enabled by default for eglot
+  (add-hook 'rust-ts-mode-hook 'eglot-ensure)
+
+  ;; Disable eldoc support by default
+  ;; TODO: due to limitations with emacs TUI/GUI compatibility and
+  ;; server/client, this only applies to the emacs you start your config with
+  ;; If you always want popups in the minibuffer, remove these lines
+  (if (display-graphic-p)
+      (add-to-list 'eglot-stay-out-of 'eldoc)))
+
 (use-package aggressive-indent
   :ensure t
   :config
   (global-aggressive-indent-mode 1)
   (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
+
+(use-package tree-sitter
+  :ensure t
+  :hook
+  (prog-mode . global-tree-sitter-mode))
+(use-package tree-sitter-langs
+  :ensure t)
+(use-package evil-textobj-tree-sitter
+  :ensure t
+  :after (evil tree-sitter)
+  :config
+  ;; bind `function.outer`(entire function block) to `f` for use in things like `vaf`, `yaf`
+  (define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj(  "function.outer" )))
+  ;; bind `function.inner`(function block without name and args) to `f` for use in things like `vif`, `yif`
+  (define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj(  "function.inner" )))
+  
+  ;; You can also bind multiple items and we will match the first one we can find
+  (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer"))))
 
 (use-package projectile
   :ensure t
@@ -602,15 +604,20 @@
     (setq projectile-project-search-path '("~/Documents/Projects")))
   (setq projectile-switch-project-action #'projectile-dired))
 
+(use-package transient
+  :ensure t)
 (use-package magit
   :ensure t
-  :commands (magit-status magit-get-current-branch)
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+  :after (transient)
+  :bind (("C-x g" . magit-status)))
 
 (use-package rustic
-  :mode ("\\.rs\\'" . rustic-mode)
-  :config (setq rustic-lsp-client 'eglot))
+  :ensure t
+  :config
+  (setq rustic-format-on-save nil)
+  :custom
+  (rustic-lsp-client 'eglot)
+  (rustic-cargo-use-last-stored-arguments t))
 
 (use-package org
   :ensure nil
@@ -633,14 +640,6 @@
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
-
-(custom-set-faces
-   '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
-   '(org-level-2 ((t (:inherit outline-2 :foreground "#ffffff" :height 1.2 :weight bold))))
-   '(org-level-3 ((t (:inherit outline-3 :foreground "#ffffff" :height 1.1 :weight bold))))
-   '(org-level-4 ((t (:inherit outline-4 :foreground "#ffffff" :height 1.0 :weight bold))))
-   '(org-level-5 ((t (:inherit outline-5 :foreground "#ffffff" :height 0.9 :weight bold))))
-   (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0))
 
 (setq org-hide-emphasis-markers t)
 (use-package org-appear
@@ -676,26 +675,32 @@
             ("quote" "" "")
             ("export" "⏩" "⏪")))
   (setq org-modern-block-fringe 6)
-  
+  (setq org-agenda-tags-column 0
+  	org-agenda-block-separator ?─
+  	org-agenda-time-grid
+  	'((daily today require-timed)
+            (800 1000 1200 1400 1600 1800 2000)
+            " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+  	org-agenda-current-time-string
+  	"⭠ now ─────────────────────────────────────────────────")
+    (setq org-modern-todo-faces
+  	'(("WAIT"
+             :inverse-video t
+             :inherit +org-todo-onhold)
+            ("NEXT"
+             :inverse-video t
+             :foreground "#89b4fa")
+            ("PROG"
+             :inverse-video t
+             :foreground "#a6e3a1")
+            ("TODO"
+             :inverse-video t
+             :foreground "#fab387")))
   (setq org-ellipsis " ↪")
   (global-org-modern-mode)
   (setq org-pretty-entities t))
 
 (setq org-ellipsis " ↪")
-
-(setq org-modern-fold-stars '((" 󰫈 " . " 󰫈 ") (" 󰫇 " . " 󰫇 ") (" 󰫆 " . " 󰫆 ") (" 󰫅 " . " 󰫅 ") (" 󰫄 " . " 󰫄 ") (" 󰫃 " . " 󰫃 ")))
-
-(setq  org-modern-list
-	 '((42 . "•")
-           (43 . "◈")
-           (45 . "➤")))
-
-(setq org-modern-block-name
-	'((t . t)
-          ("src" "»" "«")
-          ("example" "»–" "–«")
-          ("quote" "" "")
-          ("export" "⏩" "⏪")))
 
 (setq org-modern-keyword
 	'((t . t)
@@ -738,3 +743,12 @@
           ("header" . "› ")
           ("caption" . "☰ ")
           ("results" . "🠶")))
+
+(use-package async
+  :ensure t
+  :config
+  (autoload 'dired-async-mode "dired-async.el" nil t)
+  (dired-async-mode 1))
+
+(use-package ob-async
+  :ensure t)
