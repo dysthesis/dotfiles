@@ -1,10 +1,11 @@
-#+title: Emacs configuration
+#+TITLE: Emacs configuration
 
-* General
-** Package manager
+* Package manager
+
+We use the [[https://github.com/progfolio/elpaca][Elpaca package manager]].
 
 #+begin_src emacs-lisp
-;; Elpaca package manager
+;; https://github.com/progfolio/elpaca
 (defvar elpaca-installer-version 0.8)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -41,6 +42,7 @@
     (require 'elpaca)
     (elpaca-generate-autoloads "elpaca" repo)
     (load "./elpaca-autoloads")))
+
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
@@ -50,25 +52,71 @@
   (elpaca-use-package-mode))
 #+end_src
 
-** Navigation
-*** Evil-mode
+* Saner defaults
 
-#+begin_src emacs-lisp
-(use-package evil 
-               :ensure t
-               :config
-               (evil-mode 1))
-(global-unset-key (kbd "C-j"))
-(global-set-key (kbd "C-h") #'evil-window-left)
-(global-set-key (kbd "C-j") #'evil-window-down)
-(global-set-key (kbd "C-k") #'evil-window-up)
-(global-set-key (kbd "C-l") #'evil-window-right)
-#+end_src
+Some of the Emacs defaults aren't great.
 
-** Appearance
-*** Disable unnecessary UI elements
+#+begin_src emacs-lisp 
+(use-package emacs
+  :demand t
+  :ensure nil
+  :init
+  (setq enable-recursive-minibuffers t)
+  (setq backup-by-copying t)
+  (setq sentence-end-double-space nil)
+  (setq frame-inhibit-implied-resize t) ;; useless for a tiling window manager
+  (setq show-trailing-whitespace t) ;; self-explanatory
+  (defalias 'yes-or-no-p 'y-or-n-p) ;; life is too short 
+  (setq indent-tabs-mode nil) ;; no tabs
+  ;; keep backup and save files in a dedicated directory
+  (setq backup-directory-alist
+        `((".*" . ,(concat user-emacs-directory "backups")))
+        auto-save-file-name-transforms
+        `((".*" ,(concat user-emacs-directory "backups") t)))
+  (setq create-lockfiles nil) ;; no need to create lockfiles
+  (set-charset-priority 'unicode) ;; utf8 everywhere
+  (setq locale-coding-system 'utf-8
+        coding-system-for-read 'utf-8
+        coding-system-for-write 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit) ;; escape quits everything
+  ;; Don't persist a custom file
+  (setq custom-file (make-temp-file "")) ; use a temp file as a placeholder
+  (setq custom-safe-themes t)            ; mark all themes as safe, since we can't persist now
+  (setq enable-local-variables :all)     ; fix =defvar= warnings
+  (setq delete-by-moving-to-trash t) ;; use trash-cli rather than rm when deleting files.
+  ;; less noise when compiling elisp
+  (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+  (setq native-comp-async-report-warnings-errors nil)
+  (setq load-prefer-newer t)
+  (show-paren-mode t)
 
-#+begin_src emacs-lisp
+  ;; Hide commands in M-x which don't work in the current mode
+  (setq read-extended-command-predicate #'command-completion-default-include-p))
+#+END_SRC
+
+* Appearance
+** Font
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil :font "JBMono Nerd Font" :height 130)
+(set-fontset-font t nil (font-spec :size 20 :name "JBMono Nerd Font"))
+(setq-default line-spacing 0.2)
+(custom-theme-set-faces
+ 'user
+ '(variable-pitch ((t (:family "SF Pro Display" :height 200))))
+ '(fixed-pitch ((t ( :family "JBMono Nerd Font" :height 130)))))
+#+END_SRC
+
+** Remove default UI elements
+
+By default, Emacs includes a lot of UI elements that may make it more discoverable. Personally, however, it causes unwanted visual noise.
+
+#+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
 
 (scroll-bar-mode -1)        ; Disable visible scrollbar
@@ -77,23 +125,23 @@
 (set-fringe-mode 10)        ; Give some breathing room
 
 (menu-bar-mode -1)            ; Disable the menu bar
-#+end_src
+(column-number-mode)
+(global-display-line-numbers-mode 1)
+(setq display-line-numbers-type 'relative)
+(global-visual-line-mode t)
 
-*** Font
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+#+END_SRC
 
-#+begin_src emacs-lisp
-    (set-face-attribute 'default nil :font "JBMono Nerd Font" :height 130)
-    (setq-default line-spacing 0.2)
-    (custom-theme-set-faces
-     'user
-     '(variable-pitch ((t (:family "SF Pro Display" :height 160))))
-     '(fixed-pitch ((t ( :family "JBMono Nerd Font" :height 130)))))
+** Theme
 
-#+end_src
+Use a customised Catppuccin theme to make the background black and foreground white.
 
-*** Theme
-
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package catppuccin-theme
              :ensure t
              :config
@@ -111,111 +159,186 @@
              (catppuccin-set-color 'overlay2 "#7f849c")
              (catppuccin-set-color 'text "#ffffff")
              (catppuccin-reload))
-#+end_src
+#+END_SRC
 
-*** Modeline
+** Modeline
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
   :config
-  (setq doom-modeline-height 40)
+  (setq doom-modeline-height 34)
   (setq doom-modeline-bar-width 4))
 #+end_src
 
-*** Transparency
-#+begin_src emacs-lisp
-  (set-frame-parameter nil 'alpha-background 75)
-  (add-to-list 'default-frame-alist '(alpha-background . 75))
-#+end_src
+** Transparency
 
-*** Olivetti
-#+begin_src emacs-lisp
-  (use-package olivetti
-    :ensure t
-    :config
-    (defun dysthesis/org-mode-setup ()
-      (olivetti-mode)
-      (display-line-numbers-mode 0)
-      (olivetti-set-width 90)
-      (setq-local company-backends (remove 'company-dabbrev company-backends))
-      (setq-local company-backends (remove 'company-ispell company-backends))) (add-hook 'org-mode-hook 'dysthesis/org-mode-setup)) 
-#+end_src
+#+BEGIN_SRC emacs-lisp
+(set-frame-parameter nil 'alpha-background 75)
+(add-to-list 'default-frame-alist '(alpha-background . 75))
+#+END_SRC
 
-*** Mixed-pitch
-#+begin_src emacs-lisp
-    (use-package mixed-pitch
+** Rainbow delimiters
+
+Makes it visually easier to see which delimiter is paired with which.
+
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
+#+END_SRC
+
+** Which-key
+
+Cheatsheet for keybinds.
+
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :ensure t
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.3))
+#+END_SRC
+
+** Mixed pitch
+
+Allow the use of both variable pitch and fixed pitch fonts wherever appropriate.
+
+#+BEGIN_SRC emacs-lisp
+(use-package mixed-pitch
+  :ensure t
+  :hook
+  ;; You might want to enable it only in org-mode or both text-mode and org-mode
+  ((org-mode) . mixed-pitch-mode)
+  ((markdown-mode) . mixed-pitch-mode)
+  :config
+  (setq mixed-pitch-face 'variable-pitch)
+  (setq mixed-pitch-fixed-pitch-faces
+        (append mixed-pitch-fixed-pitch-faces
+                '(org-table
+                  org-code
+                  org-block
+                  org-block-begin-line
+                  org-block-end-line
+                  org-meta-line
+                  org-document-info-keyword
+                  org-tag
+                  org-time-grid
+                  org-todo
+                  org-done
+                  org-agenda-date
+                  org-date
+                  org-drawer
+                  org-modern-tag
+                  org-modern-done
+                  org-modern-label
+                  org-scheduled
+                  org-scheduled-today
+                  neo-file-link-face
+                  org-scheduled-previously))))
+#+END_SRC
+
+** Ligatures
+
+#+BEGIN_SRC emacs-lisp
+(use-package ligature
+  :ensure t
+  :config
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                       "\\\\" "://"))
+  ;; Enables ligature checks globally in all buffers.  You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
+#+END_SRC
+
+* Navigation
+** Evil mode
+
+Enable Vim-like keybindings in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+    (use-package evil 
       :ensure t
-      :hook
-      ;; You might want to enable it only in org-mode or both text-mode and org-mode
-      ((org-mode) . mixed-pitch-mode)
-      ((markdown-mode) . mixed-pitch-mode)
       :config
-      (setq mixed-pitch-fixed-pitch-faces
-            (append mixed-pitch-fixed-pitch-faces
-                    '(org-table
-                      org-code
-                      org-block
-                      org-block-begin-line
-                      org-block-end-line
-                      org-meta-line
-                      org-document-info-keyword
-                      org-tag
-                      org-time-grid
-                      org-todo
-                      org-done
-                      org-agenda-date
-                      org-date
-                      org-drawer
-                      org-modern-tag
-                      org-modern-done
-                      org-modern-label
-                      org-scheduled
-                      org-scheduled-today
-                      neo-file-link-face
-                      org-scheduled-previously))))
+      (evil-mode 1))
+
+    (global-unset-key (kbd "C-j"))
+    (global-set-key (kbd "C-h") #'evil-window-left)
+    (global-set-key (kbd "C-j") #'evil-window-down)
+    (global-set-key (kbd "C-k") #'evil-window-up)
+    (global-set-key (kbd "C-l") #'evil-window-right)
+    (global-set-key (kbd "TAB") #'evil-toggle-fold)
+#+END_SRC
+
+* Completion
+** Vertico
+
+#+BEGIN_SRC emacs-lisp
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode))
+
+(savehist-mode) ;; Enables save history mode
+
+(use-package marginalia
+  :ensure t
+  :after vertico
+  :init
+  (marginalia-mode))
+
+(use-package nerd-icons-completion
+  :ensure t
+  :after marginalia
+  :config
+  (nerd-icons-completion-mode)
+  :hook
+  ('marginalia-mode-hook . 'nerd-icons-completion-marginalia-setup))
 #+end_src
 
-** Completion
-*** Vertico
+** Orderless
 
-#+begin_src emacs-lisp
-    (use-package vertico
-      :ensure t
-      :init
-      (vertico-mode))
-
-    (savehist-mode) ;; Enables save history mode
-
-    (use-package marginalia
-      :ensure t
-      :after vertico
-      :init
-      (marginalia-mode))
-
-    (use-package nerd-icons-completion
-      :ensure t
-      :after marginalia
-      :config
-      (nerd-icons-completion-mode)
-      :hook
-      ('marginalia-mode-hook . 'nerd-icons-completion-marginalia-setup))
-#+end_src
-
-*** Orderless
-
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package orderless
   :ensure t
   :custom
   (completion-styles '(orderless basic))
+  (orderless-matching-styles
+   '(orderless-literal
+     orderless-prefixes
+     orderless-initialism
+     orderless-regexp
+     ;; orderless-flex                       ; Basically fuzzy finding
+     ;; orderless-strict-leading-initialism
+     ;; orderless-strict-initialism
+     ;; orderless-strict-full-initialism
+     ;; orderless-without-literal          ; Recommended for dispatches instead
+     ))
   (completion-category-overrides '((file (styles basic partial-completion)))))
-#+end_src
+#+END_SRC
 
-*** Corfu
+** Corfu
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
     (use-package corfu
       ;; Optional customizations
       :ensure t
@@ -247,49 +370,48 @@
       :ensure t
       :after corfu
       :init (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
-#+end_src
+#+END_SRC
 
-*** Cape
+** CAPE
 
-#+begin_src emacs-lisp
-    (use-package cape
-      :ensure t
-      :after corfu
-      :init
-      ;; Add to the global default value of `completion-at-point-functions' which is
-      ;; used by `completion-at-point'.  The order of the functions matters, the
-      ;; first function returning a result wins.  Note that the list of buffer-local
-      ;; completion functions takes precedence over the global list.
-      ;; The functions that are added later will be the first in the list
+#+BEGIN_SRC emacs-lisp
+(use-package cape
+  :ensure t
+  :after corfu
+  :init
+  ;; Add to the global default value of `completion-at-point-functions' which is
+  ;; used by `completion-at-point'.  The order of the functions matters, the
+  ;; first function returning a result wins.  Note that the list of buffer-local
+  ;; completion functions takes precedence over the global list.
+  ;; The functions that are added later will be the first in the list
 
-      ;;(add-to-list 'completion-at-point-functions #'cape-dabbrev) ;; Complete word from current buffers
-      ;;(add-to-list 'completion-at-point-functions #'cape-dict) ;; Dictionary completion
-      (add-to-list 'completion-at-point-functions #'cape-file) ;; Path completion
-      (add-to-list 'completion-at-point-functions #'cape-elisp-block) ;; Complete elisp in Org or Markdown mode
-      (add-to-list 'completion-at-point-functions #'cape-keyword) ;; Keyword/Snipet completion
+  ;;(add-to-list 'completion-at-point-functions #'cape-dabbrev) ;; Complete word from current buffers
+  ;;(add-to-list 'completion-at-point-functions #'cape-dict) ;; Dictionary completion
+  (add-to-list 'completion-at-point-functions #'cape-file) ;; Path completion
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block) ;; Complete elisp in Org or Markdown mode
+  (add-to-list 'completion-at-point-functions #'cape-keyword) ;; Keyword/Snipet completion
 
-      ;;(add-to-list 'completion-at-point-functions #'cape-abbrev) ;; Complete abbreviation
-      ;;(add-to-list 'completion-at-point-functions #'cape-history) ;; Complete from Eshell, Comint or minibuffer history
-      ;;(add-to-list 'completion-at-point-functions #'cape-line) ;; Complete entire line from current buffer
-      ;;(add-to-list 'completion-at-point-functions #'cape-elisp-symbol) ;; Complete Elisp symbol
-      ;;(add-to-list 'completion-at-point-functions #'cape-tex) ;; Complete Unicode char from TeX command, e.g. \hbar
-      ;;(add-to-list 'completion-at-point-functions #'cape-sgml) ;; Complete Unicode char from SGML entity, e.g., &alpha
-      ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345) ;; Complete Unicode char using RFC 1345 mnemonics
-      )
-#+end_src
+  ;;(add-to-list 'completion-at-point-functions #'cape-abbrev) ;; Complete abbreviation
+  ;;(add-to-list 'completion-at-point-functions #'cape-history) ;; Complete from Eshell, Comint or minibuffer history
+  ;;(add-to-list 'completion-at-point-functions #'cape-line) ;; Complete entire line from current buffer
+  ;;(add-to-list 'completion-at-point-functions #'cape-elisp-symbol) ;; Complete Elisp symbol
+  ;;(add-to-list 'completion-at-point-functions #'cape-tex) ;; Complete Unicode char from TeX command, e.g. \hbar
+  ;;(add-to-list 'completion-at-point-functions #'cape-sgml) ;; Complete Unicode char from SGML entity, e.g., &alpha
+  ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345) ;; Complete Unicode char using RFC 1345 mnemonics
+  )
+#+END_SRC
 
-*** Yasnippet
+** Snippets
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package yasnippet-snippets
   :ensure t
   :hook (prog-mode . yas-minor-mode))
-#+end_src
+#+END_SRC
 
-** Search
-*** Consult
+** Consult
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package consult
   :ensure t
   ;; Enable automatic preview at point in the *Completions* buffer. This is
@@ -341,155 +463,245 @@
    ;;;; 5. No project support
   ;; (setq consult-project-function nil)
   )
-#+end_src
+#+END_SRC
 
-** Utilities
-*** Which-key
+** Autopair
 
-#+begin_src emacs-lisp
-(use-package which-key
+Automatically insert the corresponding closing delimiter upon typing an opening delimiter.
+
+#+BEGIN_SRC emacs-lisp
+(use-package smartparens
+  :ensure smartparens  ;; install the package
+  :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
+  :config
+  ;; load default config
+  (require 'smartparens-config))
+#+END_SRC
+
+* Formatting
+** Automatic indenting
+
+#+BEGIN_SRC emacs-lisp
+(use-package aggressive-indent
   :ensure t
+  :config
+  (global-aggressive-indent-mode 1)
+  (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
+#+END_SRC
+
+* Projects
+
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :ensure t
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
   :init
-  (which-key-mode 1)
-  :diminish
+  (when (file-directory-p "~/Documents/Projects")
+    (setq projectile-project-search-path '("~/Documents/Projects")))
+  (setq projectile-switch-project-action #'projectile-dired))
+#+END_SRC
+
+* Git
+
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :ensure t
+  :commands (magit-status magit-get-current-branch)
   :custom
-  (which-key-side-window-location 'bottom)
-  (which-key-sort-order #'which-key-key-order-alpha) ;; Same as default, except single characters are sorted alphabetically
-  (which-key-sort-uppercase-first nil)
-  (which-key-add-column-padding 1) ;; Number of spaces to add to the left of each column
-  (which-key-min-display-lines 6)  ;; Increase the minimum lines to display, because the default is only 1
-  (which-key-idle-delay 0.8)       ;; Set the time delay (in seconds) for the which-key popup to appear
-  (which-key-max-description-length 25)
-  (which-key-allow-imprecise-window-fit nil)) ;; Fixes which-key window slipping out in Emacs Daemon
-#+end_src
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(use-package evil-magit
+  :ensure t
+  :after magit)
+#+END_SRC
 
 * Org-mode
 
-#+begin_src emacs-lisp
-    (use-package org
-      :ensure nil
-      :custom
-      (org-edit-src-content-indentation 4) ;; Set src block automatic indent to 4 instead of 2.
-      :config
-      (add-hook 'org-mode-hook 'org-indent-mode)
-      (custom-set-faces
-      '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
-      '(org-level-2 ((t (:inherit outline-2 :foreground "#ffffff" :height 1.2 :weight bold))))
-      '(org-level-3 ((t (:inherit outline-3 :foreground "#ffffff" :height 1.1 :weight bold))))
-      '(org-level-4 ((t (:inherit outline-4 :foreground "#ffffff" :height 1.0 :weight bold))))
-      '(org-level-5 ((t (:inherit outline-5 :foreground "#ffffff" :height 0.9 :weight bold))))
-      (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0)))
-#+end_src
+#+BEGIN_SRC emacs-lisp :noweb yes
+(use-package org
+  :ensure nil
+  :custom
+  (org-edit-src-content-indentation 4)
+  :config
+  <<org-header-faces>>)
+(require 'org-indent)
+#+END_SRC
 
 ** Appearance
+*** Org header faces
+
+#+NAME: org-header-faces
+#+BEGIN_SRC emacs-lisp :noweb yes
+(custom-set-faces
+   '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
+   '(org-level-2 ((t (:inherit outline-2 :foreground "#ffffff" :height 1.2 :weight bold))))
+   '(org-level-3 ((t (:inherit outline-3 :foreground "#ffffff" :height 1.1 :weight bold))))
+   '(org-level-4 ((t (:inherit outline-4 :foreground "#ffffff" :height 1.0 :weight bold))))
+   '(org-level-5 ((t (:inherit outline-5 :foreground "#ffffff" :height 0.9 :weight bold))))
+   (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0))
+#+END_SRC
 
 *** Hide emphasis markers
-#+begin_src emacs-lisp
-    (setq org-hide-emphasis-markers t)
-    (use-package org-appear
-      :ensure (:type git :host github :repo
-               "awth13/org-appear")
-      :config ; add late to hook
-      (add-hook 'org-mode-hook 'org-appear-mode))
+
+Show emphasis markers only when hovered over.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-hide-emphasis-markers t)
+(use-package org-appear
+  :ensure (:type git :host github :repo
+		 "awth13/org-appear")
+  :config ; add late to hook
+  (add-hook 'org-mode-hook 'org-appear-mode))
 #+end_src
 
 *** Org-modern
+:PROPERTIES:
+:header-args:emacs-lisp: :noweb yes
+:END:
 
-#+begin_src emacs-lisp
-(use-package org-modern
-  :ensure t
-  :config
-  (package-initialize)
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  (dolist (face '(window-divider
-      	   window-divider-first-pixel
-      	   window-divider-last-pixel))
-   (face-spec-reset-face face)
-   (set-face-foreground face (face-attribute 'default :background)))
- (set-face-background 'fringe (face-attribute 'default :background))
- (setq org-hide-emphasis-markers t)
- (setq  org-modern-list
-       '((42 . "•")
-         (43 . "◈")
-         (45 . "➤")))
- (setq org-modern-block-name
-       '((t . t)
-         ("src" "»" "«")
-         ("example" "»–" "–«")
-         ("quote" "" "")
-         ("export" "⏩" "⏪")))
- (setq org-modern-block-fringe 6)
- (setq org-modern-keyword
-       '((t . t)
-         ("title" . "𝙏 ")
-         ("filetags" . "󰓹 ")
-         ("auto_tangle" . "󱋿 ")
-         ("subtitle" . "𝙩 ")
-         ("author" . "𝘼 ")
-         ("email" . #(" " 0 1 (display (raise -0.14))))
-         ("date" . "𝘿 ")
-         ("property" . "☸ ")
-         ("options" . "⌥ ")
-         ("startup" . "⏻ ")
-         ("macro" . "𝓜 ")
-         ("bind" . #(" " 0 1 (display (raise -0.1))))
-         ("bibliography" . " ")
-         ("print_bibliography" . #(" " 0 1 (display (raise -0.1))))
-         ("cite_export" . "⮭ ")
-         ("print_glossary" . #("ᴬᶻ " 0 1 (display (raise -0.1))))
-         ("glossary_sources" . #(" " 0 1 (display (raise -0.14))))
-         ("include" . "⇤ ")
-         ("setupfile" . "⇚ ")
-         ("html_head" . "🅷 ")
-         ("html" . "🅗 ")
-         ("latex_class" . "🄻 ")
-         ("latex_class_options" . #("🄻 " 1 2 (display (raise -0.14))))
-         ("latex_header" . "🅻 ")
-         ("latex_header_extra" . "🅻⁺ ")
-         ("latex" . "🅛 ")
-         ("beamer_theme" . "🄱 ")
-         ("beamer_color_theme" . #("🄱 " 1 2 (display (raise -0.12))))
-         ("beamer_font_theme" . "🄱𝐀 ")
-         ("beamer_header" . "🅱 ")
-         ("beamer" . "🅑 ")
-         ("attr_latex" . "🄛 ")
-         ("attr_html" . "🄗 ")
-         ("attr_org" . "⒪ ")
-         ("call" . #(" " 0 1 (display (raise -0.15))))
-         ("name" . "⁍ ")
-         ("header" . "› ")
-         ("caption" . "☰ ")
-         ("results" . "🠶")))
- (setq org-agenda-tags-column 0
-       org-agenda-block-separator ?─
-       org-agenda-time-grid
-       '((daily today require-timed)
-         (800 1000 1200 1400 1600 1800 2000)
-         " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
-       org-agenda-current-time-string
-       "⭠ now ─────────────────────────────────────────────────")
- (setq org-modern-todo-faces
-       '(("WAIT"
-          :inverse-video t
-          :inherit +org-todo-onhold)
-         ("NEXT"
-          :inverse-video t
-          :foreground "#89b4fa")
-         ("PROG"
-          :inverse-video t
-          :foreground "#a6e3a1")
-         ("TODO"
-          :inverse-video t
-          :foreground "#fab387")))
- (global-org-modern-mode)
- (setq org-ellipsis " ↪")
- (setq org-pretty-entities t))
+#+BEGIN_SRC emacs-lisp
+    (use-package org-modern
+      :ensure t
+      :config
+      (package-initialize)
+      (menu-bar-mode -1)
+      (tool-bar-mode -1)
+      (scroll-bar-mode -1)
+      (dolist (face '(window-divider
+                      window-divider-first-pixel
+                      window-divider-last-pixel))
+        (face-spec-reset-face face)
+        (set-face-foreground face (face-attribute 'default :background)))
+      (set-face-background 'fringe (face-attribute 'default :background))
+      (setq org-hide-emphasis-markers t)
+      <<org-modern-list-bullets>>
+      <<org-modern-header-icons>>
+      <<org-modern-block-icons>>
+      (setq org-modern-block-fringe 6)
+      <<org-modern-agenda>>
+      <<org-ellipsis>>
+      (global-org-modern-mode)
+      (setq org-pretty-entities t))
+#+END_SRC
 
+**** Folded header ellipses
+#+name:org-ellipsis
+#+BEGIN_SRC emacs-lisp
+(setq org-ellipsis " ↪")
+#+END_SRC
+
+**** Header icons
+
+#+NAME: org-modern-header-icons
+#+BEGIN_SRC emacs-lisp
+(setq org-modern-fold-stars '((" 󰫈 " . " 󰫈 ") (" 󰫇 " . " 󰫇 ") (" 󰫆 " . " 󰫆 ") (" 󰫅 " . " 󰫅 ") (" 󰫄 " . " 󰫄 ") (" 󰫃 " . " 󰫃 ")))
+#+END_SRC
+
+**** List bullet icons
+
+#+NAME: org-modern-list-bullets
+#+BEGIN_SRC emacs-lisp
+(setq  org-modern-list
+	 '((42 . "•")
+           (43 . "◈")
+           (45 . "➤")))
+#+END_SRC
+
+**** Iconise block names
+
+#+NAME: org-modern-block-icons
+#+BEGIN_SRC emacs-lisp
+(setq org-modern-block-name
+	'((t . t)
+          ("src" "»" "«")
+          ("example" "»–" "–«")
+          ("quote" "" "")
+          ("export" "⏩" "⏪")))
+#+END_SRC
+
+**** Iconise keywords
+
+#+name:org-modern-keyword-icons
+#+BEGIN_SRC emacs-lisp
+(setq org-modern-keyword
+	'((t . t)
+          ("title" . "𝙏 ")
+          ("filetags" . "󰓹 ")
+          ("auto_tangle" . "󱋿 ")
+          ("subtitle" . "𝙩 ")
+          ("author" . "𝘼 ")
+          ("email" . #(" " 0 1 (display (raise -0.14))))
+          ("date" . "𝘿 ")
+          ("property" . "☸ ")
+          ("options" . "⌥ ")
+          ("startup" . "⏻ ")
+          ("macro" . "𝓜 ")
+          ("bind" . #(" " 0 1 (display (raise -0.1))))
+          ("bibliography" . " ")
+          ("print_bibliography" . #(" " 0 1 (display (raise -0.1))))
+          ("cite_export" . "⮭ ")
+          ("print_glossary" . #("ᴬᶻ " 0 1 (display (raise -0.1))))
+          ("glossary_sources" . #(" " 0 1 (display (raise -0.14))))
+          ("include" . "⇤ ")
+          ("setupfile" . "⇚ ")
+          ("html_head" . "🅷 ")
+          ("html" . "🅗 ")
+          ("latex_class" . "🄻 ")
+          ("latex_class_options" . #("🄻 " 1 2 (display (raise -0.14))))
+          ("latex_header" . "🅻 ")
+          ("latex_header_extra" . "🅻⁺ ")
+          ("latex" . "🅛 ")
+          ("beamer_theme" . "🄱 ")
+          ("beamer_color_theme" . #("🄱 " 1 2 (display (raise -0.12))))
+          ("beamer_font_theme" . "🄱𝐀 ")
+          ("beamer_header" . "🅱 ")
+          ("beamer" . "🅑 ")
+          ("attr_latex" . "🄛 ")
+          ("attr_html" . "🄗 ")
+          ("attr_org" . "⒪ ")
+          ("call" . #(" " 0 1 (display (raise -0.15))))
+          ("name" . "⁍ ")
+          ("header" . "› ")
+          ("caption" . "☰ ")
+          ("results" . "🠶")))
+#+END_SRC
+
+**** Org-agenda customisations
+
+#+NAME: org-modern-agenda
+#+BEGIN_SRC 
+(setq org-agenda-tags-column 0
+	org-agenda-block-separator ?─
+	org-agenda-time-grid
+	'((daily today require-timed)
+          (800 1000 1200 1400 1600 1800 2000)
+          " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+	org-agenda-current-time-string
+	"⭠ now ─────────────────────────────────────────────────")
+  (setq org-modern-todo-faces
+	'(("WAIT"
+           :inverse-video t
+           :inherit +org-todo-onhold)
+          ("NEXT"
+           :inverse-video t
+           :foreground "#89b4fa")
+          ("PROG"
+           :inverse-video t
+           :foreground "#a6e3a1")
+          ("TODO"
+           :inverse-video t
+           :foreground "#fab387")))
+#+END_SRC
+
+**** Org-modern indent
+
+#+BEGIN_SRC emacs-lisp
 (use-package org-modern-indent
   :ensure (:type git :host github :repo
-      	   "jdtsmith/org-modern-indent")
+      		 "jdtsmith/org-modern-indent")
   :config ; add late to hook
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
-#+end_src
+#+END_SRC

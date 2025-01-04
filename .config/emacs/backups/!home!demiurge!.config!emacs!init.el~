@@ -85,14 +85,6 @@
   ;; Hide commands in M-x which don't work in the current mode
   (setq read-extended-command-predicate #'command-completion-default-include-p))
 
-(set-face-attribute 'default nil :font "JBMono Nerd Font" :height 130)
-(set-fontset-font t nil (font-spec :size 20 :name "JBMono Nerd Font"))
-(setq-default line-spacing 0.2)
-(custom-theme-set-faces
- 'user
- '(variable-pitch ((t (:family "SF Pro Display" :height 200))))
- '(fixed-pitch ((t ( :family "JBMono Nerd Font" :height 130)))))
-
 (setq inhibit-startup-message t)
 
 (scroll-bar-mode -1)        ; Disable visible scrollbar
@@ -111,6 +103,25 @@
                 term-mode-hook
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package which-key
+  :ensure t
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.3))
+
+(set-face-attribute 'default nil :font "JBMono Nerd Font" :height 130)
+(set-fontset-font t nil (font-spec :size 20 :name "JBMono Nerd Font"))
+(setq-default line-spacing 0.2)
+(custom-theme-set-faces
+ 'user
+ '(variable-pitch ((t (:family "SF Pro Display" :height 200))))
+ '(fixed-pitch ((t ( :family "JBMono Nerd Font" :height 130)))))
 
 (use-package catppuccin-theme
              :ensure t
@@ -140,16 +151,16 @@
 (set-frame-parameter nil 'alpha-background 75)
 (add-to-list 'default-frame-alist '(alpha-background . 75))
 
-(use-package rainbow-delimiters
+(use-package olivetti
   :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-(use-package which-key
-  :ensure t
-  :init (which-key-mode)
-  :diminish which-key-mode
   :config
-  (setq which-key-idle-delay 0.3))
+  (defun dysthesis/org-mode-setup ()
+    (org-indent-mode)
+    (olivetti-mode)
+    (display-line-numbers-mode 0)
+    (olivetti-set-width 90)
+    (setq-local company-backends (remove 'company-dabbrev company-backends))
+    (setq-local company-backends (remove 'company-ispell company-backends))) (add-hook 'org-mode-hook 'dysthesis/org-mode-setup)) 
 
 (use-package mixed-pitch
   :ensure t
@@ -182,7 +193,6 @@
                   org-scheduled-today
                   neo-file-link-face
                   org-scheduled-previously))))
-
 (use-package ligature
   :ensure t
   :config
@@ -208,18 +218,16 @@
   ;; Enables ligature checks globally in all buffers.  You can also do it
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
-
 (use-package evil 
-  :ensure t
-  :config
-  (evil-mode 1))
+               :ensure t
+               :config
+               (evil-mode 1))
 
 (global-unset-key (kbd "C-j"))
 (global-set-key (kbd "C-h") #'evil-window-left)
 (global-set-key (kbd "C-j") #'evil-window-down)
 (global-set-key (kbd "C-k") #'evil-window-up)
 (global-set-key (kbd "C-l") #'evil-window-right)
-(global-set-key (kbd "TAB") #'evil-toggle-fold)
 
 (use-package vertico
   :ensure t
@@ -371,20 +379,17 @@
    ;;;; 5. No project support
   ;; (setq consult-project-function nil)
   )
-
 (use-package smartparens
   :ensure smartparens  ;; install the package
   :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
   :config
   ;; load default config
   (require 'smartparens-config))
-
 (use-package aggressive-indent
   :ensure t
   :config
   (global-aggressive-indent-mode 1)
   (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
-
 (use-package projectile
   :ensure t
   :diminish projectile-mode
@@ -395,7 +400,6 @@
   (when (file-directory-p "~/Documents/Projects")
     (setq projectile-project-search-path '("~/Documents/Projects")))
   (setq projectile-switch-project-action #'projectile-dired))
-
 (use-package magit
   :ensure t
   :commands (magit-status magit-get-current-branch)
@@ -405,36 +409,25 @@
 (use-package evil-magit
   :ensure t
   :after magit)
-
 (use-package org
   :ensure nil
   :custom
-  (org-edit-src-content-indentation 4)
+  (org-edit-src-content-indentation 4) ;; Set src block automatic indent to 4 instead of 2.
   :config
   (custom-set-faces
-     '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
-     '(org-level-2 ((t (:inherit outline-2 :foreground "#ffffff" :height 1.2 :weight bold))))
-     '(org-level-3 ((t (:inherit outline-3 :foreground "#ffffff" :height 1.1 :weight bold))))
-     '(org-level-4 ((t (:inherit outline-4 :foreground "#ffffff" :height 1.0 :weight bold))))
-     '(org-level-5 ((t (:inherit outline-5 :foreground "#ffffff" :height 0.9 :weight bold))))
-     (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0)))
-(require 'org-indent)
-
-(custom-set-faces
    '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
    '(org-level-2 ((t (:inherit outline-2 :foreground "#ffffff" :height 1.2 :weight bold))))
    '(org-level-3 ((t (:inherit outline-3 :foreground "#ffffff" :height 1.1 :weight bold))))
    '(org-level-4 ((t (:inherit outline-4 :foreground "#ffffff" :height 1.0 :weight bold))))
    '(org-level-5 ((t (:inherit outline-5 :foreground "#ffffff" :height 0.9 :weight bold))))
-   (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0))
-
+   (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0)))
+(require 'org-indent)
 (setq org-hide-emphasis-markers t)
 (use-package org-appear
   :ensure (:type git :host github :repo
 		 "awth13/org-appear")
   :config ; add late to hook
   (add-hook 'org-mode-hook 'org-appear-mode))
-
 (use-package org-modern
   :ensure t
   :config
@@ -443,46 +436,25 @@
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (dolist (face '(window-divider
-                  window-divider-first-pixel
-                  window-divider-last-pixel))
+      		  window-divider-first-pixel
+      		  window-divider-last-pixel))
     (face-spec-reset-face face)
     (set-face-foreground face (face-attribute 'default :background)))
   (set-face-background 'fringe (face-attribute 'default :background))
   (setq org-hide-emphasis-markers t)
   (setq  org-modern-list
-  	 '((42 . "•")
-             (43 . "◈")
-             (45 . "➤")))
-  (setq org-modern-fold-stars '((" 󰫈 " . " 󰫈 ") (" 󰫇 " . " 󰫇 ") (" 󰫆 " . " 󰫆 ") (" 󰫅 " . " 󰫅 ") (" 󰫄 " . " 󰫄 ") (" 󰫃 " . " 󰫃 ")))
-  (setq org-modern-block-name
-  	'((t . t)
-            ("src" "»" "«")
-            ("example" "»–" "–«")
-            ("quote" "" "")
-            ("export" "⏩" "⏪")))
-  (setq org-modern-block-fringe 6)
-  
-  (setq org-ellipsis " ↪")
-  (global-org-modern-mode)
-  (setq org-pretty-entities t))
-
-(setq org-ellipsis " ↪")
-
-(setq org-modern-fold-stars '((" 󰫈 " . " 󰫈 ") (" 󰫇 " . " 󰫇 ") (" 󰫆 " . " 󰫆 ") (" 󰫅 " . " 󰫅 ") (" 󰫄 " . " 󰫄 ") (" 󰫃 " . " 󰫃 ")))
-
-(setq  org-modern-list
 	 '((42 . "•")
            (43 . "◈")
            (45 . "➤")))
-
-(setq org-modern-block-name
+  (setq org-modern-fold-stars '((" 󰫈 " . " 󰫈 ") (" 󰫇 " . " 󰫇 ") (" 󰫆 " . " 󰫆 ") (" 󰫅 " . " 󰫅 ") (" 󰫄 " . " 󰫄 ") (" 󰫃 " . " 󰫃 ")))
+  (setq org-modern-block-name
 	'((t . t)
           ("src" "»" "«")
           ("example" "»–" "–«")
           ("quote" "" "")
           ("export" "⏩" "⏪")))
-
-(setq org-modern-keyword
+  (setq org-modern-block-fringe 6)
+  (setq org-modern-keyword
 	'((t . t)
           ("title" . "𝙏 ")
           ("filetags" . "󰓹 ")
@@ -523,6 +495,30 @@
           ("header" . "› ")
           ("caption" . "☰ ")
           ("results" . "🠶")))
+  (setq org-agenda-tags-column 0
+	org-agenda-block-separator ?─
+	org-agenda-time-grid
+	'((daily today require-timed)
+          (800 1000 1200 1400 1600 1800 2000)
+          " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+	org-agenda-current-time-string
+	"⭠ now ─────────────────────────────────────────────────")
+  (setq org-modern-todo-faces
+	'(("WAIT"
+           :inverse-video t
+           :inherit +org-todo-onhold)
+          ("NEXT"
+           :inverse-video t
+           :foreground "#89b4fa")
+          ("PROG"
+           :inverse-video t
+           :foreground "#a6e3a1")
+          ("TODO"
+           :inverse-video t
+           :foreground "#fab387")))
+  (global-org-modern-mode)
+  (setq org-ellipsis " ↪")
+  (setq org-pretty-entities t))
 
 (use-package org-modern-indent
   :ensure (:type git :host github :repo
