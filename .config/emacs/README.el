@@ -130,6 +130,11 @@
              (catppuccin-set-color 'text "#ffffff")
              (catppuccin-reload))
 
+(use-package solaire-mode
+  :ensure t
+  :config
+  (solaire-global-mode +1))
+
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
@@ -150,6 +155,17 @@
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.3))
+
+(use-package olivetti
+  :ensure t
+  :config
+  (defun dysthesis/org-mode-setup ()
+    (org-indent-mode)
+    (olivetti-mode)
+    (display-line-numbers-mode 0)
+    (olivetti-set-width 90)
+    (setq-local company-backends (remove 'company-dabbrev company-backends))
+    (setq-local company-backends (remove 'company-ispell company-backends))) (add-hook 'org-mode-hook 'dysthesis/org-mode-setup))
 
 (use-package mixed-pitch
   :ensure t
@@ -211,6 +227,23 @@
 
 (use-package evil 
   :ensure t
+  :init
+  (setq evil-respect-visual-line-mode t) ;; respect visual lines
+
+  (setq evil-search-module 'isearch) ;; use emacs' built-in search functionality.
+
+  (setq evil-want-C-u-scroll t) ;; allow scroll up with 'C-u'
+  (setq evil-want-C-d-scroll t) ;; allow scroll down with 'C-d'
+
+  (setq evil-want-integration t) ;; necessary for evil collection
+  (setq evil-want-keybinding nil)
+
+  (setq evil-split-window-below t) ;; split windows created below
+  (setq evil-vsplit-window-right t) ;; vertically split windows created to the right
+
+  (setq evil-want-C-i-jump nil) ;; hopefully this will fix weird tab behaviour
+
+  (setq evil-undo-system 'undo-redo) ;; undo via 'u', and redo the undone change via 'C-r'; only available in emacs 28+.
   :config
   (evil-mode 1))
 
@@ -220,6 +253,177 @@
 (global-set-key (kbd "C-k") #'evil-window-up)
 (global-set-key (kbd "C-l") #'evil-window-right)
 (global-set-key (kbd "TAB") #'evil-toggle-fold)
+
+(use-package evil-collection ;; evilifies a bunch of things
+  :after evil
+  :init
+  (setq evil-collection-outline-bind-tab-p t) ;; '<TAB>' cycles visibility in 'outline-minor-mode'
+  ;; If I want to incrementally enable evil-collection mode-by-mode, I can do something like the following:
+  ;; (setq evil-collection-mode-list nil) ;; I don't like surprises
+  ;; (add-to-list 'evil-collection-mode-list 'magit) ;; evilify magit
+  ;; (add-to-list 'evil-collection-mode-list '(pdf pdf-view)) ;; evilify pdf-view
+  :config
+  (evil-collection-init))
+
+(use-package evil-commentary
+  :after evil
+  :config
+  (evil-commentary-mode)) ;; globally enable evil-commentary
+
+(use-package evil-surround
+  :after evil
+  :config
+  (global-evil-surround-mode 1)) ;; globally enable evil-surround
+
+(use-package evil-goggles
+  :after evil
+  :config
+  (evil-goggles-mode)
+
+  ;; optionally use diff-mode's faces; as a result, deleted text
+  ;; will be highlighed with `diff-removed` face which is typically
+  ;; some red color (as defined by the color theme)
+  ;; other faces such as `diff-added` will be used for other actions
+  (evil-goggles-use-diff-faces))
+
+(use-package general
+  :ensure (:wait t)
+  :demand t
+  :config
+  (general-evil-setup)
+  ;; integrate general with evil
+
+  ;; set up 'SPC' as the global leader key
+  (general-create-definer dysthesis/leader-keys
+			  :states '(normal insert visual emacs)
+			  :keymaps 'override
+			  :prefix "SPC" ;; set leader
+			  :global-prefix "M-SPC") ;; access leader in insert mode
+
+  ;; set up ',' as the local leader key
+  (general-create-definer dysthesis/local-leader-keys
+			  :states '(normal insert visual emacs)
+			  :keymaps 'override
+			  :prefix "," ;; set local leader
+			  :global-prefix "M-,") ;; access local leader in insert mode
+
+  (general-define-key
+   :states 'insert
+   "C-g" 'evil-normal-state) ;; don't stretch for ESC
+
+  ;; unbind some annoying default bindings
+  (general-unbind
+   "C-x C-r"   ;; unbind find file read only
+   "C-x C-z"   ;; unbind suspend frame
+   "C-x C-d"   ;; unbind list directory
+   "<mouse-2>") ;; pasting with mouse wheel click
+
+
+  (dysthesis/leader-keys
+   "SPC" '(execute-extended-command :wk "execute command") ;; an alternative to 'M-x'
+   "TAB" '(:keymap tab-prefix-map :wk "tab")) ;; remap tab bindings
+
+  (dysthesis/leader-keys
+   "w" '(:keymap evil-window-map :wk "window")) ;; window bindings
+
+  (dysthesis/leader-keys
+   "c" '(:ignore t :wk "code"))
+
+  ;; help
+  ;; namespace mostly used by 'helpful'
+  (dysthesis/leader-keys
+   "h" '(:ignore t :wk "help"))
+
+  ;; file
+  (dysthesis/leader-keys
+   "f" '(:ignore t :wk "file")
+   "ff" '(find-file :wk "find file") ;; gets overridden by consult
+   "fs" '(save-buffer :wk "save file"))
+
+  ;; buffer
+  ;; see 'bufler' and 'popper'
+  (dysthesis/leader-keys
+   "b" '(:ignore t :wk "buffer")
+   "bb" '(switch-to-buffer :wk "switch buffer") ;; gets overridden by consult
+   "bk" '(kill-this-buffer :wk "kill this buffer")
+   "br" '(revert-buffer :wk "reload buffer"))
+
+  ;; bookmark
+  (dysthesis/leader-keys
+   "B" '(:ignore t :wk "bookmark")
+   "Bs" '(bookmark-set :wk "set bookmark")
+   "Bj" '(bookmark-jump :wk "jump to bookmark"))
+
+  ;; universal argument
+  (dysthesis/leader-keys
+   "u" '(universal-argument :wk "universal prefix"))
+
+  ;; notes
+  ;; see 'citar' and 'org-roam'
+  (dysthesis/leader-keys
+   "n" '(:ignore t :wk "notes")
+   ;; see org-roam and citar sections
+   "na" '(org-todo-list :wk "agenda todos")) ;; agenda
+
+  ;; code
+  ;; see 'flymake'
+  (dysthesis/leader-keys
+   "c" '(:ignore t :wk "code"))
+
+  ;; open
+  (dysthesis/leader-keys
+   "o" '(:ignore t :wk "open")
+   "os" '(speedbar t :wk "speedbar")
+   "op" '(elpaca-log t :wk "elpaca"))
+
+
+  ;; search
+  ;; see 'consult'
+  (dysthesis/leader-keys
+   "s" '(:ignore t :wk "search"))
+
+  ;; templating
+  ;; see 'tempel'
+  (dysthesis/leader-keys
+   "t" '(:ignore t :wk "template")))
+
+;; "c" '(org-capture :wk "capture")))
+
+(use-package avy
+    :ensure t
+    :init
+(defun patrl/avy-action-insert-newline (pt)
+      (save-excursion
+	(goto-char pt)
+	(newline))
+      (select-window
+       (cdr
+	(ring-ref avy-ring 0))))
+    (defun patrl/avy-action-kill-whole-line (pt)
+      (save-excursion
+	(goto-char pt)
+	(kill-whole-line))
+      (select-window
+       (cdr
+	(ring-ref avy-ring 0))))
+    (defun patrl/avy-action-embark (pt)
+      (unwind-protect
+	  (save-excursion
+	    (goto-char pt)
+	    (embark-act))
+	(select-window
+	 (cdr (ring-ref avy-ring 0))))
+      t) ;; adds an avy action for embark
+    :general
+    (general-def '(normal motion)
+      "s" 'evil-avy-goto-char-timer
+      "f" 'evil-avy-goto-char-in-line
+      "gl" 'evil-avy-goto-line ;; this rules
+      ";" 'avy-resume)
+    :config
+    (setf (alist-get ?. avy-dispatch-alist) 'patrl/avy-action-embark ;; embark integration
+	  (alist-get ?i avy-dispatch-alist) 'patrl/avy-action-insert-newline
+	  (alist-get ?K avy-dispatch-alist) 'patrl/avy-action-kill-whole-line)) ;; kill lines with avy
 
 (use-package vertico
   :ensure t
@@ -406,6 +610,10 @@
   :ensure t
   :after magit)
 
+(use-package rustic
+  :mode ("\\.rs\\'" . rustic-mode)
+  :config (setq rustic-lsp-client 'eglot))
+
 (use-package org
   :ensure nil
   :custom
@@ -419,6 +627,14 @@
      '(org-level-5 ((t (:inherit outline-5 :foreground "#ffffff" :height 0.9 :weight bold))))
      (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0)))
 (require 'org-indent)
+
+(use-package evil-org
+  :ensure t
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 
 (custom-set-faces
    '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
@@ -442,9 +658,10 @@
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
+  (org-indent-mode)
   (dolist (face '(window-divider
-                  window-divider-first-pixel
-                  window-divider-last-pixel))
+		  window-divider-first-pixel
+		  window-divider-last-pixel))
     (face-spec-reset-face face)
     (set-face-foreground face (face-attribute 'default :background)))
   (set-face-background 'fringe (face-attribute 'default :background))
@@ -523,9 +740,3 @@
           ("header" . "› ")
           ("caption" . "☰ ")
           ("results" . "🠶")))
-
-(use-package org-modern-indent
-  :ensure (:type git :host github :repo
-      		 "jdtsmith/org-modern-indent")
-  :config ; add late to hook
-  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
