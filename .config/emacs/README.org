@@ -1,10 +1,6 @@
 #+TITLE: Emacs configuration
 #+STARTUP:fold
 
-* Current issues
-** TODO [#A] Fix the =Failed to discover workspace= error with rustic and eglot
-- [[https://github.com/brotzeit/rustic/issues/471][Relevant issue]]
-
 * Package manager
 
 We use the [[https://github.com/progfolio/elpaca][Elpaca package manager]].
@@ -782,13 +778,17 @@ Improve the performance of Eglot. This requires the installation of [[https://gi
 ** Rust
 
 #+BEGIN_SRC emacs-lisp
-    (use-package rustic
-      :ensure t
-      :config
-      (setq rustic-format-on-save nil)
-      :custom
-      (rustic-lsp-client 'eglot)
-      (rustic-cargo-use-last-stored-arguments t))
+    ;; (use-package rustic
+    ;;   :ensure t
+    ;;   :config
+    ;;   (setq rustic-format-on-save nil)
+    ;;   :custom
+    ;;   (rustic-lsp-client 'eglot)
+    ;;   (rustic-cargo-use-last-stored-arguments t))
+    (use-package rust-mode
+      :ensure t)
+    (use-package cargo
+      :ensure t)
 #+END_SRC
 
 * Org-mode
@@ -994,3 +994,8 @@ Show emphasis markers only when hovered over.
 (use-package ob-async
   :ensure t)
 #+END_SRC
+
+* Current issues
+** TODO [#A] Fix the =Failed to discover workspace= error with rustic and eglot
+- [[https://github.com/brotzeit/rustic/issues/471][Relevant issue]]
+- For some reason, this is only an issue with =rustic= and not the official =rust-mode=, so we'll use that for now

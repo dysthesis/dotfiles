@@ -622,14 +622,17 @@
   :after (transient)
   :bind (("C-x g" . magit-status)))
 
-(use-package rustic
-  :ensure t
-  :config
-  (setq rustic-format-on-save nil)
-  :custom
-  (rustic-lsp-client 'eglot)
-  (rustic-cargo-use-last-stored-arguments t)
-  (rustic-analyzer-command '("rustup" "run" "stable" "rust-analyzer")))
+;; (use-package rustic
+;;   :ensure t
+;;   :config
+;;   (setq rustic-format-on-save nil)
+;;   :custom
+;;   (rustic-lsp-client 'eglot)
+;;   (rustic-cargo-use-last-stored-arguments t))
+(use-package rust-mode
+  :ensure t)
+(use-package cargo
+  :ensure t)
 
 (use-package org
   :ensure nil
