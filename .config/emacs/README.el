@@ -136,12 +136,14 @@
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-height 34)
-  (setq doom-modeline-bar-width 4))
+  :custom
+  (doom-modeline-height 34)
+  (doom-modeline-bar-width 4)
+  (doom-modeline-persp-name t)
+  (doom-modeline-persp-icon t))
 
-(set-frame-parameter nil 'alpha-background 75)
-(add-to-list 'default-frame-alist '(alpha-background . 75))
+(set-frame-parameter nil 'alpha-background 80)
+(add-to-list 'default-frame-alist '(alpha-background . 80))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -552,6 +554,17 @@
   ;; load default config
   (require 'smartparens-config))
 
+(use-package prescient
+  :ensure t)
+(use-package corfu-prescient
+  :ensure t
+  :init
+  (corfu-prescient-mode 1))
+(use-package vertico-prescient
+  :ensure t
+  :init
+  (vertico-prescient-mode 1))
+
 ;; Enable lsp support
 (use-package eglot
   :defer t
@@ -592,6 +605,7 @@
   (prog-mode . global-tree-sitter-mode))
 (use-package tree-sitter-langs
   :ensure t)
+
 (use-package evil-textobj-tree-sitter
   :ensure t
   :after (evil tree-sitter)
@@ -603,6 +617,18 @@
   
   ;; You can also bind multiple items and we will match the first one we can find
   (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer"))))
+
+(use-package ts-fold
+  :ensure (:type git :host github :repo "emacs-tree-sitter/ts-fold")
+  :hook (tree-sitter-after-on . ts-fold-line-comment-mode)
+  :hook (tree-sitter-after-on . ts-fold-indicators-mode)
+  :hook (ts-fold-on-fold      . sideline-render-this)
+  :init
+  (setq ts-fold-indicators-fringe 'left-fringe
+        ts-fold-indicators-face-function
+        (lambda (pos &rest _)
+          ;; Return the face of it's function.
+          (line-reminder--get-face (line-number-at-pos pos t)))))
 
 (use-package projectile
   :ensure t
@@ -767,3 +793,14 @@
 
 (use-package ob-async
   :ensure t)
+
+(use-package undo-fu
+  :ensure t
+  :config
+  (global-unset-key (kbd "C-z"))
+  (global-set-key (kbd "C-z")   'undo-fu-only-undo)
+  (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
+
+(use-package evil
+  :init
+  (setq evil-undo-system 'undo-fu))

@@ -3,7 +3,7 @@
 
 * Package manager
 
-We use the [[https://github.com/progfolio/elpaca][Elpaca package manager]].
+We use the [[https://github.com/progfolio/elpaca][Elpaca package manager]]. If it's not yet installed, install  it.
 
 #+begin_src emacs-lisp
 ;; https://github.com/progfolio/elpaca
@@ -49,6 +49,7 @@ We use the [[https://github.com/progfolio/elpaca][Elpaca package manager]].
 #+end_src
 
 Then, enable use-package support for it.
+
 #+begin_src emacs-lisp
 (elpaca elpaca-use-package
   (elpaca-use-package-mode))
@@ -103,6 +104,10 @@ Some of the Emacs defaults aren't great.
 
 * Appearance
 ** Font
+
+Define my preferred fixed pitch and variable pitch fonts.
+
+"JBMono Nerd Font" is a customised build of JetBrainsMono Nerd Font with some font features enabled, as Emacs doesn't seem to have the ability to enable it by itself.
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil :font "JBMono Nerd Font" :height 130)
@@ -174,20 +179,24 @@ Use Solaire mode to distinguish between 'real' buffers and everything else.
 
 ** Modeline
 
+A better looking modeline than the default, and it's lightweight enough for my taste.
+
 #+BEGIN_SRC emacs-lisp
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-height 34)
-  (setq doom-modeline-bar-width 4))
+    (use-package doom-modeline
+      :ensure t
+      :init (doom-modeline-mode 1)
+      :custom
+      (doom-modeline-height 34)
+      (doom-modeline-bar-width 4)
+      (doom-modeline-persp-name t)
+      (doom-modeline-persp-icon t))
 #+end_src
 
 ** Transparency
 
 #+BEGIN_SRC emacs-lisp
-(set-frame-parameter nil 'alpha-background 75)
-(add-to-list 'default-frame-alist '(alpha-background . 75))
+(set-frame-parameter nil 'alpha-background 80)
+(add-to-list 'default-frame-alist '(alpha-background . 80))
 #+END_SRC
 
 ** Rainbow delimiters
@@ -214,6 +223,9 @@ Cheatsheet for keybinds.
 #+END_SRC
 
 ** Olivetti
+
+Centre content when in Org-mode to comfortably fit everything within my field of vision, making it easier to read.
+
 #+BEGIN_SRC emacs-lisp
     (use-package olivetti
       :ensure t
@@ -225,6 +237,7 @@ Cheatsheet for keybinds.
         (olivetti-set-width 90))
       (add-hook 'org-mode-hook 'dysthesis/org-mode-setup)) 
 #+END_SRC
+
 ** Mixed pitch
 
 Allow the use of both variable pitch and fixed pitch fonts wherever appropriate.
@@ -366,6 +379,8 @@ Enable Vim-like keybindings in Emacs.
 
 ** General
 
+An easier way to define keybindings in Emacs.
+
 #+BEGIN_SRC emacs-lisp
     (use-package general
       :ensure (:wait t)
@@ -441,6 +456,8 @@ Enable Vim-like keybindings in Emacs.
 #+END_SRC
 
 ** Avy
+
+This is similar to =leap.nvim= or =flash.nvim=; it allows for jumping to a certain character by typing that character, as well as an arbitrary number of the proceeding characters.
 
 #+BEGIN_SRC emacs-lisp
     (use-package avy
@@ -669,6 +686,23 @@ Automatically insert the corresponding closing delimiter upon typing an opening 
   (require 'smartparens-config))
 #+END_SRC
 
+** Prescient
+
+Sorts and filters completion candidates by factors such as recency.
+
+#+BEGIN_SRC emacs-lisp
+    (use-package prescient
+      :ensure t)
+    (use-package corfu-prescient
+      :ensure t
+      :init
+      (corfu-prescient-mode 1))
+    (use-package vertico-prescient
+      :ensure t
+      :init
+      (vertico-prescient-mode 1))
+#+END_SRC
+
 * LSP client
 
 #+BEGIN_SRC emacs-lisp
@@ -728,12 +762,7 @@ Improve the performance of Eglot. This requires the installation of [[https://gi
       (prog-mode . global-tree-sitter-mode))
     (use-package tree-sitter-langs
       :ensure t)
-    (use-package evil-textobj-tree-sitter
-      :ensure t
-      :after (evil tree-sitter)
-      :config
-      <<tree-sitter-evil>>)
-#+END_SRC
+#+end_src
 
 ** Navigation
 
@@ -747,6 +776,33 @@ Improve the performance of Eglot. This requires the installation of [[https://gi
 ;; You can also bind multiple items and we will match the first one we can find
 (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer")))
 #+END_SRC
+
+** Evil mode integration
+
+
+#+begin_src emacs-lisp
+    (use-package evil-textobj-tree-sitter
+      :ensure t
+      :after (evil tree-sitter)
+      :config
+      <<tree-sitter-evil>>)
+#+END_SRC
+
+** Code folding
+
+#+BEGIN_SRC emacs-lisp
+    (use-package ts-fold
+      :ensure (:type git :host github :repo "emacs-tree-sitter/ts-fold")
+      :hook (tree-sitter-after-on . ts-fold-line-comment-mode)
+      :hook (tree-sitter-after-on . ts-fold-indicators-mode)
+      :hook (ts-fold-on-fold      . sideline-render-this)
+      :init
+      (setq ts-fold-indicators-fringe 'left-fringe
+            ts-fold-indicators-face-function
+            (lambda (pos &rest _)
+              ;; Return the face of it's function.
+              (line-reminder--get-face (line-number-at-pos pos t)))))
+#+end_src
 
 * Projects
 
@@ -993,6 +1049,25 @@ Show emphasis markers only when hovered over.
 
 (use-package ob-async
   :ensure t)
+#+END_SRC
+
+** Undo history
+
+#+BEGIN_SRC emacs-lisp
+    (use-package undo-fu
+      :ensure t
+      :config
+      (global-unset-key (kbd "C-z"))
+      (global-set-key (kbd "C-z")   'undo-fu-only-undo)
+      (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
+#+END_SRC
+
+*** Integrate with Evil Mode
+
+#+BEGIN_SRC emacs-lisp
+    (use-package evil
+      :init
+      (setq evil-undo-system 'undo-fu))
 #+END_SRC
 
 * Current issues
