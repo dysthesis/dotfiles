@@ -806,13 +806,15 @@ Check syntax on-the-fly when writing.
 
 #+NAME: tree-sitter-evil
 #+BEGIN_SRC emacs-lisp :tangle no
-;; bind `function.outer`(entire function block) to `f` for use in things like `vaf`, `yaf`
-(define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj(  "function.outer" )))
-;; bind `function.inner`(function block without name and args) to `f` for use in things like `vif`, `yif`
-(define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj(  "function.inner" )))
+    ;; bind `function.outer`(entire function block) to `f` for use in things like `vaf`, `yaf`
+    (define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj(  "function.outer" )))
+    ;; bind `function.inner`(function block without name and args) to `f` for use in things like `vif`, `yif`
+    (define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj(  "function.inner" )))
+    (define-key evil-inner-text-objects-map "i" (evil-textobj-tree-sitter-get-textobj(  "parameter.inner" )))
+    (define-key evil-outer-text-objects-map "i" (evil-textobj-tree-sitter-get-textobj(  "parameter.outer" )))
+    ;; You can also bind multiple items and we will match the first one we can find
+    (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer")))
 
-;; You can also bind multiple items and we will match the first one we can find
-(define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer")))
 #+END_SRC
 
 ** Evil mode integration
@@ -913,18 +915,60 @@ Easily browse the Git history of files.
 * Org-mode
 
 #+BEGIN_SRC emacs-lisp :noweb yes
-    (use-package org
-      :ensure nil
-      :custom
-      (org-directory "~/Org/")
-      (org-edit-src-content-indentation 4)
-      (org-preview-latex-default-process 'dvisvgm)
-      (org-highlight-latex-and-related '(latex script entities))
-      :config
-      <<org-header-faces>>
-      <<org-latex-config>>)
-    (require 'org-indent)
+  (use-package org
+    :ensure nil
+    :general
+    ("C-c c" 'org-capture)
+    ("C-c a" 'org-agenda)
+    :custom
+    (org-agenda-start-day "0d")
+    (org-agenda-skip-scheduled-if-done t)
+    (org-agenda-skip-deadline-if-done t)
+    (org-agenda-include-deadlines t)
+    (org-agenda-block-separator nil)
+    (org-directory "~/Documents/Org/")
+    (org-agenda-files (directory-files-recursively "~/Documents/Org/GTD/" "\\.org$"))
+    (org-preview-latex-default-process 'dvisvgm)
+    (org-highlight-latex-and-related '(latex script entities))
+    :config
+    <<org-header-faces>>
+    <<org-latex-config>>)
+  (require 'org-indent)
 #+END_SRC
+
+** Capture templates
+
+#+BEGIN_SRC emacs-lisp
+    (use-package doct
+      :ensure t
+      :commands (doct)
+      :init
+      (setq org-capture-templates
+            (doct '((" Todo"
+                     :keys "t"
+                     :prepend t
+                     :file "GTD/inbox.org"
+                     :headline "Tasks"
+                     :type entry
+                     :template ("* TODO %? %{extra}")
+                     :children ((" General"
+                                 :keys "t"
+                                 :extra "")
+                                ("󰈸 With deadline"
+                                 :keys "d"
+                                 :extra "\nDEADLINE: %^{Deadline:}t")
+                                ("󰥔 With schedule"
+                                 :keys "s"
+                                 :extra "\nSCHEDULED: %^{Start time:}t")))
+                    ("Bookmark"
+                     :keys "b"
+                     :prepend t
+                     :file "bookmarks.org"
+                     :type entry
+                     :template "* TODO [[%:link][%:description]] :bookmark:\n\n"
+                     :immediate-finish t)))))
+#+END_SRC
+
 ** Navigation
 
 #+BEGIN_SRC emacs-lisp
@@ -1111,19 +1155,38 @@ Show emphasis markers only when hovered over.
       :ensure t
       :custom
       (org-roam-directory (file-truename "~/Documents/Org/Roam/"))
-      :bind (("C-c n l" . org-roam-buffer-toggle)
-             ("C-c n f" . org-roam-node-find)
-             ("C-c n g" . org-roam-graph)
-             ("C-c n i" . org-roam-node-insert)
-             ("C-c n c" . org-roam-capture)
-             ;; Dailies
-             ("C-c n j" . org-roam-dailies-capture-today))
+      :general
+      ("C-c n" '(:ignore t
+                         :wk "Org-roam"))
+      ("C-c n l" '(org-roam-buffer-toggle
+                   :wk "Toggle org-roam buffer"))
+      ("C-c n f" '(org-roam-node-find
+                   :wk "Find org-roam node"))
+      ("C-c n d" '(:keymap org-roam-dailies-map
+                           :package org-roam
+                           :wk "Org-roam dailies"))
+      ("C-c n i" '(org-roam-node-insert
+                   :wk "Insert org-roam node"))
+      ("C-c n c" '(org-roam-capture
+                   :wk "Capture into org-roam node"))
+      ;; Dailies
       :config
       ;; If you're using a vertical completion framework, you might want a more informative completion interface
       (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
       (org-roam-db-autosync-mode)
       ;; If using org-roam-protocol
       (require 'org-roam-protocol))
+#+END_SRC
+
+*** Timestamps
+
+Add a creation date and maintain a last edited date for each Org-roam node.
+
+#+BEGIN_SRC emacs-lisp
+    (use-package org-roam-timestamps
+      :ensure t
+      :after org-roam
+      :config (org-roam-timestamps-mode))
 #+END_SRC
 
 *** UI

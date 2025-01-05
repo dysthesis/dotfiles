@@ -635,9 +635,11 @@
   (define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj(  "function.outer" )))
   ;; bind `function.inner`(function block without name and args) to `f` for use in things like `vif`, `yif`
   (define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj(  "function.inner" )))
-  
+  (define-key evil-inner-text-objects-map "i" (evil-textobj-tree-sitter-get-textobj(  "parameter.inner" )))
+  (define-key evil-outer-text-objects-map "i" (evil-textobj-tree-sitter-get-textobj(  "parameter.outer" )))
   ;; You can also bind multiple items and we will match the first one we can find
-  (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer"))))
+  (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer")))
+  )
 
 (use-package ts-fold
   :ensure
@@ -693,9 +695,17 @@
 
 (use-package org
   :ensure nil
+  :general
+  ("C-c c" 'org-capture)
+  ("C-c a" 'org-agenda)
   :custom
-  (org-directory "~/Org/")
-  (org-edit-src-content-indentation 4)
+  (org-agenda-start-day "0d")
+  (org-agenda-skip-scheduled-if-done t)
+  (org-agenda-skip-deadline-if-done t)
+  (org-agenda-include-deadlines t)
+  (org-agenda-block-separator nil)
+  (org-directory "~/Documents/Org/")
+  (org-agenda-files (directory-files-recursively "~/Documents/Org/GTD/" "\\.org$"))
   (org-preview-latex-default-process 'dvisvgm)
   (org-highlight-latex-and-related '(latex script entities))
   :config
@@ -710,6 +720,35 @@
   (plist-put org-format-latex-options :background nil)
   (plist-put org-format-latex-options :scale 0.65))
 (require 'org-indent)
+
+(use-package doct
+  :ensure t
+  :commands (doct)
+  :init
+  (setq org-capture-templates
+        (doct '((" Todo"
+                 :keys "t"
+                 :prepend t
+                 :file "GTD/inbox.org"
+                 :headline "Tasks"
+                 :type entry
+                 :template ("* TODO %? %{extra}")
+                 :children ((" General"
+                             :keys "t"
+                             :extra "")
+                            ("󰈸 With deadline"
+                             :keys "d"
+                             :extra "\nDEADLINE: %^{Deadline:}t")
+                            ("󰥔 With schedule"
+                             :keys "s"
+                             :extra "\nSCHEDULED: %^{Start time:}t")))
+                ("Bookmark"
+                 :keys "b"
+                 :prepend t
+                 :file "bookmarks.org"
+                 :type entry
+                 :template "* TODO [[%:link][%:description]] :bookmark:\n\n"
+                 :immediate-finish t)))))
 
 (use-package evil-org
   :ensure t
@@ -826,19 +865,32 @@
   :ensure t
   :custom
   (org-roam-directory (file-truename "~/Documents/Org/Roam/"))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
+  :general
+  ("C-c n" '(:ignore t
+                     :wk "Org-roam"))
+  ("C-c n l" '(org-roam-buffer-toggle
+               :wk "Toggle org-roam buffer"))
+  ("C-c n f" '(org-roam-node-find
+               :wk "Find org-roam node"))
+  ("C-c n d" '(:keymap org-roam-dailies-map
+                       :package org-roam
+                       :wk "Org-roam dailies"))
+  ("C-c n i" '(org-roam-node-insert
+               :wk "Insert org-roam node"))
+  ("C-c n c" '(org-roam-capture
+               :wk "Capture into org-roam node"))
+  ;; Dailies
   :config
   ;; If you're using a vertical completion framework, you might want a more informative completion interface
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-mode)
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
+
+(use-package org-roam-timestamps
+  :ensure t
+  :after org-roam
+  :config (org-roam-timestamps-mode))
 
 (use-package org-roam-ui
   :ensure
