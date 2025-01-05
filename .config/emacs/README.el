@@ -288,6 +288,7 @@
 
 (use-package general
   :ensure (:wait t)
+  :after (evil)
   :demand t
   :config
   (general-evil-setup)
@@ -301,11 +302,13 @@
   (start/leader-keys
     "." '(find-file :wk "Find file")
     "TAB" '(comment-line :wk "Comment lines")
-    "p" '(projectile-command-map :wk "Projectile command map"))
+    "p" '(:keymap projectile-command-map
+                  :package projectile
+                  :wk "Projectile command map"))
 
   (start/leader-keys
     "f" '(:ignore t :wk "Find")
-    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/README.org")) :wk "Edit emacs config")
     "f r" '(consult-recent-file :wk "Recent files")
     "f f" '(consult-fd :wk "Fd search for files")
     "f g" '(consult-ripgrep :wk "Ripgrep search in files")
@@ -569,6 +572,14 @@
   (if (display-graphic-p)
       (add-to-list 'eglot-stay-out-of 'eldoc)))
 
+(use-package eglot-booster
+  :ensure (:type git
+                 :host github
+                 :repo "jdtsmith/eglot-booster")
+  :after eglot
+  :config
+  (eglot-booster-mode))
+
 (use-package aggressive-indent
   :ensure t
   :config
@@ -617,7 +628,8 @@
   (setq rustic-format-on-save nil)
   :custom
   (rustic-lsp-client 'eglot)
-  (rustic-cargo-use-last-stored-arguments t))
+  (rustic-cargo-use-last-stored-arguments t)
+  (rustic-analyzer-command '("rustup" "run" "stable" "rust-analyzer")))
 
 (use-package org
   :ensure nil

@@ -373,6 +373,7 @@ Enable Vim-like keybindings in Emacs.
 #+BEGIN_SRC emacs-lisp
     (use-package general
       :ensure (:wait t)
+      :after (evil)
       :demand t
       :config
       (general-evil-setup)
@@ -386,11 +387,13 @@ Enable Vim-like keybindings in Emacs.
       (start/leader-keys
         "." '(find-file :wk "Find file")
         "TAB" '(comment-line :wk "Comment lines")
-        "p" '(projectile-command-map :wk "Projectile command map"))
+        "p" '(:keymap projectile-command-map
+                      :package projectile
+                      :wk "Projectile command map"))
 
       (start/leader-keys
         "f" '(:ignore t :wk "Find")
-        "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+        "f c" '((lambda () (interactive) (find-file "~/.config/emacs/README.org")) :wk "Edit emacs config")
         "f r" '(consult-recent-file :wk "Recent files")
         "f f" '(consult-fd :wk "Fd search for files")
         "f g" '(consult-ripgrep :wk "Ripgrep search in files")
@@ -692,6 +695,18 @@ Automatically insert the corresponding closing delimiter upon typing an opening 
       ;; If you always want popups in the minibuffer, remove these lines
       (if (display-graphic-p)
           (add-to-list 'eglot-stay-out-of 'eldoc))) 
+#+END_SRC
+
+Improve the performance of Eglot. This requires the installation of [[https://github.com/blahgeek/emacs-lsp-booster][emacs-lsp-booster]] as a binary on your system.
+
+#+BEGIN_SRC emacs-lisp
+(use-package eglot-booster
+  :ensure (:type git
+                 :host github
+                 :repo "jdtsmith/eglot-booster")
+  :after eglot
+  :config
+  (eglot-booster-mode))
 #+END_SRC
 
 * Formatting
