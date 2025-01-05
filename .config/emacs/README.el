@@ -178,6 +178,7 @@
         (append mixed-pitch-fixed-pitch-faces
                 '(org-table
                   org-code
+                  org-property-value
                   org-block
                   org-block-begin-line
                   org-block-end-line
@@ -693,7 +694,10 @@
 (use-package org
   :ensure nil
   :custom
+  (org-directory "~/Org/")
   (org-edit-src-content-indentation 4)
+  (org-preview-latex-default-process 'dvisvgm)
+  (org-highlight-latex-and-related '(latex script entities))
   :config
   (custom-set-faces
      '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
@@ -701,7 +705,10 @@
      '(org-level-3 ((t (:inherit outline-3 :foreground "#ffffff" :height 1.1 :weight bold))))
      '(org-level-4 ((t (:inherit outline-4 :foreground "#ffffff" :height 1.0 :weight bold))))
      '(org-level-5 ((t (:inherit outline-5 :foreground "#ffffff" :height 0.9 :weight bold))))
-     (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0)))
+     (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0))
+  (plist-put org-format-latex-options :foreground "White")
+  (plist-put org-format-latex-options :background nil)
+  (plist-put org-format-latex-options :scale 0.65))
 (require 'org-indent)
 
 (use-package evil-org
@@ -814,6 +821,51 @@
           ("header" . "› ")
           ("caption" . "☰ ")
           ("results" . "🠶")))
+
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/Documents/Org/Roam/"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
+
+(use-package org-roam-ui
+  :ensure
+  (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+  :after org-roam
+  ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+  ;;         a hookable mode anymore, you're advised to pick something yourself
+  ;;         if you don't care about startup time, use
+  ;;  :hook (after-init . org-roam-ui-mode)
+  :custom
+  (org-roam-ui-sync-theme t)
+  (org-roam-ui-follow t)
+  (org-roam-ui-update-on-save t)
+  (org-roam-ui-open-on-start t)
+  (org-roam-ui-custom-theme
+   '((bg-alt . "#0f0f0f")
+     (bg . "#000000")
+     (fg . "#ffffff")
+     (fg-alt . "#cdd6f4")
+     (red . "#f38ba8")
+     (orange . "#fab387")
+     (yellow ."#f9e2af")
+     (green . "#a6e3a1")
+     (cyan . "#94e2d5")
+     (blue . "#89b4fa")
+     (violet . "#8be9fd")
+     (magenta . "#f5c2e7"))))
 
 (use-package org-fragtog
   :ensure t
