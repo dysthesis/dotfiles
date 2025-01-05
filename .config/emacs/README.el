@@ -137,7 +137,7 @@
   :ensure t
   :init (doom-modeline-mode 1)
   :custom
-  (doom-modeline-height 34)
+  (doom-modeline-height 40)
   (doom-modeline-bar-width 4)
   (doom-modeline-persp-name t)
   (doom-modeline-persp-icon t))
@@ -223,6 +223,20 @@
   ;; Enables ligature checks globally in all buffers.  You can also do it
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
+
+(use-package hl-todo
+  :ensure t
+  :hook (prog-mode . hl-todo-mode)
+  :custom (hl-todo-keyword-faces '(("TODO" warning bold)
+                                   ("FIXME" error bold)
+                                   ("HACK" font-lock-constant-face)
+                                   ("NOTE" success bold)
+                                   ("REVIEW" font-lock-keyword-face bold)
+                                   ("DEPRECATED" font-lock-doc-face bold))))
+
+(use-package rainbow-mode
+  :ensure t
+  :hook org-mode prog-mode)
 
 (use-package evil 
   :ensure t
@@ -555,7 +569,8 @@
   (require 'smartparens-config))
 
 (use-package prescient
-  :ensure t)
+  :ensure t
+  :config (prescient-persist-mode 1))
 (use-package corfu-prescient
   :ensure t
   :init
@@ -593,6 +608,11 @@
   :config
   (eglot-booster-mode))
 
+(use-package flycheck
+  :ensure t
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode))
+
 (use-package aggressive-indent
   :ensure t
   :config
@@ -619,23 +639,19 @@
   (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer"))))
 
 (use-package ts-fold
-  :ensure (:type git :host github :repo "emacs-tree-sitter/ts-fold")
-  :hook (tree-sitter-after-on . ts-fold-line-comment-mode)
-  :hook (tree-sitter-after-on . ts-fold-indicators-mode)
-  :hook (ts-fold-on-fold      . sideline-render-this)
-  :init
-  (setq ts-fold-indicators-fringe 'left-fringe
-        ts-fold-indicators-face-function
-        (lambda (pos &rest _)
-          ;; Return the face of it's function.
-          (line-reminder--get-face (line-number-at-pos pos t)))))
+  :ensure
+  (:type git :host github :repo "emacs-tree-sitter/ts-fold")
+  :general
+  ("C-c f O" 'ts-fold-open-all)
+  ("C-c f o" 'ts-fold-open-recursively)
+  ("C-c f C" 'ts-fold-close-all)
+  ("C-c f c" 'ts-fold-close)
+  ("C-c f z" 'ts-fold-toggle))
 
 (use-package projectile
   :ensure t
   :diminish projectile-mode
   :config (projectile-mode)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
   :init
   (when (file-directory-p "~/Documents/Projects")
     (setq projectile-project-search-path '("~/Documents/Projects")))
@@ -646,7 +662,11 @@
 (use-package magit
   :ensure t
   :after (transient)
-  :bind (("C-x g" . magit-status)))
+  :general ("C-x g" 'magit))
+
+(use-package git-timemachine
+  :ensure t
+  :hook (evil-normalize-keymaps . git-timemachine-hook))
 
 ;; (use-package rustic
 ;;   :ensure t
@@ -656,9 +676,19 @@
 ;;   (rustic-lsp-client 'eglot)
 ;;   (rustic-cargo-use-last-stored-arguments t))
 (use-package rust-mode
-  :ensure t)
+  :ensure t
+  :hook
+  (rust-mode . eglot-ensure)
+  (rust-mode . turn-on-eldoc-mode))
 (use-package cargo
   :ensure t)
+
+(use-package flycheck-rust
+  :ensure t
+  :after flycheck
+  :config
+  (with-eval-after-load 'rust-mode
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 
 (use-package org
   :ensure nil
@@ -784,6 +814,12 @@
           ("header" . "› ")
           ("caption" . "☰ ")
           ("results" . "🠶")))
+
+(use-package org-fragtog
+  :ensure t
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'org-fragtog-mode))
 
 (use-package async
   :ensure t

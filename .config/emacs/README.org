@@ -186,7 +186,7 @@ A better looking modeline than the default, and it's lightweight enough for my t
       :ensure t
       :init (doom-modeline-mode 1)
       :custom
-      (doom-modeline-height 34)
+      (doom-modeline-height 40)
       (doom-modeline-bar-width 4)
       (doom-modeline-persp-name t)
       (doom-modeline-persp-icon t))
@@ -304,6 +304,31 @@ Allow the use of both variable pitch and fixed pitch fonts wherever appropriate.
   ;; Enables ligature checks globally in all buffers.  You can also do it
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
+#+END_SRC
+
+** Highlight TODO keywords
+
+#+BEGIN_SRC emacs-lisp
+    (use-package hl-todo
+      :ensure t
+      :hook (prog-mode . hl-todo-mode)
+      :custom (hl-todo-keyword-faces '(("TODO" warning bold)
+                                       ("FIXME" error bold)
+                                       ("HACK" font-lock-constant-face)
+                                       ("NOTE" success bold)
+                                       ("REVIEW" font-lock-keyword-face bold)
+                                       ("DEPRECATED" font-lock-doc-face bold))))
+#+END_SRC
+
+** Rainbow mode
+
+Display the actual colour as a background whenever entering a hexadecimal colour code.
+
+#+BEGIN_SRC emacs-lisp
+    (use-package rainbow-mode
+      :ensure t
+      :hook org-mode prog-mode)
+
 #+END_SRC
 
 * Navigation
@@ -692,7 +717,8 @@ Sorts and filters completion candidates by factors such as recency.
 
 #+BEGIN_SRC emacs-lisp
     (use-package prescient
-      :ensure t)
+      :ensure t
+      :config (prescient-persist-mode 1))
     (use-package corfu-prescient
       :ensure t
       :init
@@ -730,13 +756,24 @@ Sorts and filters completion candidates by factors such as recency.
 Improve the performance of Eglot. This requires the installation of [[https://github.com/blahgeek/emacs-lsp-booster][emacs-lsp-booster]] as a binary on your system.
 
 #+BEGIN_SRC emacs-lisp
-(use-package eglot-booster
-  :ensure (:type git
-                 :host github
-                 :repo "jdtsmith/eglot-booster")
-  :after eglot
-  :config
-  (eglot-booster-mode))
+    (use-package eglot-booster
+      :ensure (:type git
+                     :host github
+                     :repo "jdtsmith/eglot-booster")
+      :after eglot
+      :config
+      (eglot-booster-mode))
+#+END_SRC
+
+* Syntax checking
+
+Check syntax on-the-fly when writing.
+
+#+BEGIN_SRC emacs-lisp
+    (use-package flycheck
+      :ensure t
+      :config
+      (add-hook 'after-init-hook #'global-flycheck-mode))
 #+END_SRC
 
 * Formatting
@@ -792,16 +829,14 @@ Improve the performance of Eglot. This requires the installation of [[https://gi
 
 #+BEGIN_SRC emacs-lisp
     (use-package ts-fold
-      :ensure (:type git :host github :repo "emacs-tree-sitter/ts-fold")
-      :hook (tree-sitter-after-on . ts-fold-line-comment-mode)
-      :hook (tree-sitter-after-on . ts-fold-indicators-mode)
-      :hook (ts-fold-on-fold      . sideline-render-this)
-      :init
-      (setq ts-fold-indicators-fringe 'left-fringe
-            ts-fold-indicators-face-function
-            (lambda (pos &rest _)
-              ;; Return the face of it's function.
-              (line-reminder--get-face (line-number-at-pos pos t)))))
+      :ensure
+      (:type git :host github :repo "emacs-tree-sitter/ts-fold")
+      :general
+      ("C-c f O" 'ts-fold-open-all)
+      ("C-c f o" 'ts-fold-open-recursively)
+      ("C-c f C" 'ts-fold-close-all)
+      ("C-c f c" 'ts-fold-close)
+      ("C-c f z" 'ts-fold-toggle))
 #+end_src
 
 * Projects
@@ -811,8 +846,6 @@ Improve the performance of Eglot. This requires the installation of [[https://gi
   :ensure t
   :diminish projectile-mode
   :config (projectile-mode)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
   :init
   (when (file-directory-p "~/Documents/Projects")
     (setq projectile-project-search-path '("~/Documents/Projects")))
@@ -820,6 +853,9 @@ Improve the performance of Eglot. This requires the installation of [[https://gi
 #+END_SRC
 
 * Git
+** Magit
+
+A nice interface to interact with Git with.
 
 #+BEGIN_SRC emacs-lisp
     (use-package transient
@@ -827,11 +863,23 @@ Improve the performance of Eglot. This requires the installation of [[https://gi
     (use-package magit
       :ensure t
       :after (transient)
-      :bind (("C-x g" . magit-status)))
+      :general ("C-x g" 'magit))
+#+END_SRC
+
+** Git-timemachine
+
+Easily browse the Git history of files.
+
+#+BEGIN_SRC emacs-lisp
+    (use-package git-timemachine
+      :ensure t
+      :hook (evil-normalize-keymaps . git-timemachine-hook))
 #+END_SRC
 
 * Languages
 ** Rust
+
+=rustic= causes Rust buffers to crash for some reason, so we use =rust-mode= for now. I have yet to encounter a need for the extra features offered by =rustic=
 
 #+BEGIN_SRC emacs-lisp
     ;; (use-package rustic
@@ -842,9 +890,23 @@ Improve the performance of Eglot. This requires the installation of [[https://gi
     ;;   (rustic-lsp-client 'eglot)
     ;;   (rustic-cargo-use-last-stored-arguments t))
     (use-package rust-mode
-      :ensure t)
+      :ensure t
+      :hook
+      (rust-mode . eglot-ensure)
+      (rust-mode . turn-on-eldoc-mode))
     (use-package cargo
       :ensure t)
+#+END_SRC
+
+*** Flycheck integration
+
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck-rust
+    :ensure t
+    :after flycheck
+    :config
+    (with-eval-after-load 'rust-mode
+      (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 #+END_SRC
 
 * Org-mode
@@ -1035,6 +1097,16 @@ Show emphasis markers only when hovered over.
           ("TODO"
            :inverse-video t
            :foreground "#fab387")))
+#+END_SRC
+
+** LaTeX
+
+#+BEGIN_SRC emacs-lisp
+    (use-package org-fragtog
+      :ensure t
+      :after org
+      :config
+      (add-hook 'org-mode-hook 'org-fragtog-mode))
 #+END_SRC
 
 * Miscellaneous

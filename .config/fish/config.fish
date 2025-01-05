@@ -13,6 +13,7 @@ if status is-interactive
 end
 
 alias sudo=doas
+alias ytfzf="ytfzf -t -T kitty"
 # Git stuff
 alias gc="git commit -S -am"
 
