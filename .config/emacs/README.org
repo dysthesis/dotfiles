@@ -1326,9 +1326,9 @@ Show emphasis markers only when hovered over.
 #+NAME: org-modern-list-bullets
 #+BEGIN_SRC emacs-lisp :tangle no
 (setq  org-modern-list
-	 '((42 . "•")
+	 '((45 . "•")
            (43 . "◈")
-           (45 . "➤")))
+           (42 . "➤")))
 #+END_SRC
 
 **** Iconise block names

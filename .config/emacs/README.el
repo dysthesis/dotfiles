@@ -999,9 +999,9 @@
   (set-face-background 'fringe (face-attribute 'default :background))
   (setq org-hide-emphasis-markers t)
   (setq  org-modern-list
-  	 '((42 . "•")
+  	 '((45 . "•")
              (43 . "◈")
-             (45 . "➤")))
+             (42 . "➤")))
   (setq org-modern-fold-stars '((" 󰫈 " . " 󰫈 ") (" 󰫇 " . " 󰫇 ") (" 󰫆 " . " 󰫆 ") (" 󰫅 " . " 󰫅 ") (" 󰫄 " . " 󰫄 ") (" 󰫃 " . " 󰫃 ")))
   (setq org-modern-block-name
   	'((t . t)
