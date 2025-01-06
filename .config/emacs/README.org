@@ -60,46 +60,48 @@ Then, enable use-package support for it.
 Some of the Emacs defaults aren't great.
 
 #+begin_src emacs-lisp 
-(use-package emacs
-  :demand t
-  :ensure nil
-  :init
-  (setq enable-recursive-minibuffers t)
-  (setq backup-by-copying t)
-  (setq sentence-end-double-space nil)
-  (setq frame-inhibit-implied-resize t) ;; useless for a tiling window manager
-  (setq show-trailing-whitespace t) ;; self-explanatory
-  (defalias 'yes-or-no-p 'y-or-n-p) ;; life is too short 
-  (setq indent-tabs-mode nil) ;; no tabs
-  ;; keep backup and save files in a dedicated directory
-  (setq backup-directory-alist
-        `((".*" . ,(concat user-emacs-directory "backups")))
-        auto-save-file-name-transforms
-        `((".*" ,(concat user-emacs-directory "backups") t)))
-  (setq create-lockfiles nil) ;; no need to create lockfiles
-  (set-charset-priority 'unicode) ;; utf8 everywhere
-  (setq locale-coding-system 'utf-8
-        coding-system-for-read 'utf-8
-        coding-system-for-write 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8)
-  (prefer-coding-system 'utf-8)
-  (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
-  (global-set-key (kbd "<escape>") 'keyboard-escape-quit) ;; escape quits everything
-  ;; Don't persist a custom file
-  (setq custom-file (make-temp-file "")) ; use a temp file as a placeholder
-  (setq custom-safe-themes t)            ; mark all themes as safe, since we can't persist now
-  (setq enable-local-variables :all)     ; fix =defvar= warnings
-  (setq delete-by-moving-to-trash t) ;; use trash-cli rather than rm when deleting files.
-  ;; less noise when compiling elisp
-  (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
-  (setq native-comp-async-report-warnings-errors nil)
-  (setq load-prefer-newer t)
-  (show-paren-mode t)
+  (use-package emacs
+    :demand t
+    :ensure nil
+    :init
+    (setq pixel-scroll-precision-large-scroll-height 40.0)
+    (pixel-scroll-precision-mode 1)
+    (setq enable-recursive-minibuffers t)
+    (setq backup-by-copying t)
+    (setq sentence-end-double-space nil)
+    (setq frame-inhibit-implied-resize t) ;; useless for a tiling window manager
+    (setq show-trailing-whitespace t) ;; self-explanatory
+    (defalias 'yes-or-no-p 'y-or-n-p) ;; life is too short 
+    (setq indent-tabs-mode nil) ;; no tabs
+    ;; keep backup and save files in a dedicated directory
+    (setq backup-directory-alist
+          `((".*" . ,(concat user-emacs-directory "backups")))
+          auto-save-file-name-transforms
+          `((".*" ,(concat user-emacs-directory "backups") t)))
+    (setq create-lockfiles nil) ;; no need to create lockfiles
+    (set-charset-priority 'unicode) ;; utf8 everywhere
+    (setq locale-coding-system 'utf-8
+          coding-system-for-read 'utf-8
+          coding-system-for-write 'utf-8)
+    (set-terminal-coding-system 'utf-8)
+    (set-keyboard-coding-system 'utf-8)
+    (set-selection-coding-system 'utf-8)
+    (prefer-coding-system 'utf-8)
+    (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
+    (global-set-key (kbd "<escape>") 'keyboard-escape-quit) ;; escape quits everything
+    ;; Don't persist a custom file
+    (setq custom-file (make-temp-file "")) ; use a temp file as a placeholder
+    (setq custom-safe-themes t)            ; mark all themes as safe, since we can't persist now
+    (setq enable-local-variables :all)     ; fix =defvar= warnings
+    (setq delete-by-moving-to-trash t) ;; use trash-cli rather than rm when deleting files.
+    ;; less noise when compiling elisp
+    (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+    (setq native-comp-async-report-warnings-errors nil)
+    (setq load-prefer-newer t)
+    (show-paren-mode t)
 
-  ;; Hide commands in M-x which don't work in the current mode
-  (setq read-extended-command-predicate #'command-completion-default-include-p))
+    ;; Hide commands in M-x which don't work in the current mode
+    (setq read-extended-command-predicate #'command-completion-default-include-p))
 #+END_SRC
 
 * Appearance

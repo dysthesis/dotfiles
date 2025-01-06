@@ -46,6 +46,8 @@
   :demand t
   :ensure nil
   :init
+  (setq pixel-scroll-precision-large-scroll-height 40.0)
+  (pixel-scroll-precision-mode 1)
   (setq enable-recursive-minibuffers t)
   (setq backup-by-copying t)
   (setq sentence-end-double-space nil)
