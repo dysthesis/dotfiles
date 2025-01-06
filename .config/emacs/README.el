@@ -93,6 +93,8 @@
  '(variable-pitch ((t (:family "SF Pro Display" :height 200))))
  '(fixed-pitch ((t ( :family "JBMono Nerd Font" :height 130)))))
 
+(set-face-attribute 'variable-pitch nil :family "SF Pro Display" :height 1.4)
+
 (setq inhibit-startup-message t)
 
 (scroll-bar-mode -1)        ; Disable visible scrollbar
@@ -699,29 +701,243 @@
   :ensure nil
   :general
   ("C-c c" 'org-capture)
-  ("C-c a" 'org-agenda)
   :custom
+  (org-directory "~/Documents/Org/")
+  (org-archive-location (concat org-directory "archive.org::* From =%s="))
+  (org-preview-latex-default-process 'dvisvgm)
+  (org-highlight-latex-and-related '(latex script entities))
+  :config
+  (custom-set-faces
+   '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
+   '(org-level-2 ((t (:inherit outline-2 :foreground "#ffffff" :height 1.2 :weight bold))))
+   '(org-level-3 ((t (:inherit outline-3 :foreground "#ffffff" :height 1.1 :weight bold))))
+   '(org-level-4 ((t (:inherit outline-4 :foreground "#ffffff" :height 1.0 :weight bold))))
+   '(org-level-5 ((t (:inherit outline-5 :foreground "#ffffff" :height 0.9 :weight bold))))
+   (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0))
+  (plist-put org-format-latex-options :foreground "White")
+  (plist-put org-format-latex-options :background nil)
+  (plist-put org-format-latex-options :scale 0.65))
+  (require 'org-indent)
+
+(defun dysthesis/agenda ()
+  (interactive)
+  (org-agenda nil "o"))
+
+(use-package org-agenda
+  :ensure nil
+  :after org evil
+  :general ("C-c a" 'dysthesis/agenda)
+  :custom
+  (org-todo-keywords
+   '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "PROG(p)" "|" "DONE(d)" "|" "CANCEL(c)")))
+  (org-agenda-sorting-strategy
+   '((urgency-up deadline-up priority-down effort-up)))
   (org-agenda-start-day "0d")
   (org-agenda-skip-scheduled-if-done t)
   (org-agenda-skip-deadline-if-done t)
   (org-agenda-include-deadlines t)
   (org-agenda-block-separator nil)
-  (org-directory "~/Documents/Org/")
-  (org-agenda-files (directory-files-recursively "~/Documents/Org/GTD/" "\\.org$"))
-  (org-preview-latex-default-process 'dvisvgm)
-  (org-highlight-latex-and-related '(latex script entities))
-  :config
-  (custom-set-faces
-     '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
-     '(org-level-2 ((t (:inherit outline-2 :foreground "#ffffff" :height 1.2 :weight bold))))
-     '(org-level-3 ((t (:inherit outline-3 :foreground "#ffffff" :height 1.1 :weight bold))))
-     '(org-level-4 ((t (:inherit outline-4 :foreground "#ffffff" :height 1.0 :weight bold))))
-     '(org-level-5 ((t (:inherit outline-5 :foreground "#ffffff" :height 0.9 :weight bold))))
-     (set-face-attribute 'org-document-title nil :foreground "#ffffff" :height 2.0))
-  (plist-put org-format-latex-options :foreground "White")
-  (plist-put org-format-latex-options :background nil)
-  (plist-put org-format-latex-options :scale 0.65))
-(require 'org-indent)
+  (org-agenda-files (directory-files-recursively (concat org-directory "GTD/") "\\.org$"))
+  (setq org-refile-targets '(("~/Org/GTD/gtd.org" :maxlevel . 2)
+                             ("~/Org/GTD/someday.org" :maxlevel . 2)
+                             ("~/Org/GTD/tickler.org" :maxlevel . 2)
+                             ("~/Org/GTD/routine.org" :maxlevel . 2)
+                             ("~/Org/GTD/reading.org" :maxlevel . 2))))
+
+(defun dysthesis/mark-inbox-todos ()
+  "Mark entries in the agenda whose category is inbox for future bulk action."
+  (let ((entries-marked 0)
+        (regexp "inbox")  ; Set the search term to inbox
+        category-at-point)
+    (save-excursion
+      (goto-char (point-min))
+      (goto-char (next-single-property-change (point) 'org-hd-marker))
+      (while (re-search-forward regexp nil t)
+        (setq category-at-point (get-text-property (match-beginning 0) 'org-category))
+        (if (or (get-char-property (point) 'invisible)
+                (not category-at-point))  ; Skip if category is nil
+            (beginning-of-line 2)
+          (when (string-match-p regexp category-at-point)
+            (setq entries-marked (1+ entries-marked))
+            (call-interactively 'org-agenda-bulk-mark))))
+      (unless entries-marked
+        (message "No entry matching 'inbox'.")))))
+
+(defun dysthesis/org-agenda-process-inbox-item ()
+  "Process a single item in the org-agenda."
+  (org-with-wide-buffer
+   (org-agenda-set-tags)
+   (org-agenda-priority)
+
+   ;; Get the marker for the current headline
+   (let* ((hdmarker (org-get-at-bol 'org-hd-marker))
+          (category (completing-read "Category: " '("University" "Home" "Tinkering" "Read"))))
+     ;; Switch to the buffer of the actual Org file
+     (with-current-buffer (marker-buffer hdmarker)
+       (goto-char (marker-position hdmarker))
+       ;; Set the category property
+       (org-set-property "CATEGORY" category))
+
+   (call-interactively 'dysthesis/my-org-agenda-set-effort)
+   (org-agenda-refile nil nil t))))
+
+(defvar dysthesis/org-current-effort "1:00"
+  "Current effort for agenda items.")
+(defun dysthesis/my-org-agenda-set-effort (effort)
+  "Set the effort property for the current headline."
+  (interactive
+   (list (read-string (format "EFFORT [%s]: " dysthesis/org-current-effort) nil nil dysthesis/org-current-effort)))
+  (setq dysthesis/org-current-effort effort)
+  (org-agenda-check-no-diary)
+  (let* ((hdmarker (or (org-get-at-bol 'org-hd-marker)
+                       (org-agenda-error)))
+         (buffer (marker-buffer hdmarker))
+         (pos (marker-position hdmarker))
+         (inhibit-read-only t)
+         newhead)
+    (org-with-remote-undo buffer
+      (with-current-buffer buffer
+        (widen)
+        (goto-char pos)
+        (org-fold-show-context 'agenda)
+        (funcall-interactively 'org-set-effort nil dysthesis/org-current-effort)
+        (end-of-line 1)
+        (setq newhead (org-get-heading)))
+      (org-agenda-change-all-lines newhead hdmarker))))
+
+(defun dysthesis/bulk-process-entries ()
+  ;; (let ())
+  (if (not (null org-agenda-bulk-marked-entries))
+      (let ((entries (reverse org-agenda-bulk-marked-entries))
+            (processed 0)
+            (skipped 0))
+        (dolist (e entries)
+          (let ((pos (text-property-any (point-min) (point-max) 'org-hd-marker e)))
+            (if (not pos)
+                (progn (message "Skipping removed entry at %s" e)
+                       (cl-incf skipped))
+              (goto-char pos)
+              (let (org-loop-over-headlines-in-active-region) (funcall 'dysthesis/org-agenda-process-inbox-item))
+              ;; `post-command-hook' is not run yet.  We make sure any
+              ;; pending log note is processed.
+              (when (or (memq 'org-add-log-note (default-value 'post-command-hook))
+                        (memq 'org-add-log-note post-command-hook))
+                (org-add-log-note))
+              (cl-incf processed))))
+        (org-agenda-redo)
+        (unless org-agenda-persistent-marks (org-agenda-bulk-unmark-all))
+        (message "Acted on %d entries%s%s"
+                 processed
+                 (if (= skipped 0)
+                     ""
+                   (format ", skipped %d (disappeared before their turn)"
+                           skipped))
+                 (if (not org-agenda-persistent-marks) "" " (kept marked)")))))
+
+(defun dysthesis/org-process-inbox ()
+  "Called in org-agenda-mode, processes all inbox items."
+  (interactive)
+  (dysthesis/mark-inbox-todos)
+  (dysthesis/bulk-process-entries))
+
+(setq org-log-done 'time
+      org-log-into-drawer t
+      org-log-state-notes-insert-after-drawers nil)
+(defun log-todo-next-creation-date (&rest ignore)
+  "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
+  (when (and (string= (org-get-todo-state) "NEXT")
+             (not (org-entry-get nil "ACTIVATED")))
+    (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
+(add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
+
+(defun dysthesis/org-inbox-capture ()
+  "Capture a task in agenda mode."
+  (interactive)
+  (org-capture nil "i"))
+(defun dysthesis/org-capture-todo ()
+  (interactive)
+  (org-capture nil "tt"))
+(defun dysthesis/org-capture-todo-with-deadline ()
+  (interactive)
+  (org-capture nil "td"))
+(defun dysthesis/org-capture-todo-with-schedule ()
+  (interactive)
+  (org-capture nil "ts"))
+
+(mapcar (lambda
+          (keymap)
+          (apply 'define-key org-mode-map (car keymap) (cadr keymap)))
+        '(("i" 'org-agenda-clock-in)
+         ("r" 'dysthesis/org-process-inbox)
+         ("R" 'org-agenda-refile)))
+
+(use-package org-super-agenda
+  :ensure t
+  :after org-agenda
+  :custom
+  (org-super-agenda-keep-order t) ;; do not re-sort entries when grouping
+  (org-agenda-custom-commands
+   '(("o" "Overview"
+      ((agenda "" ((org-agenda-span 'day)
+                   (org-super-agenda-groups
+                    '((:name "Today"
+                             :time-grid t
+                             :deadline today
+                             :scheduled today
+                             :order 0)
+                      (:habit t
+                              :order 1)
+                      (:name "Overdue"
+                             :deadline past
+                             :scheduled past
+                             :order 2)
+                      (:name "Upcoming"
+                             :and (:deadline future
+                                             :priority>= "B")
+                             :and (:scheduled future
+                                              :priority>= "B")
+                             :order 3)
+                      (:discard (:anything t))))))
+       (alltodo "" ((org-agenda-overriding-header "")
+                    (org-super-agenda-groups
+                     '((:name "Ongoing"
+                              :todo "PROG"
+                              :order 0)
+                       (:name "Up next"
+                              :todo "NEXT"
+                              :order 1)
+                       (:name "Waiting"
+                              :todo "WAIT"
+                              :order 2)
+                       (:name "Important"
+                              :priority "A"
+                              :order 3)
+                       (:name "Inbox"
+                              :file-path "inbox"
+                              :order 4)
+                       (:name "University"
+                              :category "University"
+                              :tag ("university"
+                                    "uni"
+                                    "assignment"
+                                    "exam")
+                              :order 5)
+                       (:name "Tinkering"
+                              :category "Tinkering"
+                              :tag ("nix"
+                                    "nixos"
+                                    "voidlinux"
+                                    "neovim"
+                                    "gentoo"
+                                    "emacs"
+                                    "tinker")
+                              :order 6)
+                       (:name "Reading list"
+                              :category "Read"
+                              :tag "read"
+                              :order 6)))))))))
+  :config (let ((inhibit-message t))
+            (org-super-agenda-mode)))
 
 (use-package doct
   :ensure t
@@ -862,6 +1078,38 @@
           ("header" . "› ")
           ("caption" . "☰ ")
           ("results" . "🠶")))
+
+(defface busy-1  '((t :foreground "black" :background "#eceff1")) "")
+(defface busy-2  '((t :foreground "black" :background "#cfd8dc")) "")
+(defface busy-3  '((t :foreground "black" :background "#b0bec5")) "")
+(defface busy-4  '((t :foreground "black" :background "#90a4ae")) "")
+(defface busy-5  '((t :foreground "white" :background "#78909c")) "")
+(defface busy-6  '((t :foreground "white" :background "#607d8b")) "")
+(defface busy-7  '((t :foreground "white" :background "#546e7a")) "")
+(defface busy-8  '((t :foreground "white" :background "#455a64")) "")
+(defface busy-9  '((t :foreground "white" :background "#37474f")) "")
+(defface busy-10 '((t :foreground "white" :background "#263238")) "")
+(defadvice calendar-generate-month
+    (after highlight-weekend-days (month year indent) activate)
+  "Highlight weekend days"
+  (dotimes (i 31)
+    (let* ((org-files org-agenda-files)
+           (date (list month (1+ i) year))
+           (count 0))
+      (dolist (file org-files)
+        (setq count (+ count (length (org-agenda-get-day-entries file date)))))
+      (cond ((= count 0) ())
+            ((= count 1) (calendar-mark-visible-date date 'busy-1))
+            ((= count 2) (calendar-mark-visible-date date 'busy-2))
+            ((= count 3) (calendar-mark-visible-date date 'busy-3))
+            ((= count 4) (calendar-mark-visible-date date 'busy-4))
+            ((= count 5) (calendar-mark-visible-date date 'busy-5))
+            ((= count 6) (calendar-mark-visible-date date 'busy-6))
+            ((= count 7) (calendar-mark-visible-date date 'busy-7))
+            ((= count 8) (calendar-mark-visible-date date 'busy-8))
+            ((= count 9) (calendar-mark-visible-date date 'busy-9))
+            (t  (calendar-mark-visible-date date 'busy-10)))
+      )))
 
 (use-package org-roam
   :ensure t

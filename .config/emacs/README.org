@@ -112,13 +112,15 @@ Define my preferred fixed pitch and variable pitch fonts.
 "JBMono Nerd Font" is a customised build of JetBrainsMono Nerd Font with some font features enabled, as Emacs doesn't seem to have the ability to enable it by itself.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "JBMono Nerd Font" :height 130)
-(set-fontset-font t nil (font-spec :size 20 :name "JBMono Nerd Font"))
-(setq-default line-spacing 0.2)
-(custom-theme-set-faces
- 'user
- '(variable-pitch ((t (:family "SF Pro Display" :height 200))))
- '(fixed-pitch ((t ( :family "JBMono Nerd Font" :height 130)))))
+  (set-face-attribute 'default nil :font "JBMono Nerd Font" :height 130)
+  (set-fontset-font t nil (font-spec :size 20 :name "JBMono Nerd Font"))
+  (setq-default line-spacing 0.2)
+  (custom-theme-set-faces
+   'user
+   '(variable-pitch ((t (:family "SF Pro Display" :height 200))))
+   '(fixed-pitch ((t ( :family "JBMono Nerd Font" :height 130)))))
+
+  (set-face-attribute 'variable-pitch nil :family "SF Pro Display" :height 1.4)
 #+END_SRC
 
 ** Remove default UI elements
@@ -921,21 +923,286 @@ Easily browse the Git history of files.
     :ensure nil
     :general
     ("C-c c" 'org-capture)
-    ("C-c a" 'org-agenda)
     :custom
-    (org-agenda-start-day "0d")
-    (org-agenda-skip-scheduled-if-done t)
-    (org-agenda-skip-deadline-if-done t)
-    (org-agenda-include-deadlines t)
-    (org-agenda-block-separator nil)
     (org-directory "~/Documents/Org/")
-    (org-agenda-files (directory-files-recursively "~/Documents/Org/GTD/" "\\.org$"))
+    (org-archive-location (concat org-directory "archive.org::* From =%s="))
     (org-preview-latex-default-process 'dvisvgm)
     (org-highlight-latex-and-related '(latex script entities))
     :config
     <<org-header-faces>>
     <<org-latex-config>>)
-  (require 'org-indent)
+    (require 'org-indent)
+#+END_SRC
+
+** Agenda
+
+#+BEGIN_SRC emacs-lisp
+  (defun dysthesis/agenda ()
+    (interactive)
+    (org-agenda nil "o"))
+
+  (use-package org-agenda
+    :ensure nil
+    :after org evil
+    :general ("C-c a" 'dysthesis/agenda)
+    :custom
+    (org-todo-keywords
+     '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "PROG(p)" "|" "DONE(d)" "|" "CANCEL(c)")))
+    (org-agenda-sorting-strategy
+     '((urgency-up deadline-up priority-down effort-up)))
+    (org-agenda-start-day "0d")
+    (org-agenda-skip-scheduled-if-done t)
+    (org-agenda-skip-deadline-if-done t)
+    (org-agenda-include-deadlines t)
+    (org-agenda-block-separator nil)
+    (org-agenda-files (directory-files-recursively (concat org-directory "GTD/") "\\.org$"))
+    (setq org-refile-targets '(("~/Org/GTD/gtd.org" :maxlevel . 2)
+                               ("~/Org/GTD/someday.org" :maxlevel . 2)
+                               ("~/Org/GTD/tickler.org" :maxlevel . 2)
+                               ("~/Org/GTD/routine.org" :maxlevel . 2)
+                               ("~/Org/GTD/reading.org" :maxlevel . 2))))
+#+END_SRC
+
+*** GTD functions
+Stolen from [[https://github.com/jethrokuan/dots/blob/master/.doom.d/config.el][Jethro Kuan's Emacs configuration]], and slightly modified. This section of the configuration is responsible for managing inbox items in an Org-agenda view. When you press =r= in an agenda view, it will start finding any inbox items and iterate through it, prompting you for tags, categories, timestamp, and refile targets. If the tag =someday= is *not* present, it will ask for a scheduled or deadline time too.
+
+How this version differs from Jethro's original version:
+- For some reason, the original =mark-inbox-todos= does not work, because =org-agenda-bulk-mark-regexp= does not behave as expected. Therefore, we iterate through each TODO item in the agenda and get their categories instead.
+
+**** Bulk select inbox tasks
+First, create a function which searches for all tasks with the category =inbox=. This includes any tasks from any files called =inbox.org=, since apparently, the file name is the default category. This function will loop through all entries in the current agenda view, and apply a regex to validate the task's category, marking any called 'inbox'.
+
+#+begin_src emacs-lisp
+(defun dysthesis/mark-inbox-todos ()
+  "Mark entries in the agenda whose category is inbox for future bulk action."
+  (let ((entries-marked 0)
+        (regexp "inbox")  ; Set the search term to inbox
+        category-at-point)
+    (save-excursion
+      (goto-char (point-min))
+      (goto-char (next-single-property-change (point) 'org-hd-marker))
+      (while (re-search-forward regexp nil t)
+        (setq category-at-point (get-text-property (match-beginning 0) 'org-category))
+        (if (or (get-char-property (point) 'invisible)
+                (not category-at-point))  ; Skip if category is nil
+            (beginning-of-line 2)
+          (when (string-match-p regexp category-at-point)
+            (setq entries-marked (1+ entries-marked))
+            (call-interactively 'org-agenda-bulk-mark))))
+      (unless entries-marked
+        (message "No entry matching 'inbox'.")))))
+#+end_src
+
+**** Process a single entry
+This function interactively sets the tags, priority, and category for a single task, and proceeds to refile it.
+
+#+begin_src emacs-lisp
+(defun dysthesis/org-agenda-process-inbox-item ()
+  "Process a single item in the org-agenda."
+  (org-with-wide-buffer
+   (org-agenda-set-tags)
+   (org-agenda-priority)
+
+   ;; Get the marker for the current headline
+   (let* ((hdmarker (org-get-at-bol 'org-hd-marker))
+          (category (completing-read "Category: " '("University" "Home" "Tinkering" "Read"))))
+     ;; Switch to the buffer of the actual Org file
+     (with-current-buffer (marker-buffer hdmarker)
+       (goto-char (marker-position hdmarker))
+       ;; Set the category property
+       (org-set-property "CATEGORY" category))
+
+   (call-interactively 'dysthesis/my-org-agenda-set-effort)
+   (org-agenda-refile nil nil t))))
+#+end_src
+
+***** Helper function to set the effort
+#+begin_src emacs-lisp
+(defvar dysthesis/org-current-effort "1:00"
+  "Current effort for agenda items.")
+(defun dysthesis/my-org-agenda-set-effort (effort)
+  "Set the effort property for the current headline."
+  (interactive
+   (list (read-string (format "EFFORT [%s]: " dysthesis/org-current-effort) nil nil dysthesis/org-current-effort)))
+  (setq dysthesis/org-current-effort effort)
+  (org-agenda-check-no-diary)
+  (let* ((hdmarker (or (org-get-at-bol 'org-hd-marker)
+                       (org-agenda-error)))
+         (buffer (marker-buffer hdmarker))
+         (pos (marker-position hdmarker))
+         (inhibit-read-only t)
+         newhead)
+    (org-with-remote-undo buffer
+      (with-current-buffer buffer
+        (widen)
+        (goto-char pos)
+        (org-fold-show-context 'agenda)
+        (funcall-interactively 'org-set-effort nil dysthesis/org-current-effort)
+        (end-of-line 1)
+        (setq newhead (org-get-heading)))
+      (org-agenda-change-all-lines newhead hdmarker))))
+#+end_src
+
+**** Process multiple entries
+This function applies the =dysthesis/org-agenda-process-inbox-item= function on every item that is bulk-marked, and the unmarks them.
+
+#+begin_src emacs-lisp
+(defun dysthesis/bulk-process-entries ()
+  ;; (let ())
+  (if (not (null org-agenda-bulk-marked-entries))
+      (let ((entries (reverse org-agenda-bulk-marked-entries))
+            (processed 0)
+            (skipped 0))
+        (dolist (e entries)
+          (let ((pos (text-property-any (point-min) (point-max) 'org-hd-marker e)))
+            (if (not pos)
+                (progn (message "Skipping removed entry at %s" e)
+                       (cl-incf skipped))
+              (goto-char pos)
+              (let (org-loop-over-headlines-in-active-region) (funcall 'dysthesis/org-agenda-process-inbox-item))
+              ;; `post-command-hook' is not run yet.  We make sure any
+              ;; pending log note is processed.
+              (when (or (memq 'org-add-log-note (default-value 'post-command-hook))
+                        (memq 'org-add-log-note post-command-hook))
+                (org-add-log-note))
+              (cl-incf processed))))
+        (org-agenda-redo)
+        (unless org-agenda-persistent-marks (org-agenda-bulk-unmark-all))
+        (message "Acted on %d entries%s%s"
+                 processed
+                 (if (= skipped 0)
+                     ""
+                   (format ", skipped %d (disappeared before their turn)"
+                           skipped))
+                 (if (not org-agenda-persistent-marks) "" " (kept marked)")))))
+#+end_src
+
+**** Process the entire inbox
+Combine the previously defined functions to process the entire inbox.
+
+#+begin_src emacs-lisp
+(defun dysthesis/org-process-inbox ()
+  "Called in org-agenda-mode, processes all inbox items."
+  (interactive)
+  (dysthesis/mark-inbox-todos)
+  (dysthesis/bulk-process-entries))
+#+end_src
+
+**** Miscellaneous helper functions
+#+begin_src emacs-lisp
+(setq org-log-done 'time
+      org-log-into-drawer t
+      org-log-state-notes-insert-after-drawers nil)
+(defun log-todo-next-creation-date (&rest ignore)
+  "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
+  (when (and (string= (org-get-todo-state) "NEXT")
+             (not (org-entry-get nil "ACTIVATED")))
+    (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
+(add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
+#+end_src
+
+**** Keybinding
+Make it easier to perform agenda-related operations.
+
+First, we define some functions.
+#+begin_src emacs-lisp
+(defun dysthesis/org-inbox-capture ()
+  "Capture a task in agenda mode."
+  (interactive)
+  (org-capture nil "i"))
+(defun dysthesis/org-capture-todo ()
+  (interactive)
+  (org-capture nil "tt"))
+(defun dysthesis/org-capture-todo-with-deadline ()
+  (interactive)
+  (org-capture nil "td"))
+(defun dysthesis/org-capture-todo-with-schedule ()
+  (interactive)
+  (org-capture nil "ts"))
+#+end_src
+
+Then map them.
+#+begin_src emacs-lisp
+  (mapcar (lambda
+            (keymap)
+            (apply 'define-key org-mode-map (car keymap) (cadr keymap)))
+          '(("i" 'org-agenda-clock-in)
+           ("r" 'dysthesis/org-process-inbox)
+           ("R" 'org-agenda-refile)))
+#+end_src
+
+*** Org-super-agenda
+
+Better agenda views.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-super-agenda
+    :ensure t
+    :after org-agenda
+    :custom
+    (org-super-agenda-keep-order t) ;; do not re-sort entries when grouping
+    (org-agenda-custom-commands
+     '(("o" "Overview"
+        ((agenda "" ((org-agenda-span 'day)
+                     (org-super-agenda-groups
+                      '((:name "Today"
+                               :time-grid t
+                               :deadline today
+                               :scheduled today
+                               :order 0)
+                        (:habit t
+                                :order 1)
+                        (:name "Overdue"
+                               :deadline past
+                               :scheduled past
+                               :order 2)
+                        (:name "Upcoming"
+                               :and (:deadline future
+                                               :priority>= "B")
+                               :and (:scheduled future
+                                                :priority>= "B")
+                               :order 3)
+                        (:discard (:anything t))))))
+         (alltodo "" ((org-agenda-overriding-header "")
+                      (org-super-agenda-groups
+                       '((:name "Ongoing"
+                                :todo "PROG"
+                                :order 0)
+                         (:name "Up next"
+                                :todo "NEXT"
+                                :order 1)
+                         (:name "Waiting"
+                                :todo "WAIT"
+                                :order 2)
+                         (:name "Important"
+                                :priority "A"
+                                :order 3)
+                         (:name "Inbox"
+                                :file-path "inbox"
+                                :order 4)
+                         (:name "University"
+                                :category "University"
+                                :tag ("university"
+                                      "uni"
+                                      "assignment"
+                                      "exam")
+                                :order 5)
+                         (:name "Tinkering"
+                                :category "Tinkering"
+                                :tag ("nix"
+                                      "nixos"
+                                      "voidlinux"
+                                      "neovim"
+                                      "gentoo"
+                                      "emacs"
+                                      "tinker")
+                                :order 6)
+                         (:name "Reading list"
+                                :category "Read"
+                                :tag "read"
+                                :order 6)))))))))
+    :config (let ((inhibit-message t))
+              (org-super-agenda-mode)))
 #+END_SRC
 
 ** Capture templates
@@ -988,7 +1255,7 @@ Easily browse the Git history of files.
 
 #+NAME: org-header-faces
 #+BEGIN_SRC emacs-lisp :noweb yes :tangle no
-(custom-set-faces
+  (custom-set-faces
    '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
    '(org-level-2 ((t (:inherit outline-2 :foreground "#ffffff" :height 1.2 :weight bold))))
    '(org-level-3 ((t (:inherit outline-3 :foreground "#ffffff" :height 1.1 :weight bold))))
@@ -1150,6 +1417,44 @@ Show emphasis markers only when hovered over.
            :foreground "#fab387")))
 #+END_SRC
 
+*** Calendar highlighting
+
+Highlight each day in the calendar according to the number of tasks due that day.
+
+#+BEGIN_SRC emacs-lisp
+  (defface busy-1  '((t :foreground "black" :background "#eceff1")) "")
+  (defface busy-2  '((t :foreground "black" :background "#cfd8dc")) "")
+  (defface busy-3  '((t :foreground "black" :background "#b0bec5")) "")
+  (defface busy-4  '((t :foreground "black" :background "#90a4ae")) "")
+  (defface busy-5  '((t :foreground "white" :background "#78909c")) "")
+  (defface busy-6  '((t :foreground "white" :background "#607d8b")) "")
+  (defface busy-7  '((t :foreground "white" :background "#546e7a")) "")
+  (defface busy-8  '((t :foreground "white" :background "#455a64")) "")
+  (defface busy-9  '((t :foreground "white" :background "#37474f")) "")
+  (defface busy-10 '((t :foreground "white" :background "#263238")) "")
+  (defadvice calendar-generate-month
+      (after highlight-weekend-days (month year indent) activate)
+    "Highlight weekend days"
+    (dotimes (i 31)
+      (let* ((org-files org-agenda-files)
+             (date (list month (1+ i) year))
+             (count 0))
+        (dolist (file org-files)
+          (setq count (+ count (length (org-agenda-get-day-entries file date)))))
+        (cond ((= count 0) ())
+              ((= count 1) (calendar-mark-visible-date date 'busy-1))
+              ((= count 2) (calendar-mark-visible-date date 'busy-2))
+              ((= count 3) (calendar-mark-visible-date date 'busy-3))
+              ((= count 4) (calendar-mark-visible-date date 'busy-4))
+              ((= count 5) (calendar-mark-visible-date date 'busy-5))
+              ((= count 6) (calendar-mark-visible-date date 'busy-6))
+              ((= count 7) (calendar-mark-visible-date date 'busy-7))
+              ((= count 8) (calendar-mark-visible-date date 'busy-8))
+              ((= count 9) (calendar-mark-visible-date date 'busy-9))
+              (t  (calendar-mark-visible-date date 'busy-10)))
+        )))
+#+END_SRC
+
 ** Org-roam
 
 #+BEGIN_SRC emacs-lisp
@@ -1284,6 +1589,3 @@ Toggles the source code when a LaTeX fragment is under the cursor; otherwise, re
 ** TODO Centre LaTeX previews
 
 * Current issues
-** TODO [#A] Fix the =Failed to discover workspace= error with rustic and eglot
-- [[https://github.com/brotzeit/rustic/issues/471][Relevant issue]]
-- For some reason, this is only an issue with =rustic= and not the official =rust-mode=, so we'll use that for now
