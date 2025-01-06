@@ -90,10 +90,10 @@
 (setq-default line-spacing 0.2)
 (custom-theme-set-faces
  'user
- '(variable-pitch ((t (:family "SF Pro Display" :height 200))))
+ '(variable-pitch ((t (:family "SF Pro Display" :height 130))))
  '(fixed-pitch ((t ( :family "JBMono Nerd Font" :height 130)))))
 
-(set-face-attribute 'variable-pitch nil :family "SF Pro Display" :height 1.4)
+(add-to-list 'face-font-rescale-alist '("SF Pro Display" . 1.2))
 
 (setq inhibit-startup-message t)
 
