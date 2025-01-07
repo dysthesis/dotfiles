@@ -245,7 +245,14 @@
 
 (use-package highlight-indent-guides
   :ensure t
-  :hook (prog-mode . highlight-indent-guides-mode))
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :custom
+  (highlight-indent-guides-method 'character)
+  (highlight-indent-guides-auto-enabled nil)
+  :config
+  (set-face-background 'highlight-indent-guides-odd-face "white")
+  (set-face-background 'highlight-indent-guides-even-face "dimgray")
+  (set-face-foreground 'highlight-indent-guides-character-face "dimgray"))
 
 (use-package evil 
   :ensure t
@@ -602,6 +609,10 @@
   ;; Rust is not enabled by default for eglot
   (add-hook 'rust-ts-mode-hook 'eglot-ensure)
 
+  (add-to-list 'eglot-server-programs
+               '((rust-ts-mode rust-mode) .
+                 ("rust-analyzer" :initializationOptions (:check (:command "clippy")))))
+
   ;; Disable eldoc support by default
   ;; TODO: due to limitations with emacs TUI/GUI compatibility and
   ;; server/client, this only applies to the emacs you start your config with
@@ -609,13 +620,13 @@
   (if (display-graphic-p)
       (add-to-list 'eglot-stay-out-of 'eldoc)))
 
-;; (use-package eglot-booster
-;;   :ensure (:type git
-;;                  :host github
-;;                  :repo "jdtsmith/eglot-booster")
-;;   :after eglot
-;;   :config
-;;   (eglot-booster-mode))
+(use-package eglot-booster
+  :ensure (:type git
+                 :host github
+                 :repo "jdtsmith/eglot-booster")
+  :after eglot
+  :config
+  (eglot-booster-mode))
 
 (use-package flycheck
   :ensure t
@@ -679,20 +690,20 @@
   :ensure t
   :hook (evil-normalize-keymaps . git-timemachine-hook))
 
-;; (use-package rustic
-;;   :ensure t
-;;   :config
-;;   (setq rustic-format-on-save nil)
-;;   :custom
-;;   (rustic-lsp-client 'eglot)
-;;   (rustic-cargo-use-last-stored-arguments t))
 (use-package rust-mode
   :ensure t
+  :custom
+  (rust-format-on-save t)
+  (treesit-language-available-p 'rust)
+  ;; (rust-mode-treesitter-derive t)
   :hook
   (rust-mode . eglot-ensure)
-  (rust-mode . turn-on-eldoc-mode))
-(use-package cargo
-  :ensure t)
+  (rust-mode . turn-on-eldoc-mode)
+  (rust-mode . (lambda () (setq indent-tabs-mode nil)))
+  ;; prettify symbols
+  (rust-mode . (lambda () (prettify-symbols-mode))))
+  (use-package cargo
+    :ensure t)
 
 (use-package flycheck-rust
   :ensure t

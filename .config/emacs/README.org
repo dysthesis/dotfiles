@@ -343,7 +343,14 @@ Highlight indentation levels.
 #+BEGIN_SRC emacs-lisp
   (use-package highlight-indent-guides
     :ensure t
-    :hook (prog-mode . highlight-indent-guides-mode))
+    :hook (prog-mode . highlight-indent-guides-mode)
+    :custom
+    (highlight-indent-guides-method 'character)
+    (highlight-indent-guides-auto-enabled nil)
+    :config
+    (set-face-background 'highlight-indent-guides-odd-face "white")
+    (set-face-background 'highlight-indent-guides-even-face "dimgray")
+    (set-face-foreground 'highlight-indent-guides-character-face "dimgray"))
 #+END_SRC
 
 * Navigation
@@ -747,25 +754,29 @@ Sorts and filters completion candidates by factors such as recency.
 * LSP client
 
 #+BEGIN_SRC emacs-lisp
-    ;; Enable lsp support
-    (use-package eglot
-      :defer t
-      :ensure nil
-      :hook ((prog-mode . (lambda ()
-                            (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode 'snippet-mode)
-                              (eglot-ensure)))))
-      :config
+  ;; Enable lsp support
+  (use-package eglot
+    :defer t
+    :ensure nil
+    :hook ((prog-mode . (lambda ()
+                          (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode 'snippet-mode)
+                            (eglot-ensure)))))
+    :config
 
-      ;; Example - add rust support
-      ;; Rust is not enabled by default for eglot
-      (add-hook 'rust-ts-mode-hook 'eglot-ensure)
+    ;; Example - add rust support
+    ;; Rust is not enabled by default for eglot
+    (add-hook 'rust-ts-mode-hook 'eglot-ensure)
 
-      ;; Disable eldoc support by default
-      ;; TODO: due to limitations with emacs TUI/GUI compatibility and
-      ;; server/client, this only applies to the emacs you start your config with
-      ;; If you always want popups in the minibuffer, remove these lines
-      (if (display-graphic-p)
-          (add-to-list 'eglot-stay-out-of 'eldoc))) 
+    (add-to-list 'eglot-server-programs
+                 '((rust-ts-mode rust-mode) .
+                   ("rust-analyzer" :initializationOptions (:check (:command "clippy")))))
+
+    ;; Disable eldoc support by default
+    ;; TODO: due to limitations with emacs TUI/GUI compatibility and
+    ;; server/client, this only applies to the emacs you start your config with
+    ;; If you always want popups in the minibuffer, remove these lines
+    (if (display-graphic-p)
+        (add-to-list 'eglot-stay-out-of 'eldoc))) 
 #+END_SRC
 
 Improve the performance of Eglot. This requires the installation of [[https://github.com/blahgeek/emacs-lsp-booster][emacs-lsp-booster]] as a binary on your system.
@@ -896,21 +907,21 @@ Easily browse the Git history of files.
 * Languages
 ** Rust
 
-=rustic= causes Rust buffers to crash for some reason, so we use =rust-mode= for now. I have yet to encounter a need for the extra features offered by =rustic=
+=rustic= causes Rust buffers to crash for some reason, so we use =rust-mode= for now. I have yet to encounter a need for the extra features offered by =rustic=.
 
 #+BEGIN_SRC emacs-lisp
-    ;; (use-package rustic
-    ;;   :ensure t
-    ;;   :config
-    ;;   (setq rustic-format-on-save nil)
-    ;;   :custom
-    ;;   (rustic-lsp-client 'eglot)
-    ;;   (rustic-cargo-use-last-stored-arguments t))
-    (use-package rust-mode
-      :ensure t
-      :hook
-      (rust-mode . eglot-ensure)
-      (rust-mode . turn-on-eldoc-mode))
+  (use-package rust-mode
+    :ensure t
+    :custom
+    (rust-format-on-save t)
+    (treesit-language-available-p 'rust)
+    ;; (rust-mode-treesitter-derive t)
+    :hook
+    (rust-mode . eglot-ensure)
+    (rust-mode . turn-on-eldoc-mode)
+    (rust-mode . (lambda () (setq indent-tabs-mode nil)))
+    ;; prettify symbols
+    (rust-mode . (lambda () (prettify-symbols-mode))))
     (use-package cargo
       :ensure t)
 #+END_SRC
@@ -1599,9 +1610,14 @@ Toggles the source code when a LaTeX fragment is under the cursor; otherwise, re
 ** TODO Centre LaTeX previews
 
 * Current issues
-** TODO [#A] Fix =rust-analyzer= causing Emacs to segfault
+** PROG [#A] Fix =rust-analyzer= causing Emacs to segfault
+:PROPERTIES:
+:ACTIVATED: [2025-01-07]
+:END:
 
 Initially, I thought it was specific to =rustic=, and that =rust-mode= did not suffer from the same issue. It turns out that the problem was independent from either plugins; it seems that it is an issue with =corfu= getting completions from =rust-analyzer=.
+
+*** Backtrace
 
 The backtrace appears to be as follows:
 
@@ -1651,4 +1667,15 @@ emacs(+0x1c2a5a) [0x56187fa08a5a]
 emacs(+0x1c3c72) [0x56187fa09c72]
 #+END_SRC
 
+*** Disabling =emacs-lsp-booster=
+
 This does not seem to be caused by =emac-lsp-booster=, as the segfault still occurs even with the =eglot-booster= plugin disabled.
+
+*** Downgrading Emacs
+
+A [[https://red.artemislena.eu/r/emacs/comments/1deb0yk/emacs_segfaulting_because_of_corfu/][Reddit thread]] suggested that the issue may be caused by the upgrade to Emacs 29.4, and that downgrading back to version 29.3 would fix the issue. I attempted this fix by
+
+- adding the ebuild for =app-editors/emacs-29.3-r3= to my personal ebuild repository, as Gentoo dropped it in their main repository, and
+- re-emerging =app-editors/emacs=,
+
+  but the problem still persists.

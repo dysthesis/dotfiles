@@ -27,3 +27,4 @@ fi
 
 
 [ -f "/home/demiurge/.ghcup/env" ] && . "/home/demiurge/.ghcup/env" # ghcup-env
+. "$HOME/.cargo/env"
