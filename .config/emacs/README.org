@@ -336,6 +336,16 @@ Display the actual colour as a background whenever entering a hexadecimal colour
 
 #+END_SRC
 
+** Indent guides
+
+Highlight indentation levels.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package highlight-indent-guides
+    :ensure t
+    :hook (prog-mode . highlight-indent-guides-mode))
+#+END_SRC
+
 * Navigation
 ** Evil mode
 
@@ -1589,3 +1599,54 @@ Toggles the source code when a LaTeX fragment is under the cursor; otherwise, re
 ** TODO Centre LaTeX previews
 
 * Current issues
+** TODO [#A] Fix =rust-analyzer= causing Emacs to segfault
+
+Initially, I thought it was specific to =rustic=, and that =rust-mode= did not suffer from the same issue. It turns out that the problem was independent from either plugins; it seems that it is an issue with =corfu= getting completions from =rust-analyzer=.
+
+The backtrace appears to be as follows:
+
+#+BEGIN_SRC
+Fatal error 11: Segmentation fault
+Backtrace:
+emacs(+0x1449cf) [0x56187f98a9cf]
+emacs(+0x27f3b) [0x56187f86df3b]
+emacs(+0x289b6) [0x56187f86e9b6]
+emacs(+0x2ad21c) [0x56187faf321c]
+/usr/lib64/libc.so.6(+0x41c70) [0x7f8aff650c70]
+emacs(+0x1d1938) [0x56187fa17938]
+emacs(+0x12ec01) [0x56187f974c01]
+emacs(+0x13c5d8) [0x56187f9825d8]
+emacs(+0x12b02b) [0x56187f97102b]
+emacs(+0x1f2801) [0x56187fa38801]
+/usr/bin/../lib64/emacs/29.4/native-lisp/29.4-487b1972/preloaded/subr-13adf6a6-bfb9f448.eln(F7369742d666f72_sit_for_0+0x19f) [0x7f8af80883df]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+/usr/lib64/emacs/29.4/native-lisp/29.4-487b1972/jsonrpc-e62a9c36-62ae7160.eln(F6a736f6e7270632d72657175657374_jsonrpc_request_0+0xa14) [0x7f8ad6843304]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+emacs(+0x1c3980) [0x56187fa09980]
+emacs(+0x218651) [0x56187fa5e651]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+emacs(+0x16351e) [0x56187f9a951e]
+/home/demiurge/.config/emacs/eln-cache/29.4-487b1972/prescient-8580340d-308d8591.eln(F707265736369656e742d66696c746572_prescient_filter_0+0xea) [0x7f8ad5684e2a]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+/home/demiurge/.config/emacs/eln-cache/29.4-487b1972/prescient-8580340d-308d8591.eln(F707265736369656e742d616c6c2d636f6d706c6574696f6e73_prescient_all_completions_0+0x57) [0x7f8ad5685d27]
+emacs(+0x218651) [0x56187fa5e651]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+/usr/bin/../lib64/emacs/29.4/native-lisp/29.4-487b1972/preloaded/minibuffer-1b0f548b-25462d74.eln(F636f6d706c6574696f6e2d2d736f6d65_completion__some_0+0x1e2) [0x7f8af8017882]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+/usr/bin/../lib64/emacs/29.4/native-lisp/29.4-487b1972/preloaded/minibuffer-1b0f548b-25462d74.eln(F636f6d706c6574696f6e2d2d6e74682d636f6d706c6574696f6e_completion__nth_completion_0+0x2d4) [0x7f8af801c944]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+/usr/bin/../lib64/emacs/29.4/native-lisp/29.4-487b1972/preloaded/minibuffer-1b0f548b-25462d74.eln(F636f6d706c6574696f6e2d616c6c2d636f6d706c6574696f6e73_completion_all_completions_0+0x50) [0x7f8af801cd00]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+emacs(+0x1c3980) [0x56187fa09980]
+emacs(+0x218651) [0x56187fa5e651]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+emacs(+0x1c3980) [0x56187fa09980]
+/home/demiurge/.config/emacs/eln-cache/29.4-487b1972/corfu-7e30ef4d-26fd3405.eln(F636f7266752d2d66696c7465722d636f6d706c6574696f6e73_corfu__filter_completions_0+0x199) [0x7f8ad56cacf9]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+/home/demiurge/.config/emacs/eln-cache/29.4-487b1972/corfu-7e30ef4d-26fd3405.eln(F636f7266752d2d7265636f6d70757465_corfu__recompute_0+0x29e) [0x7f8ad56cbd4e]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+/home/demiurge/.config/emacs/eln-cache/29.4-487b1972/corfu-7e30ef4d-26fd3405.eln(F636f7266752d2d757064617465_corfu__update_0+0x755) [0x7f8ad56ccfd5]
+emacs(+0x218651) [0x56187fa5e651]
+emacs(+0x1c2a5a) [0x56187fa08a5a]
+emacs(+0x1c3c72) [0x56187fa09c72]
+#+END_SRC

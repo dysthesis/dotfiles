@@ -243,6 +243,10 @@
   :ensure t
   :hook org-mode prog-mode)
 
+(use-package highlight-indent-guides
+  :ensure t
+  :hook (prog-mode . highlight-indent-guides-mode))
+
 (use-package evil 
   :ensure t
   :init
