@@ -243,16 +243,33 @@
   :ensure t
   :hook org-mode prog-mode)
 
-(use-package highlight-indent-guides
+(use-package indent-bars
   :ensure t
-  :hook (prog-mode . highlight-indent-guides-mode)
   :custom
-  (highlight-indent-guides-method 'character)
-  (highlight-indent-guides-auto-enabled nil)
-  :config
-  (set-face-background 'highlight-indent-guides-odd-face "white")
-  (set-face-background 'highlight-indent-guides-even-face "dimgray")
-  (set-face-foreground 'highlight-indent-guides-character-face "dimgray"))
+  (indent-bars-color '(highlight :face-bg t :blend 0.225))
+  (indent-bars-no-descend-string t)
+  (indent-bars-treesit-support t)
+  (indent-bars-treesit-wrap '((rust arguments parameters)))
+  (indent-bars-treesit-scope '((;; rust
+                                rust trait_item impl_item 
+                                macro_definition macro_invocation 
+                                struct_item enum_item mod_item 
+                                const_item let_declaration 
+                                function_item for_expression 
+                                if_expression loop_expression 
+                                while_expression match_expression 
+                                match_arm call_expression 
+                                token_tree token_tree_pattern 
+                                token_repetition
+                                ;; C/C++
+                                c argument_list parameter_list
+                                init_declarator parenthesized_expression)))
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+  (indent-bars-prefer-character t)
+  (indent-bars-treesit-scope '((python function_definition class_definition for_statement
+                                       if_statement with_statement while_statement)))
+  :hook ((prog-mode yaml-mode) . indent-bars-mode)
+  :config (require 'indent-bars-ts))
 
 (use-package evil 
   :ensure t
