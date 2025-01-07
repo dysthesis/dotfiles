@@ -55,6 +55,26 @@ Then, enable use-package support for it.
   (elpaca-use-package-mode))
 #+end_src
 
+** Using with Nix
+
+Refer to [[https://github.com/progfolio/elpaca/wiki/Usage-with-Nix][this article from the wiki]] on notes on using Elpaca with Nix.
+
+*** Retrieving build description
+
+#+BEGIN_SRC emacs-lisp
+  (defun dysthesis/nixos-p ()
+    "Return t if operating system is NixOS, nil otherwise."
+    (string-match-p "NixOS" (shell-command-to-string "uname -v")))
+
+  (defun dysthesis/nixos/get-emacs-build-date ()
+    "Return NixOS Emacs build date."
+    (string-match "--prefix.*emacs.*\\([[:digit:]]\\{8\\}\\)" system-configuration-options)
+    (string-to-number (match-string 1 system-configuration-options)))
+
+  ;; Run this before the elpaca.el is loaded. Before the installer in your init.el is a good spot.
+  (when (dysthesis/nixos-p) (setq elpaca-core-date (list (dysthesis/nixos/get-emacs-build-date))))
+#+END_SRC
+
 * Saner defaults
 
 Some of the Emacs defaults aren't great.
@@ -65,7 +85,7 @@ Some of the Emacs defaults aren't great.
     :ensure nil
     :init
     (setq pixel-scroll-precision-large-scroll-height 40.0)
-    (pixel-scroll-precision-mode 1)
+    (setq pixel-scroll-precision-mode 1)
     (setq enable-recursive-minibuffers t)
     (setq backup-by-copying t)
     (setq sentence-end-double-space nil)
@@ -119,7 +139,11 @@ Define my preferred fixed pitch and variable pitch fonts.
    'user
    '(variable-pitch ((t (:family "SF Pro Display" :height 130))))
    '(fixed-pitch ((t ( :family "JBMono Nerd Font" :height 130)))))
+#+END_SRC
 
+Scale the variable pitch font to match the fixed pitch font. Otherwise, it looks slightly smaller.
+
+#+BEGIN_SRC emacs-lisp
   (add-to-list 'face-font-rescale-alist '("SF Pro Display" . 1.2))
 #+END_SRC
 
@@ -768,9 +792,14 @@ Sorts and filters completion candidates by factors such as recency.
 #+END_SRC
 
 * LSP client
+** Eglot
+:PROPERTIES:
+:HEADER-ARGS:EMACS-LISP:  :noweb yes
+:END:
+
+A lighter-weight LSP client for Emacs, compared to =lsp-mode=.
 
 #+BEGIN_SRC emacs-lisp
-  ;; Enable lsp support
   (use-package eglot
     :defer t
     :ensure nil
@@ -778,23 +807,37 @@ Sorts and filters completion candidates by factors such as recency.
                           (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode 'snippet-mode)
                             (eglot-ensure)))))
     :config
-
-    ;; Example - add rust support
-    ;; Rust is not enabled by default for eglot
-    (add-hook 'rust-ts-mode-hook 'eglot-ensure)
-
-    (add-to-list 'eglot-server-programs
-                 '((rust-ts-mode rust-mode) .
-                   ("rust-analyzer" :initializationOptions (:check (:command "clippy")))))
-
+    <<eglot-server-programs>>
+    <<eglot-format-on-save>>
     ;; Disable eldoc support by default
     ;; TODO: due to limitations with emacs TUI/GUI compatibility and
     ;; server/client, this only applies to the emacs you start your config with
     ;; If you always want popups in the minibuffer, remove these lines
     (if (display-graphic-p)
-        (add-to-list 'eglot-stay-out-of 'eldoc))) 
+        (add-to-list 'eglot-stay-out-of 'eldoc)))
 #+END_SRC
 
+*** Server programs
+
+#+NAME: eglot-server-programs
+#+BEGIN_SRC emacs-lisp :tangle no
+  (with-eval-after-load 'eglot
+    (dolist (mode '((nix-mode . ("nixd"))
+                    ((rust-ts-mode rust-mode) . ("rust-analyzer"
+                                                 :initializationOptions (:check (:command "clippy"))))))
+      (add-to-list 'eglot-server-programs mode)))
+#+END_SRC
+
+*** Format on save
+
+#+NAME: eglot-format-on-save
+#+BEGIN_SRC emacs-lisp :tangle no
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (add-hook 'before-save-hook 'eglot-format nil t)))
+#+END_SRC
+
+*** Eglot-booster
 Improve the performance of Eglot. This requires the installation of [[https://github.com/blahgeek/emacs-lsp-booster][emacs-lsp-booster]] as a binary on your system.
 
 #+BEGIN_SRC emacs-lisp
@@ -805,6 +848,30 @@ Improve the performance of Eglot. This requires the installation of [[https://gi
     :after eglot
     :config
     (eglot-booster-mode))
+#+END_SRC
+
+** LSP-mode :disabled:
+
+The classic LSP client for Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package lsp-mode
+  ;;   :ensure t
+  ;;   :init
+  ;;   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  ;;   (setq lsp-keymap-prefix "C-c l")
+  ;;   :custom 
+  ;;   ;; Use Corfu over company
+  ;;   (lsp-completion-provider :none)
+  ;;   :hook ((rust-mode . lsp)
+  ;;          (c-mode . lsp)
+  ;;          ;; if you want which-key integration
+  ;;          (lsp-mode . lsp-enable-which-key-integration))
+  ;;   :commands lsp)
+
+  ;; (use-package lsp-ui
+  ;;   :ensure t
+  ;;   :commands lsp-ui-mode)
 #+END_SRC
 
 * Syntax checking
@@ -934,7 +1001,7 @@ Easily browse the Git history of files.
     ;; (rust-mode-treesitter-derive t)
     :hook
     (rust-mode . eglot-ensure)
-    (rust-mode . turn-on-eldoc-mode)
+    (rust-mode . eldoc-mode)
     (rust-mode . (lambda () (setq indent-tabs-mode nil)))
     ;; prettify symbols
     (rust-mode . (lambda () (prettify-symbols-mode))))
@@ -951,6 +1018,24 @@ Easily browse the Git history of files.
     :config
     (with-eval-after-load 'rust-mode
       (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+#+END_SRC
+
+** Nix
+
+#+BEGIN_SRC emacs-lisp
+  (use-package nix-mode
+    :ensure t
+    :mode "\\.nix\\'"
+    :hook (nix-mode . eglot-ensure))
+  (use-package nix-drv-mode
+    :after nix-mode
+    :mode "\\.drv\\'")
+  (use-package nix-shell
+    :after nix-mode
+    :commands (nix-shell-unpack nix-shell-configure nix-shell-build))
+  (use-package nix-repl
+    :after nix-mode
+    :commands (nix-repl))
 #+END_SRC
 
 * Org-mode
@@ -1493,33 +1578,111 @@ Highlight each day in the calendar according to the number of tasks due that day
 #+END_SRC
 
 ** Org-roam
+:PROPERTIES:
+:HEADER-ARGS:EMACS-LISP:  :noweb yes
+:END:
 
 #+BEGIN_SRC emacs-lisp
-    (use-package org-roam
-      :ensure t
-      :custom
-      (org-roam-directory (file-truename "~/Documents/Org/Roam/"))
-      :general
-      ("C-c n" '(:ignore t
-                         :wk "Org-roam"))
-      ("C-c n l" '(org-roam-buffer-toggle
-                   :wk "Toggle org-roam buffer"))
-      ("C-c n f" '(org-roam-node-find
-                   :wk "Find org-roam node"))
-      ("C-c n d" '(:keymap org-roam-dailies-map
-                           :package org-roam
-                           :wk "Org-roam dailies"))
-      ("C-c n i" '(org-roam-node-insert
-                   :wk "Insert org-roam node"))
-      ("C-c n c" '(org-roam-capture
-                   :wk "Capture into org-roam node"))
-      ;; Dailies
-      :config
-      ;; If you're using a vertical completion framework, you might want a more informative completion interface
-      (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-      (org-roam-db-autosync-mode)
-      ;; If using org-roam-protocol
-      (require 'org-roam-protocol))
+  (use-package org-roam
+    :ensure t
+    :custom
+    (org-roam-directory (file-truename "~/Documents/Org/Roam/"))
+    <<org-roam-capture-templates>>
+    <<org-roam-dailies-config>>
+    :general
+    ("C-c n" '(:ignore t
+                       :wk "Org-roam"))
+    ("C-c n l" '(org-roam-buffer-toggle
+                 :wk "Toggle org-roam buffer"))
+    ("C-c n f" '(org-roam-node-find
+                 :wk "Find org-roam node"))
+    ("C-c n d" '(:keymap org-roam-dailies-map
+                         :package org-roam
+                         :wk "Org-roam dailies"))
+    ("C-c n i" '(org-roam-node-insert
+                 :wk "Insert org-roam node"))
+    ("C-c n c" '(org-roam-capture
+                 :wk "Capture into org-roam node"))
+    ;; Dailies
+    :config
+    ;; If you're using a vertical completion framework, you might want a more informative completion interface
+    (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+    (org-roam-db-autosync-mode)
+    ;; If using org-roam-protocol
+    (require 'org-roam-protocol))
+#+END_SRC
+
+*** Capture templates
+
+#+name:org-roam-capture-templates
+#+BEGIN_SRC emacs-lisp :tangle no
+  (org-roam-capture-templates
+   '(("d" " Default" plain
+      "%?"
+      :if-new (file+head "${slug}.org"
+                         "#+title: ${title}\n#+filetags: :new:\n#+STARTUP: latexpreview")
+      :immediate-finish t
+      :unnarrowed t)
+     ("i" "󰆼 Index note" plain
+      "%?"
+      :if-new (file+head "${slug}.org"
+                         "#+title: ${title}\n#+filetags: :new:index:")
+      :immediate-finish t
+      :unarrowed t)
+     ("e" "󰖟 Elfeed" plain
+      "%?"
+      :target (file+head "Elfeed/${slug}.org"
+                         "#+title: ${title}\n#+filetags: :new:article:rss:\n#+STARTUP: latexpreview"
+                         ;;"#+filetags: :article:rss:\n"
+                         )
+      :unnarrowed t)
+     ("l" "󰙨 Literature note" plain
+      "%?"
+      :target
+      (file+head
+       "%(expand-file-name (or citar-org-roam-subdir \"\") org-roam-directory)/Literature/${citar-citekey}.org"
+       "#+title: ${note-title}.\n#+filetags: :new:\n#+created: %U\n#+last_modified: %U\n#+STARTUP: latexpreview\n\n* Annotations\n:PROPERTIES:\n:Custom_ID: ${citar-citekey}\n:NOTER_DOCUMENT: ${citar-file}\n:NOTER_PAGE: \n:END:\n\n")
+      :unnarrowed t)
+     ("d" " Idea" plain "%?"
+      :if-new
+      (file+head "${slug}.org" "#+title: ${title}\n#+filetags: :idea:new:\n#+STARTUP: latexpreview\n")
+      :immediate-finish t
+      :unnarrowed t)))
+#+END_SRC
+
+*** Org-roam-dailies
+
+#+NAME: org-roam-dailies-config
+#+BEGIN_SRC emacs-lisp :tangle no
+  (org-roam-dailies-capture-templates
+   '(("d" "default" entry "* %<%H:%M> %?"
+      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+  (org-roam-dailies-directory "Daily/")
+#+END_SRC
+
+*** Citar integration
+
+#+BEGIN_SRC emacs-lisp
+  (use-package citar-org-roam
+    :after (citar org-roam)
+    :custom
+    (citar-org-roam-capture-template-key "l")
+    (citar-org-roam-note-title-template "${author} - ${title}")
+    <<citar-org-roam-template-fields>>
+    :config (citar-org-roam-mode))
+#+END_SRC
+
+**** Template fields
+
+#+name:citar-org-roam-template-fields
+#+BEGIN_SRC emacs-lisp :tangle no
+  (citar-org-roam-template-fields
+   '((:citar-title . ("title"))
+     (:citar-author . ("author" "editor"))
+     (:citar-date . ("date" "year" "issued"))
+     (:citar-pages . ("pages"))
+     (:citar-type . ("=type="))
+     (:citar-file . ("file"))))
 #+END_SRC
 
 *** Timestamps
@@ -1564,6 +1727,59 @@ Add a creation date and maintain a last edited date for each Org-roam node.
          (magenta . "#f5c2e7"))))
 #+END_SRC
 
+** Org-ref
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-ref
+    :ensure t
+    :config
+    (setq
+     org-ref-get-pdf-filename-function
+     (lambda (key) (car (bibtex-completion-find-pdf key)))
+     org-ref-default-bibliography (list citar-bibliography)
+     ;;org-ref-bibliography-notes "~/Org/Roam/Literature/bibnotes.org"
+     org-ref-pdf-directory "~/Documents/Library/files"
+     org-ref-note-title-format "* %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
+     org-ref-notes-directory (concat org-roam-directory "Literature/")
+     org-ref-notes-function 'orb-edit-notes)
+
+    (setq
+     bibtex-completion-notes-path org-ref-notes-directory
+     bibtex-completion-bibliography org-ref-default-bibliography
+     bibtex-completion-library-path "~/Documents/Library/files/"
+     bibtex-completion-pdf-field "file"
+     bibtex-completion-notes-template-multiple-files
+     (concat
+      "#+TITLE: ${title}\n"
+      "#+ROAM_KEY: cite:${=key=}\n"
+      "* TODO Notes\n"
+      ":PROPERTIES:\n"
+      ":CUSTOM_ID: ${=key=}\n"
+      ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
+      ":AUTHOR: ${author-abbrev}\n"
+      ":JOURNAL: ${journaltitle}\n"
+      ":DATE: ${date}\n"
+      ":YEAR: ${year}\n"
+      ":DOI: ${doi}\n"
+      ":URL: ${url}\n"
+      ":END:\n\n")))
+#+END_SRC
+
+** Org-babel
+
+Org-babel is a literate programming module for Org-mode
+
+*** Auto-tangle
+
+Automatically tangle all code blocks on Org-mode files marked with =#+auto_tangle: t=
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-auto-tangle
+    :ensure t
+    :defer t
+    :hook (org-mode . org-auto-tangle-mode))
+#+END_SRC
+
 ** LaTeX
 *** Configurations
 
@@ -1586,6 +1802,49 @@ Toggles the source code when a LaTeX fragment is under the cursor; otherwise, re
       :after org
       :config
       (add-hook 'org-mode-hook 'org-fragtog-mode))
+#+END_SRC
+
+*** TikZ plot preview
+
+Render previews forTikZ plots inside LaTeX fragments in Org files.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-latex-packages-alist
+               '("" "tikz" t))
+
+  (eval-after-load "preview"
+    '(add-to-list 'preview-default-preamble "\\PreviewEnvironment{tikzpicture}" t))
+#+END_SRC
+
+* Bibliography
+** Citar
+
+#+BEGIN_SRC emacs-lisp
+  (use-package citar
+    :ensure t
+    :custom (citar-bibliography '((concat org-directory "Library.bib")))
+    :hook
+    ((org-mode LaTeX-mode) . citar-capf-setup)
+    :general ("C-c o" 'citar-open))
+
+  (defun my-citar-org-open-notes (key entry)
+    (let* ((bib (string-join (list my/bibtex-directory key ".bib")))
+           (org (string-join (list my/bibtex-directory key ".org")))
+           (new (not (file-exists-p org))))
+      (funcall citar-file-open-function org)
+      (when (and new (eq (buffer-size) 0))
+        (insert (format template
+                        (assoc-default "title" entry)
+                        user-full-name
+                        user-mail-address
+                        bib
+                        (with-temp-buffer
+                          (insert-file-contents bib)
+                          (buffer-string))))
+        (search-backward "|")
+        (delete-char 1))))
+
+  (setq-default citar-open-note-function 'my-citar-org-open-notes)
 #+END_SRC
 
 * Miscellaneous
@@ -1619,6 +1878,27 @@ Toggles the source code when a LaTeX fragment is under the cursor; otherwise, re
     (use-package evil
       :init
       (setq evil-undo-system 'undo-fu))
+#+END_SRC
+
+** Custom =PATH=
+
+Tell Emacs where my binaries are.
+
+#+BEGIN_SRC emacs-lisp
+  (setenv "PATH" (concat (getenv "PATH") ":/home/demiurge/.local/bin"))
+  (setq exec-path (append exec-path '("/home/demiurge/.local/bin")))
+#+END_SRC
+
+** Fix Elpaca not installing the =queue= package
+
+See [[https://github.com/progfolio/elpaca/issues/395][this Github issue in progfolio/elpaca]].
+
+#+BEGIN_SRC emacs-lisp
+  ;;(use-package elpaca
+  ;;  :init
+  ;;  (setf (alist-get 'remote (alist-get 'gnu-devel elpaca-menu-elpas)) "https://git.savannah.gnu.org/git/emacs/elpa.git/")
+  ;;  (elpaca-update-menus #'elpaca-menu-gnu-devel-elpa))
+  ;;(elpaca-wait)
 #+END_SRC
 
 * Todo
@@ -1695,3 +1975,56 @@ A [[https://red.artemislena.eu/r/emacs/comments/1deb0yk/emacs_segfaulting_becaus
 - re-emerging =app-editors/emacs=,
 
   but the problem still persists.
+
+*** Checking if LSP-mode has the same issue
+
+It does. The backtrace is as follows:
+
+#+BEGIN_SRC 
+Fatal error 11: Segmentation fault
+Backtrace:
+emacs(+0x1449cf) [0x55a0635c69cf]
+emacs(+0x27f3b) [0x55a0634a9f3b]
+emacs(+0x289b6) [0x55a0634aa9b6]
+emacs(+0x2ad21c) [0x55a06372f21c]
+/usr/lib64/libc.so.6(+0x41c70) [0x7f3b22050c70]
+emacs(+0x1d1938) [0x55a063653938]
+emacs(+0x12ec01) [0x55a0635b0c01]
+emacs(+0x13c5d8) [0x55a0635be5d8]
+emacs(+0x12b02b) [0x55a0635ad02b]
+emacs(+0x1f2801) [0x55a063674801]
+/usr/bin/../lib64/emacs/29.4/native-lisp/29.4-487b1972/preloaded/subr-13adf6a6-bfb9f448.eln(F7369742d666f72_sit_for_0+0x19f) [0x7f3b1d5333df]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+/home/demiurge/.config/emacs/eln-cache/29.4-487b1972/lsp-mode-379f09f3-0a1c00f6.eln(F6c73702d726571756573742d7768696c652d6e6f2d696e707574_lsp_request_while_no_input_0+0x427) [0x7f3afbe09af7]
+emacs(+0x218651) [0x55a06369a651]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+emacs(+0x16351e) [0x55a0635e551e]
+emacs(+0x218651) [0x55a06369a651]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+/usr/bin/../lib64/emacs/29.4/native-lisp/29.4-487b1972/preloaded/minibuffer-1b0f548b-25462d74.eln(F636f6d706c6574696f6e2d2d736f6d65_completion__some_0+0x1e2) [0x7f3b1d4c2882]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+/usr/bin/../lib64/emacs/29.4/native-lisp/29.4-487b1972/preloaded/minibuffer-1b0f548b-25462d74.eln(F636f6d706c6574696f6e2d2d6e74682d636f6d706c6574696f6e_completion__nth_completion_0+0x2d4) [0x7f3b1d4c7944]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+/usr/bin/../lib64/emacs/29.4/native-lisp/29.4-487b1972/preloaded/minibuffer-1b0f548b-25462d74.eln(F636f6d706c6574696f6e2d616c6c2d636f6d706c6574696f6e73_completion_all_completions_0+0x50) [0x7f3b1d4c7d00]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+emacs(+0x1c3980) [0x55a063645980]
+emacs(+0x218651) [0x55a06369a651]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+emacs(+0x1c3980) [0x55a063645980]
+/home/demiurge/.config/emacs/eln-cache/29.4-487b1972/corfu-7e30ef4d-26fd3405.eln(F636f7266752d2d66696c7465722d636f6d706c6574696f6e73_corfu__filter_completions_0+0x199) [0x7f3b08d98cf9]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+/home/demiurge/.config/emacs/eln-cache/29.4-487b1972/corfu-7e30ef4d-26fd3405.eln(F636f7266752d2d7265636f6d70757465_corfu__recompute_0+0x29e) [0x7f3b08d99d4e]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+/home/demiurge/.config/emacs/eln-cache/29.4-487b1972/corfu-7e30ef4d-26fd3405.eln(F636f7266752d2d757064617465_corfu__update_0+0x755) [0x7f3b08d9afd5]
+emacs(+0x218651) [0x55a06369a651]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+emacs(+0x1c3b58) [0x55a063645b58]
+emacs(+0x218651) [0x55a06369a651]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+emacs(+0x1c3b58) [0x55a063645b58]
+emacs(+0x218651) [0x55a06369a651]
+emacs(+0x1c2a5a) [0x55a063644a5a]
+...
+#+END_SRC
+
+On another note, though, I learned that =lsp-ui-mode= provides a lot of neat UI integration for =lsp-mode=. I wonder if something similar exists for =eglot=.
