@@ -609,13 +609,13 @@
   (if (display-graphic-p)
       (add-to-list 'eglot-stay-out-of 'eldoc)))
 
-(use-package eglot-booster
-  :ensure (:type git
-                 :host github
-                 :repo "jdtsmith/eglot-booster")
-  :after eglot
-  :config
-  (eglot-booster-mode))
+;; (use-package eglot-booster
+;;   :ensure (:type git
+;;                  :host github
+;;                  :repo "jdtsmith/eglot-booster")
+;;   :after eglot
+;;   :config
+;;   (eglot-booster-mode))
 
 (use-package flycheck
   :ensure t

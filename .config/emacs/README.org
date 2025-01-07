@@ -771,13 +771,13 @@ Sorts and filters completion candidates by factors such as recency.
 Improve the performance of Eglot. This requires the installation of [[https://github.com/blahgeek/emacs-lsp-booster][emacs-lsp-booster]] as a binary on your system.
 
 #+BEGIN_SRC emacs-lisp
-    (use-package eglot-booster
-      :ensure (:type git
-                     :host github
-                     :repo "jdtsmith/eglot-booster")
-      :after eglot
-      :config
-      (eglot-booster-mode))
+  (use-package eglot-booster
+    :ensure (:type git
+                   :host github
+                   :repo "jdtsmith/eglot-booster")
+    :after eglot
+    :config
+    (eglot-booster-mode))
 #+END_SRC
 
 * Syntax checking
@@ -1650,3 +1650,5 @@ emacs(+0x218651) [0x56187fa5e651]
 emacs(+0x1c2a5a) [0x56187fa08a5a]
 emacs(+0x1c3c72) [0x56187fa09c72]
 #+END_SRC
+
+This does not seem to be caused by =emac-lsp-booster=, as the segfault still occurs even with the =eglot-booster= plugin disabled.
