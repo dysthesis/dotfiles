@@ -1038,6 +1038,116 @@ Easily browse the Git history of files.
     :commands (nix-repl))
 #+END_SRC
 
+* Bibliography
+** Citar
+
+#+BEGIN_SRC emacs-lisp
+  (use-package citar
+    :ensure t
+    :custom (citar-bibliography '("~/Documents/Org/Library.bib"))
+    :hook
+    ((org-mode LaTeX-mode) . citar-capf-setup)
+    :general ("C-c o" 'citar-open))
+
+  (defun my-citar-org-open-notes (key entry)
+    (let* ((bib (string-join (list my/bibtex-directory key ".bib")))
+           (org (string-join (list my/bibtex-directory key ".org")))
+           (new (not (file-exists-p org))))
+      (funcall citar-file-open-function org)
+      (when (and new (eq (buffer-size) 0))
+        (insert (format template
+                        (assoc-default "title" entry)
+                        user-full-name
+                        user-mail-address
+                        bib
+                        (with-temp-buffer
+                          (insert-file-contents bib)
+                          (buffer-string))))
+        (search-backward "|")
+        (delete-char 1))))
+
+  (setq-default citar-open-note-function 'my-citar-org-open-notes)
+#+END_SRC
+
+* EPUB reading
+:PROPERTIES:
+:HEADER-ARGS:EMACS-LISP: :noweb yes
+:END:
+
+#+BEGIN_SRC emacs-lisp
+  (use-package nov
+    :ensure t
+    :mode ("\\.epub\\'" . nov-mode)
+    :general
+    <<nov-mode-keymap>>
+    :config
+    <<nov-disable-rendering-title>>
+    <<nov-setup>>)
+#+END_SRC
+
+** Keymaps
+
+#+name:nov-mode-keymap
+#+BEGIN_SRC emacs-lisp :tangle no
+  ("RET" 'nov-scroll-up)
+#+END_SRC
+
+** Disable rendering title
+#+name:nov-disable-rendering-title
+#+begin_src emacs-lisp :tangle no
+  (advice-add 'nov-render :override #'ignore)
+#+end_src
+
+** Setup function
+
+#+name:nov-setup
+#+begin_src emacs-lisp :tangle no
+  (defun +nov-mode-setup ()
+    "Tweak nov-mode to our liking."
+    (face-remap-add-relative 'variable-pitch
+                             :family "Georgia Pro"
+                             :height 1.4)
+    (face-remap-add-relative 'default :height 1.3)
+    (setq-local line-spacing 0.2
+                next-screen-context-lines 4
+                shr-use-colors nil)
+    (require 'visual-fill-column nil t)
+    (setq-local visual-fill-column-center-text t
+                visual-fill-column-width 81
+                nov-text-width 80)
+    (visual-fill-column-mode 1)
+    (hl-line-mode -1)
+    ;; Re-render with new display settings
+    (nov-render-document)
+    ;; Look up words with the dictionary.
+    (add-to-list '+lookup-definition-functions #'+lookup/dictionary-definition)
+    ;; Customise the mode-line to make it more minimal and relevant.
+    (setq-local
+     mode-line-format
+     `((:eval
+        (doom-modeline-segment--workspace-name))
+       (:eval
+        (doom-modeline-segment--window-number))
+       (:eval
+        (doom-modeline-segment--nov-info))
+       ,(propertize
+         " %P "
+         'face 'doom-modeline-buffer-minor-mode)
+       ,(propertize
+         " "
+         'face (if (doom-modeline--active) 'mode-line 'mode-line-inactive)
+         'display `((space
+                     :align-to
+                     (- (+ right right-fringe right-margin)
+                        ,(* (let ((width (doom-modeline--font-width)))
+                              (or (and (= width 1) 1)
+                                  (/ width (frame-char-width) 1.0)))
+                            (string-width
+                             (format-mode-line (cons "" '(:eval (doom-modeline-segment--major-mode))))))))))
+       (:eval (doom-modeline-segment--major-mode)))))
+  (add-hook 'nov-mode-hook #'+nov-mode-setup)
+#+end_src
+
 * Org-mode
 
 #+BEGIN_SRC emacs-lisp :noweb yes
@@ -1603,6 +1713,8 @@ Highlight each day in the calendar according to the number of tasks due that day
                  :wk "Insert org-roam node"))
     ("C-c n c" '(org-roam-capture
                  :wk "Capture into org-roam node"))
+    ("C-c n t" '(org-roam-tag-add :wk "Add tag to current org-roam node"))
+    ("C-c n a" '(org-roam-alias-add :wk "Add alias to current org-roam node"))
     ;; Dailies
     :config
     ;; If you're using a vertical completion framework, you might want a more informative completion interface
@@ -1664,12 +1776,13 @@ Highlight each day in the calendar according to the number of tasks due that day
 
 #+BEGIN_SRC emacs-lisp
   (use-package citar-org-roam
+    :ensure t
     :after (citar org-roam)
     :custom
     (citar-org-roam-capture-template-key "l")
     (citar-org-roam-note-title-template "${author} - ${title}")
     <<citar-org-roam-template-fields>>
-    :config (citar-org-roam-mode))
+    :config (citar-org-roam-mode 1))
 #+END_SRC
 
 **** Template fields
@@ -1736,17 +1849,17 @@ Add a creation date and maintain a last edited date for each Org-roam node.
     (setq
      org-ref-get-pdf-filename-function
      (lambda (key) (car (bibtex-completion-find-pdf key)))
-     org-ref-default-bibliography (list citar-bibliography)
+     org-ref-default-bibliography '("~/Documents/Org/Library.bib") 
      ;;org-ref-bibliography-notes "~/Org/Roam/Literature/bibnotes.org"
-     org-ref-pdf-directory "~/Documents/Library/files"
+     org-ref-pdf-directory "~/Documents/Org/Library/files"
      org-ref-note-title-format "* %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
-     org-ref-notes-directory (concat org-roam-directory "Literature/")
+     org-ref-notes-directory "~/Documents/Org/Roam/Literature/"
      org-ref-notes-function 'orb-edit-notes)
 
     (setq
      bibtex-completion-notes-path org-ref-notes-directory
      bibtex-completion-bibliography org-ref-default-bibliography
-     bibtex-completion-library-path "~/Documents/Library/files/"
+     bibtex-completion-library-path "~/Documents/Org/Library/files/"
      bibtex-completion-pdf-field "file"
      bibtex-completion-notes-template-multiple-files
      (concat
@@ -1763,6 +1876,53 @@ Add a creation date and maintain a last edited date for each Org-roam node.
       ":DOI: ${doi}\n"
       ":URL: ${url}\n"
       ":END:\n\n")))
+#+END_SRC
+
+** Org-noter
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-noter
+    :ensure t
+    :after (:any org pdf-view)
+    :config
+    (setq
+     ;; Please stop opening frames
+     org-noter-always-create-frame nil
+     ;; I want to see the whole file
+     org-noter-hide-other nil
+     ;; Everything is relative to the main notes file
+     org-noter-notes-search-path (list org-directory)))
+#+END_SRC
+
+** Org-remark
+
+Annotation of PDFs, websites, etc.
+
+#+BEGIN_Src emacs-lisp
+  (use-package org-remark
+    :ensure t
+    :bind (;; :bind keyword also implicitly defers org-remark itself.
+           ;; Keybindings before :map is set for global-map.
+           ("C-c m m" . org-remark-mark)
+           ("C-c m l" . org-remark-mark-line)
+           :map org-remark-mode-map
+           ("C-c m o" . org-remark-open)
+           ("C-c m ]" . org-remark-view-next)
+           ("C-c m [" . org-remark-view-prev)
+           ("C-c m r" . org-remark-remove)
+           ("C-c m d" . org-remark-delete))
+    ;; Alternative way to enable `org-remark-global-tracking-mode' in
+    ;; `after-init-hook'.
+    ;; :hook (after-init . org-remark-global-tracking-mode)
+    :init
+    ;; It is recommended that `org-remark-global-tracking-mode' be
+    ;; enabled when Emacs initializes. Alternatively, you can put it to
+    ;; `after-init-hook' as in the comment above
+    (org-remark-global-tracking-mode +1)
+    :config
+    (use-package org-remark-info :after info :config (org-remark-info-mode +1))
+    (use-package org-remark-eww  :after eww  :config (org-remark-eww-mode +1))
+    (use-package org-remark-nov  :after nov  :config (org-remark-nov-mode +1)))
 #+END_SRC
 
 ** Org-babel
@@ -1814,37 +1974,6 @@ Render previews forTikZ plots inside LaTeX fragments in Org files.
 
   (eval-after-load "preview"
     '(add-to-list 'preview-default-preamble "\\PreviewEnvironment{tikzpicture}" t))
-#+END_SRC
-
-* Bibliography
-** Citar
-
-#+BEGIN_SRC emacs-lisp
-  (use-package citar
-    :ensure t
-    :custom (citar-bibliography '((concat org-directory "Library.bib")))
-    :hook
-    ((org-mode LaTeX-mode) . citar-capf-setup)
-    :general ("C-c o" 'citar-open))
-
-  (defun my-citar-org-open-notes (key entry)
-    (let* ((bib (string-join (list my/bibtex-directory key ".bib")))
-           (org (string-join (list my/bibtex-directory key ".org")))
-           (new (not (file-exists-p org))))
-      (funcall citar-file-open-function org)
-      (when (and new (eq (buffer-size) 0))
-        (insert (format template
-                        (assoc-default "title" entry)
-                        user-full-name
-                        user-mail-address
-                        bib
-                        (with-temp-buffer
-                          (insert-file-contents bib)
-                          (buffer-string))))
-        (search-backward "|")
-        (delete-char 1))))
-
-  (setq-default citar-open-note-function 'my-citar-org-open-notes)
 #+END_SRC
 
 * Miscellaneous
