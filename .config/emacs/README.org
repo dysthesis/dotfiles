@@ -2029,13 +2029,13 @@ See [[https://github.com/progfolio/elpaca/issues/395][this Github issue in progf
   ;;  (elpaca-update-menus #'elpaca-menu-gnu-devel-elpa))
   ;;(elpaca-wait)
 #+END_SRC
-
 * Todo
 ** TODO Configure Org-roam
 ** TODO Centre LaTeX previews
 
 * Current issues
-** PROG [#A] Fix =rust-analyzer= causing Emacs to segfault
+** DONE [#A] Fix =rust-analyzer= causing Emacs to segfault
+CLOSED: [2025-01-09 Thu 08:25]
 :PROPERTIES:
 :ACTIVATED: [2025-01-07]
 :END:
@@ -2157,3 +2157,7 @@ emacs(+0x1c2a5a) [0x55a063644a5a]
 #+END_SRC
 
 On another note, though, I learned that =lsp-ui-mode= provides a lot of neat UI integration for =lsp-mode=. I wonder if something similar exists for =eglot=.
+
+*** Upgrading Emacs
+
+I unmasked Emacs 30.0.91 and upgraded it, and for now, the issue seems to be fixed.
