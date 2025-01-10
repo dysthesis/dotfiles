@@ -1,1 +1,0 @@
-("~/Documents/Projects/dwl/" "~/Documents/Projects/experiment/" "~/Documents/Org/" "~/Documents/Projects/laplace/" "~/Documents/Projects/exlings/" "~/Documents/Projects/eschatos/" "~/Documents/Projects/dwm-flexipatch/" "~/Documents/Projects/dwl-patches/" "~/Documents/Projects/dmenu-flexipatch/" "~/Documents/Projects/AoC/")
