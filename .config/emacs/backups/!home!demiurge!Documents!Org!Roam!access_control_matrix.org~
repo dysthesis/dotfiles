@@ -1,0 +1,19 @@
+:PROPERTIES:
+:ID:       32cd1f92-8a25-49ea-8828-459961af2752
+:mtime:    20250108090413
+:ctime:    20250108090413
+:ROAM_ALIASES: "access control matrix"
+:END:
+#+title: Access control matrix
+#+filetags: :new:
+#+STARTUP: latexpreview
+
+
+* Disadvantags
+
+Storing the full matrix is inefficient, as
+
+- the matrix is sparse, and
+- it is highly dynamic.
+
+To alleviate this, the access control matrix was compressed, resulting in the [[id:3fd40272-2b49-4411-8396-d446513ad79f][access control list]]

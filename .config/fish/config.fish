@@ -18,7 +18,6 @@ alias ytfzf="ytfzf -t -T kitty"
 alias gc="git commit -S -am"
 
 alias ':q'=exit
-alias ping=gping
 alias notes='tmux attach-session -t Notes || tmux new-session -s Notes -c ~/Documents/Notes/'
 
 # UNSW stuff

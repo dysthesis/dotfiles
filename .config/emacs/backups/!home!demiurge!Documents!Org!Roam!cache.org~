@@ -1,0 +1,19 @@
+:PROPERTIES:
+:ID:       cc876ce2-7ee6-4b6c-a8df-5504de5a0f4b
+:mtime:    20250108091720
+:ctime:    20250108091720
+:END:
+#+title: Cache
+#+filetags: :new:
+#+STARTUP: latexpreview
+
+Exploits [[id:4e50df21-ac6c-4d2e-b462-8b278ece4890][spatial]] and [[id:eff42ed3-acf0-4d10-aad9-3da6f84e1bd7][temporal]] locality.
+
+* Rate of transfer
+
+The rate of transfer in order from largest to smallest are as follows:
+
+1. register,
+2. CPU cache, and
+3. main memory.
+

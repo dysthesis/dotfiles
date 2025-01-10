@@ -1,0 +1,12 @@
+:PROPERTIES:
+:ID:       0219e173-5838-4037-9520-3b1c24b750b3
+:mtime:    20250109103525
+:ctime:    20250109103525
+:END:
+#+title: All policies and mechanisms operate under assumptions
+#+filetags: :new:
+#+STARTUP: latexpreview
+
+* Issues
+
+Assumptions can be implicit or poorly understood. This can lead to vulnerabilities.

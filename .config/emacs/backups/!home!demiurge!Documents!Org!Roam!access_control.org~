@@ -1,0 +1,15 @@
+:PROPERTIES:
+:ID:       517e0eed-7ded-44fb-9d94-0c31a3da15e0
+:mtime:    20250108090417
+:ctime:    20250108090417
+:END:
+#+title: Access control
+#+filetags: :new:
+#+STARTUP: latexpreview
+
+An [[id:77530c92-195f-4edc-8c07-261ef8a5c964][operating system]] mechanism which defines /who/ can access /what/ in /what ways/.
+
+* Models
+
+- [[id:32cd1f92-8a25-49ea-8828-459961af2752][Access control matrix]]
+

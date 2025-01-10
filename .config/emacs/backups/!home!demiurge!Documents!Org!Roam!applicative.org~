@@ -1,0 +1,42 @@
+:PROPERTIES:
+:ID:       7fad1814-3bdc-4813-a987-ee2b3b9a82c4
+:mtime:    20250109103758
+:ctime:    20250109103758
+:END:
+#+title: Applicative
+#+filetags: :new:
+#+STARTUP: latexpreview
+
+=Applicative= is a subclass of [Functor](Functor.md), defined as
+
+#+begin_src haskell
+class Functor f => Applicative f
+    where
+        pure    :: a -> f a
+        (<*>)   :: f (a -> b) -> f a -> f b
+#+end_src
+
+What functors effectively do is that it applies a "wrapped" function on a "wrapped" value.[^1]
+
+## Usage
+
+Regular functions, such as
+
+===hs
+f a b c d
+===
+
+can be applied to arguments that are instances of =Applicative=, such as [Maybe](Maybe.md), by using the pattern
+
+===hs
+pure f <*> ma <*> mb <*> mc <*> md
+===
+
+where =<*>= is left-associative.[^2]
+
+## Relationship
+
+- [Relationship between Applicative and Functor](Relationship%20between%20Applicative%20and%20Functor.md)
+
+[^1]: [Functors, Applicatives, And Monads In Pictures](https://www.adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html)
+[^2]: COMP3141 2024 T2 Lecture 6

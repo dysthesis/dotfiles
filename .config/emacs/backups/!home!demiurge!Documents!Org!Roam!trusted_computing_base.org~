@@ -1,0 +1,13 @@
+:PROPERTIES:
+:ID:       b0403da9-9a6b-4c56-ad13-a4a8691f7dfd
+:mtime:    20250109103625
+:ctime:    20250109103625
+:END:
+#+title: Trusted computing base
+#+filetags: :new:
+#+STARTUP: latexpreview
+
+The set of all trusted entities.
+
+One of the [[id:d7bcb61b-3cb1-47e1-864c-005593ce48c4][Assumptions]] made when designing the security of an [operating system](Operating%20systems.md).
+
