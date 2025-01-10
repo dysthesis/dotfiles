@@ -551,9 +551,18 @@
   ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345) ;; Complete Unicode char using RFC 1345 mnemonics
   )
 
+(use-package yasnippet
+  :ensure t
+  :commands (yas-global-mode)
+  :hook ((text-mode
+          prog-mode
+          conf-mode
+          snippet-mode) . yas-minor-mode)
+  :custom
+  (yas-snippet-dirs '("~/.config/emacs/snippets/")))
 (use-package yasnippet-snippets
   :ensure t
-  :hook (prog-mode . yas-minor-mode))
+  :after yasnippet)
 
 (use-package consult
   :ensure t
@@ -675,10 +684,28 @@
 ;;   :ensure t
 ;;   :commands lsp-ui-mode)
 
-(use-package flycheck
-  :ensure t
+(use-package flymake
+  :ensure nil
+  :after (consult eglot)
+  :general
+  (dysthesis/leader-keys
+   :keymaps 'flymake-mode-map
+   "el" '(consult-flymake :wk "List errors")) ;; depends on consult
+  :hook
+  (prog-mode . flymake-mode)
+  (flymake-mode . (lambda () (or (ignore-errors flymake-show-project-diagnostics)
+                                 (flymake-show-buffer-diagnostics))))
+  :custom
+  (flymake-no-changes-timeout nil)
+  :general
+  (general-nmap "en" 'flymake-goto-next-error)
+  (general-nmap "ep" 'flymake-goto-prev-error)
+  
   :config
-  (add-hook 'after-init-hook #'global-flycheck-mode))
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Flymake diagnostics.*?\\*\\'"
+                 display-buffer-in-side-window  (window-parameters (window-height 0.10)) (side . bottom)))
+  )
 
 (use-package aggressive-indent
   :ensure t
@@ -751,13 +778,6 @@
   (rust-mode . (lambda () (prettify-symbols-mode))))
   (use-package cargo
     :ensure t)
-
-(use-package flycheck-rust
-  :ensure t
-  :after flycheck
-  :config
-  (with-eval-after-load 'rust-mode
-    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 
 (use-package nix-mode
   :ensure t
