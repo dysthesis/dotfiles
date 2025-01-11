@@ -577,7 +577,6 @@
     (setq-local completion-at-point-functions
                 (cons #'tempel-expand
                       completion-at-point-functions)))
-  (tempel-setup-capf)
 
   (add-hook 'conf-mode-hook 'tempel-setup-capf)
   (add-hook 'prog-mode-hook 'tempel-setup-capf)
@@ -667,12 +666,57 @@
   :init
   (vertico-prescient-mode 1))
 
+(use-package eldoc-box
+  :ensure t
+  :after (eldoc eglot)
+  :config (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
+
+(defvar +lsp--default-read-process-output-max nil)
+(defvar +lsp--default-gcmh-high-cons-threshold nil)
+(defvar +lsp--optimization-init-p nil)
+
+(define-minor-mode +lsp-optimization-mode
+  "Deploys universal GC and IPC optimizations for `lsp-mode' and `eglot'."
+  :global t
+  :init-value nil
+  (if (not +lsp-optimization-mode)
+      (setq-default read-process-output-max +lsp--default-read-process-output-max
+                    gcmh-high-cons-threshold +lsp--default-gcmh-high-cons-threshold
+                    +lsp--optimization-init-p nil)
+    ;; Only apply these settings once!
+    (unless +lsp--optimization-init-p
+      (setq +lsp--default-read-process-output-max (default-value 'read-process-output-max)
+            +lsp--default-gcmh-high-cons-threshold (default-value 'gcmh-high-cons-threshold))
+      (setq-default read-process-output-max (* 1024 1024))
+      ;; REVIEW LSP causes a lot of allocations, with or without the native JSON
+      ;;        library, so we up the GC threshold to stave off GC-induced
+      ;;        slowdowns/freezes. Doom uses `gcmh' to enforce its GC strategy,
+      ;;        so we modify its variables rather than `gc-cons-threshold'
+      ;;        directly.
+      (setq-default gcmh-high-cons-threshold (* 2 +lsp--default-gcmh-high-cons-threshold))
+      (gcmh-set-high-threshold)
+      (setq +lsp--optimization-init-p t))))
+
 (use-package eglot
   :defer t
   :ensure nil
-  :hook ((prog-mode . (lambda ()
-                        (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode 'snippet-mode)
-                          (eglot-ensure)))))
+  :hook
+  (prog-mode . (lambda ()
+                 (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode 'snippet-mode)
+                   (eglot-ensure))))
+  (eglot-managed-mode . +lsp-optimization-mode)
+  :custom
+  (eglot-sync-connect 1)
+  (eglot-autoshutdown t)
+  ;; NOTE: We disable eglot-auto-display-help-buffer because :select t in
+  ;;   its popup rule causes eglot to steal focus too often.
+  (eglot-auto-display-help-buffer nil)
+  :general
+  (start/leader-keys
+   "c" '(:ignore t :which-key "Code")
+   "c <escape>" '(keyboard-escape-quit :which-key t)
+   "c r" '(eglot-rename :which-key "Rename")
+   "c a" '(eglot-code-actions :which-key "Actions"))
   :config
   (with-eval-after-load 'eglot
     (dolist (mode '((nix-mode . ("nixd"))
@@ -681,13 +725,7 @@
       (add-to-list 'eglot-server-programs mode)))
   (add-hook 'prog-mode-hook
             (lambda ()
-              (add-hook 'before-save-hook 'eglot-format nil t)))
-  ;; Disable eldoc support by default
-  ;; TODO: due to limitations with emacs TUI/GUI compatibility and
-  ;; server/client, this only applies to the emacs you start your config with
-  ;; If you always want popups in the minibuffer, remove these lines
-  (if (display-graphic-p)
-      (add-to-list 'eglot-stay-out-of 'eldoc)))
+              (add-hook 'before-save-hook 'eglot-format nil t))))
 
 (use-package eglot-booster
   :ensure (:type git
@@ -697,29 +735,18 @@
   :config
   (eglot-booster-mode))
 
-;; (use-package lsp-mode
-;;   :ensure t
-;;   :init
-;;   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-;;   (setq lsp-keymap-prefix "C-c l")
-;;   :custom 
-;;   ;; Use Corfu over company
-;;   (lsp-completion-provider :none)
-;;   :hook ((rust-mode . lsp)
-;;          (c-mode . lsp)
-;;          ;; if you want which-key integration
-;;          (lsp-mode . lsp-enable-which-key-integration))
-;;   :commands lsp)
-
-;; (use-package lsp-ui
-;;   :ensure t
-;;   :commands lsp-ui-mode)
+(use-package consult-eglot
+  :ensure t
+  :after (eglot consult)
+  :general
+  (start/leader-keys
+	     "c s" '(consult-eglot-symbols :wk "Code Symbols")))
 
 (use-package flymake
   :ensure nil
   :after (consult eglot)
   :general
-  (dysthesis/leader-keys
+  (start/leader-keys
    :keymaps 'flymake-mode-map
    "el" '(consult-flymake :wk "List errors")) ;; depends on consult
   :hook
@@ -730,13 +757,7 @@
   (flymake-no-changes-timeout nil)
   :general
   (general-nmap "en" 'flymake-goto-next-error)
-  (general-nmap "ep" 'flymake-goto-prev-error)
-  
-  :config
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Flymake diagnostics.*?\\*\\'"
-                 display-buffer-in-side-window  (window-parameters (window-height 0.10)) (side . bottom)))
-  )
+  (general-nmap "ep" 'flymake-goto-prev-error))
 
 (use-package aggressive-indent
   :ensure t
@@ -750,6 +771,13 @@
   (prog-mode . global-tree-sitter-mode))
 (use-package tree-sitter-langs
   :ensure t)
+(use-package treesit-auto
+  :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 (use-package evil-textobj-tree-sitter
   :ensure t
@@ -823,6 +851,8 @@
 (use-package nix-repl
   :after nix-mode
   :commands (nix-repl))
+
+(use-package haskell-mode :ensure t)
 
 (use-package citar
   :ensure t
@@ -1543,3 +1573,7 @@
 ;;  (setf (alist-get 'remote (alist-get 'gnu-devel elpaca-menu-elpas)) "https://git.savannah.gnu.org/git/emacs/elpa.git/")
 ;;  (elpaca-update-menus #'elpaca-menu-gnu-devel-elpa))
 ;;(elpaca-wait)
+
+(use-package gcmh
+  :ensure t
+  :config (gcmh-mode 1))

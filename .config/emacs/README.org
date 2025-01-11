@@ -400,69 +400,69 @@ Highlight indentation levels.
 Enable Vim-like keybindings in Emacs.
 
 #+BEGIN_SRC emacs-lisp
-    (use-package evil 
-      :ensure t
-      :init
-      (setq evil-respect-visual-line-mode t) ;; respect visual lines
+  (use-package evil 
+    :ensure t
+    :init
+    (setq evil-respect-visual-line-mode t) ;; respect visual lines
 
-      (setq evil-search-module 'isearch) ;; use emacs' built-in search functionality.
+    (setq evil-search-module 'isearch) ;; use emacs' built-in search functionality.
 
-      (setq evil-want-C-u-scroll t) ;; allow scroll up with 'C-u'
-      (setq evil-want-C-d-scroll t) ;; allow scroll down with 'C-d'
+    (setq evil-want-C-u-scroll t) ;; allow scroll up with 'C-u'
+    (setq evil-want-C-d-scroll t) ;; allow scroll down with 'C-d'
 
-      (setq evil-want-integration t) ;; necessary for evil collection
-      (setq evil-want-keybinding nil)
+    (setq evil-want-integration t) ;; necessary for evil collection
+    (setq evil-want-keybinding nil)
 
-      (setq evil-split-window-below t) ;; split windows created below
-      (setq evil-vsplit-window-right t) ;; vertically split windows created to the right
+    (setq evil-split-window-below t) ;; split windows created below
+    (setq evil-vsplit-window-right t) ;; vertically split windows created to the right
 
-      (setq evil-want-C-i-jump nil) ;; hopefully this will fix weird tab behaviour
+    (setq evil-want-C-i-jump nil) ;; hopefully this will fix weird tab behaviour
 
-      (setq evil-undo-system 'undo-redo) ;; undo via 'u', and redo the undone change via 'C-r'; only available in emacs 28+.
-      :config
-      (evil-mode 1))
+    (setq evil-undo-system 'undo-redo) ;; undo via 'u', and redo the undone change via 'C-r'; only available in emacs 28+.
+    :config
+    (evil-mode 1))
 
-    (global-unset-key (kbd "C-j"))
-    (global-set-key (kbd "C-h") #'evil-window-left)
-    (global-set-key (kbd "C-j") #'evil-window-down)
-    (global-set-key (kbd "C-k") #'evil-window-up)
-    (global-set-key (kbd "C-l") #'evil-window-right)
+  (global-unset-key (kbd "C-j"))
+  (global-set-key (kbd "C-h") #'evil-window-left)
+  (global-set-key (kbd "C-j") #'evil-window-down)
+  (global-set-key (kbd "C-k") #'evil-window-up)
+  (global-set-key (kbd "C-l") #'evil-window-right)
 
-    (use-package evil-collection ;; evilifies a bunch of things
-      :ensure t
-      :after evil
-      :init
-      (setq evil-collection-outline-bind-tab-p t) ;; '<TAB>' cycles visibility in 'outline-minor-mode'
-      ;; If I want to incrementally enable evil-collection mode-by-mode, I can do something like the following:
-      ;; (setq evil-collection-mode-list nil) ;; I don't like surprises
-      ;; (add-to-list 'evil-collection-mode-list 'magit) ;; evilify magit
-      ;; (add-to-list 'evil-collection-mode-list '(pdf pdf-view)) ;; evilify pdf-view
-      :config
-      (evil-collection-init))
+  (use-package evil-collection ;; evilifies a bunch of things
+    :ensure t
+    :after evil
+    :init
+    (setq evil-collection-outline-bind-tab-p t) ;; '<TAB>' cycles visibility in 'outline-minor-mode'
+    ;; If I want to incrementally enable evil-collection mode-by-mode, I can do something like the following:
+    ;; (setq evil-collection-mode-list nil) ;; I don't like surprises
+    ;; (add-to-list 'evil-collection-mode-list 'magit) ;; evilify magit
+    ;; (add-to-list 'evil-collection-mode-list '(pdf pdf-view)) ;; evilify pdf-view
+    :config
+    (evil-collection-init))
 
-    (use-package evil-commentary
-      :ensure t
-      :after evil
-      :config
-      (evil-commentary-mode)) ;; globally enable evil-commentary
+  (use-package evil-commentary
+    :ensure t
+    :after evil
+    :config
+    (evil-commentary-mode)) ;; globally enable evil-commentary
 
-    (use-package evil-surround
-      :ensure t
-      :after evil
-      :config
-      (global-evil-surround-mode 1)) ;; globally enable evil-surround
+  (use-package evil-surround
+    :ensure t
+    :after evil
+    :config
+    (global-evil-surround-mode 1)) ;; globally enable evil-surround
 
-    (use-package evil-goggles
-      :ensure t
-      :after evil
-      :config
-      (evil-goggles-mode)
+  (use-package evil-goggles
+    :ensure t
+    :after evil
+    :config
+    (evil-goggles-mode)
 
-      ;; optionally use diff-mode's faces; as a result, deleted text
-      ;; will be highlighed with `diff-removed` face which is typically
-      ;; some red color (as defined by the color theme)
-      ;; other faces such as `diff-added` will be used for other actions
-      (evil-goggles-use-diff-faces))
+    ;; optionally use diff-mode's faces; as a result, deleted text
+    ;; will be highlighed with `diff-removed` face which is typically
+    ;; some red color (as defined by the color theme)
+    ;; other faces such as `diff-added` will be used for other actions
+    (evil-goggles-use-diff-faces))
 #+END_SRC
 
 ** General
@@ -841,7 +841,50 @@ Sorts and filters completion candidates by factors such as recency.
     (vertico-prescient-mode 1))
 #+END_SRC
 
+** ElDoc box
+
+A childframe box for ElDoc documentations.
+
+#+begin_src emacs-lisp
+  (use-package eldoc-box
+    :ensure t
+    :after (eldoc eglot)
+    :config (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
+#+end_src
+
 * LSP client
+** Optimisations
+
+Yoinked from [[https://github.com/doomemacs/doomemacs/blob/1a8636056051ad52c8df33adc898699451c425a7/modules/tools/lsp/%2Beglot.el#LL11][Doom Emacs]].
+
+#+begin_src emacs-lisp
+  (defvar +lsp--default-read-process-output-max nil)
+  (defvar +lsp--default-gcmh-high-cons-threshold nil)
+  (defvar +lsp--optimization-init-p nil)
+
+  (define-minor-mode +lsp-optimization-mode
+    "Deploys universal GC and IPC optimizations for `lsp-mode' and `eglot'."
+    :global t
+    :init-value nil
+    (if (not +lsp-optimization-mode)
+        (setq-default read-process-output-max +lsp--default-read-process-output-max
+                      gcmh-high-cons-threshold +lsp--default-gcmh-high-cons-threshold
+                      +lsp--optimization-init-p nil)
+      ;; Only apply these settings once!
+      (unless +lsp--optimization-init-p
+        (setq +lsp--default-read-process-output-max (default-value 'read-process-output-max)
+              +lsp--default-gcmh-high-cons-threshold (default-value 'gcmh-high-cons-threshold))
+        (setq-default read-process-output-max (* 1024 1024))
+        ;; REVIEW LSP causes a lot of allocations, with or without the native JSON
+        ;;        library, so we up the GC threshold to stave off GC-induced
+        ;;        slowdowns/freezes. Doom uses `gcmh' to enforce its GC strategy,
+        ;;        so we modify its variables rather than `gc-cons-threshold'
+        ;;        directly.
+        (setq-default gcmh-high-cons-threshold (* 2 +lsp--default-gcmh-high-cons-threshold))
+        (gcmh-set-high-threshold)
+        (setq +lsp--optimization-init-p t))))
+#+end_src
+
 ** Eglot
 :PROPERTIES:
 :HEADER-ARGS:EMACS-LISP:  :noweb yes
@@ -853,19 +896,34 @@ A lighter-weight LSP client for Emacs, compared to =lsp-mode=.
   (use-package eglot
     :defer t
     :ensure nil
-    :hook ((prog-mode . (lambda ()
-                          (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode 'snippet-mode)
-                            (eglot-ensure)))))
+    :hook
+    (prog-mode . (lambda ()
+                   (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode 'snippet-mode)
+                     (eglot-ensure))))
+    (eglot-managed-mode . +lsp-optimization-mode)
+    :custom
+    (eglot-sync-connect 1)
+    (eglot-autoshutdown t)
+    ;; NOTE: We disable eglot-auto-display-help-buffer because :select t in
+    ;;   its popup rule causes eglot to steal focus too often.
+    (eglot-auto-display-help-buffer nil)
+    :general
+    <<eglot-keybinds>>
     :config
     <<eglot-server-programs>>
-    <<eglot-format-on-save>>
-    ;; Disable eldoc support by default
-    ;; TODO: due to limitations with emacs TUI/GUI compatibility and
-    ;; server/client, this only applies to the emacs you start your config with
-    ;; If you always want popups in the minibuffer, remove these lines
-    (if (display-graphic-p)
-        (add-to-list 'eglot-stay-out-of 'eldoc)))
+    <<eglot-format-on-save>>)
 #+END_SRC
+
+*** Keybinds
+
+#+name: eglot-keybinds
+#+begin_src emacs-lisp :tangle no
+  (start/leader-keys
+   "c" '(:ignore t :which-key "Code")
+   "c <escape>" '(keyboard-escape-quit :which-key t)
+   "c r" '(eglot-rename :which-key "Rename")
+   "c a" '(eglot-code-actions :which-key "Actions"))
+#+end_src
 
 *** Server programs
 
@@ -900,28 +958,39 @@ Improve the performance of Eglot. This requires the installation of [[https://gi
     (eglot-booster-mode))
 #+END_SRC
 
-** LSP-mode :disabled:
+*** Consult integration
+
+#+begin_src emacs-lisp
+    (use-package consult-eglot
+      :ensure t
+      :after (eglot consult)
+      :general
+      (start/leader-keys
+    	     "c s" '(consult-eglot-symbols :wk "Code Symbols")))
+#+end_src
+
+** COMMENT LSP-mode
 
 The classic LSP client for Emacs.
 
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package lsp-mode
-  ;;   :ensure t
-  ;;   :init
-  ;;   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  ;;   (setq lsp-keymap-prefix "C-c l")
-  ;;   :custom 
-  ;;   ;; Use Corfu over company
-  ;;   (lsp-completion-provider :none)
-  ;;   :hook ((rust-mode . lsp)
-  ;;          (c-mode . lsp)
-  ;;          ;; if you want which-key integration
-  ;;          (lsp-mode . lsp-enable-which-key-integration))
-  ;;   :commands lsp)
+  (use-package lsp-mode
+    :ensure t
+    :init
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+    :custom 
+    ;; Use Corfu over company
+    (lsp-completion-provider :none)
+    :hook ((rust-mode . lsp)
+           (c-mode . lsp)
+           ;; if you want which-key integration
+           (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp)
 
-  ;; (use-package lsp-ui
-  ;;   :ensure t
-  ;;   :commands lsp-ui-mode)
+  (use-package lsp-ui
+    :ensure t
+    :commands lsp-ui-mode)
 #+END_SRC
 
 * Syntax checking
@@ -933,7 +1002,7 @@ Check syntax on-the-fly when writing.
     :ensure nil
     :after (consult eglot)
     :general
-    (dysthesis/leader-keys
+    (start/leader-keys
      :keymaps 'flymake-mode-map
      "el" '(consult-flymake :wk "List errors")) ;; depends on consult
     :hook
@@ -944,13 +1013,7 @@ Check syntax on-the-fly when writing.
     (flymake-no-changes-timeout nil)
     :general
     (general-nmap "en" 'flymake-goto-next-error)
-    (general-nmap "ep" 'flymake-goto-prev-error)
-    
-    :config
-    (add-to-list 'display-buffer-alist
-                 '("\\`\\*Flymake diagnostics.*?\\*\\'"
-                   display-buffer-in-side-window  (window-parameters (window-height 0.10)) (side . bottom)))
-    )
+    (general-nmap "ep" 'flymake-goto-prev-error))
 #+END_SRC
 
 * Formatting
@@ -970,12 +1033,20 @@ Check syntax on-the-fly when writing.
 :END:
 
 #+BEGIN_SRC emacs-lisp
-    (use-package tree-sitter
-      :ensure t
-      :hook
-      (prog-mode . global-tree-sitter-mode))
-    (use-package tree-sitter-langs
-      :ensure t)
+  (use-package tree-sitter
+    :ensure t
+    :hook
+    (prog-mode . global-tree-sitter-mode))
+  (use-package tree-sitter-langs
+    :ensure t)
+  (use-package treesit-auto
+    :ensure t
+    :custom
+    (treesit-auto-install 'prompt)
+    :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode))
+
 #+end_src
 
 ** Navigation
@@ -1094,6 +1165,12 @@ Easily browse the Git history of files.
     :after nix-mode
     :commands (nix-repl))
 #+END_SRC
+
+** Haskell
+
+#+begin_src emacs-lisp
+  (use-package haskell-mode :ensure t)
+#+end_src
 
 * Bibliography
 ** Citar
@@ -2033,6 +2110,23 @@ Render previews forTikZ plots inside LaTeX fragments in Org files.
     '(add-to-list 'preview-default-preamble "\\PreviewEnvironment{tikzpicture}" t))
 #+END_SRC
 
+* COMMENT IRC
+
+Turn Emacs into an IRC client.
+
+#+begin_src emacs-lisp
+  (use-package erc
+    :ensure nil
+    :custom
+    (erc-nick "dysthesis")
+    (erc-user-full-name "Dysthesis")
+    :general
+    ("C-c i l" '(lambda ()
+    				(interactive)
+    				(erc-tls :server "palladium.libera.chat"
+    						 :port   "6697"))))
+#+end_src
+
 * Miscellaneous
 ** Async
 
@@ -2086,6 +2180,16 @@ See [[https://github.com/progfolio/elpaca/issues/395][this Github issue in progf
   ;;  (elpaca-update-menus #'elpaca-menu-gnu-devel-elpa))
   ;;(elpaca-wait)
 #+END_SRC
+** Garbage Collector Magic Hack
+
+This package optimises the garbage collector strategy for better performance.
+
+#+begin_src emacs-lisp
+  (use-package gcmh
+    :ensure t
+    :config (gcmh-mode 1))
+#+end_src
+
 * Todo
 ** TODO Configure Org-roam
 ** TODO Centre LaTeX previews

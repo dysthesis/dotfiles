@@ -8,6 +8,7 @@ export EDITOR=nvim
 export PATH=~/.local/share/flatpak/exports/bin:$PATH
 export ELECTRON_OZONE_PLATFORM_HINT=wayland
 export SXHKD_SHELL sh
+export GDK_SCALE=2
 
 if [ "$TERM" != "tmux-256color" ] && [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
 	exec ~/.config/dwl/start
