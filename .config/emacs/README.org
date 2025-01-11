@@ -2119,7 +2119,28 @@ Turn Emacs into an IRC client.
     :ensure nil
     :custom
     (erc-nick "dysthesis")
+    (erc-sasl-user erc-nick)
+    (erc-sasl-password "~/.config/weechat/certs/libera.pem")
     (erc-user-full-name "Dysthesis")
+    (erc-autojoin-channels-alist '(("irc.libera.chat"
+  				  "#voidlinux"
+  				  "#gentoo"
+  				  "#gentoo-hardened"
+  				  "#emacs"
+  				  "#neovim"
+  				  "#dwl"
+  				  "#nixos"
+  				  "#nixos-dev"
+  				  "#nixos-emacs"
+  				  "#org-mode"
+  				  "#rust"
+  				  "#haskell"
+  				  "#haskell-beginners"
+  				  "haskell-in-depth"
+  				  "#osdev"
+  				  "#jujutsu")))
+    (erc-server-auto-reconnect t)
+    (erc-server-reconnect-timeout 10)
     :general
     ("C-c i l" '(lambda ()
     				(interactive)
