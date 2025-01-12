@@ -1579,8 +1579,8 @@
   :init
   (setq evil-undo-system 'undo-fu))
 
-(setenv "PATH" (concat (getenv "PATH") ":/home/demiurge/.local/bin"))
-(setq exec-path (append exec-path '("/home/demiurge/.local/bin")))
+(setenv "PATH" (concat (getenv "PATH") ":/home/demiurge/.nix-profile/bin"))
+(setq exec-path (append exec-path '("/home/demiurge/.nix-profile/bin")))
 
 ;;(use-package elpaca
 ;;  :init

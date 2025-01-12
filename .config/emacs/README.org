@@ -2238,8 +2238,8 @@ Use vterm because it is simple and fast, and does all I need.
 Tell Emacs where my binaries are.
 
 #+BEGIN_SRC emacs-lisp
-  (setenv "PATH" (concat (getenv "PATH") ":/home/demiurge/.local/bin"))
-  (setq exec-path (append exec-path '("/home/demiurge/.local/bin")))
+  (setenv "PATH" (concat (getenv "PATH") ":/home/demiurge/.nix-profile/bin"))
+  (setq exec-path (append exec-path '("/home/demiurge/.nix-profile/bin")))
 #+END_SRC
 
 ** Fix Elpaca not installing the =queue= package
