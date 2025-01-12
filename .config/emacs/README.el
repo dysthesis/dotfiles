@@ -463,6 +463,11 @@
 
 (savehist-mode) ;; Enables save history mode
 
+(use-package vertico-posframe
+  :ensure t
+  :after vertico
+  :config (vertico-posframe-mode 1))
+
 (use-package marginalia
   :ensure t
   :after vertico
@@ -1544,6 +1549,15 @@
 
 (eval-after-load "preview"
   '(add-to-list 'preview-default-preamble "\\PreviewEnvironment{tikzpicture}" t))
+
+(use-package vterm
+  :ensure t)
+
+(setq-default shell-file-name (executable-find "dash"))
+
+(use-package envrc
+  :ensure t
+  :hook (after-init-hook . envrc-global-mode))
 
 (use-package async
   :ensure t

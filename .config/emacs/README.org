@@ -595,13 +595,28 @@ This is similar to =leap.nvim= or =flash.nvim=; it allows for jumping to a certa
   (vertico-mode))
 
 (savehist-mode) ;; Enables save history mode
+#+end_src
 
+*** Posframe
+
+#+begin_src emacs-lisp
+  (use-package vertico-posframe
+    :ensure t
+    :after vertico
+    :config (vertico-posframe-mode 1))
+#+end_src
+
+** Marginalia
+#+begin_src emacs-lisp
 (use-package marginalia
   :ensure t
   :after vertico
   :init
   (marginalia-mode))
+#+end_src
 
+** Icons
+#+BEGIN_SRC emacs-lisp
 (use-package nerd-icons-completion
   :ensure t
   :after marginalia
@@ -2112,7 +2127,21 @@ Render previews forTikZ plots inside LaTeX fragments in Org files.
 
 * COMMENT IRC
 
-Turn Emacs into an IRC client.
+This isn't working just yet. ERC does not seem to be able to resolve the address =palladium.libera.chat= with Tor enabled, even though Weechat is able to do so just fine.
+
+First, set up the SOCKS proxy to connect to IRC via Tor.
+
+#+begin_src emacs-lisp
+  (use-package socks
+    :ensure nil
+    :demand t
+    :custom
+    (socks-override-functions 1)
+    (socks-noproxy '("localhost"))
+    (socks-server '("Tor" "localhost" 9050 5)))
+#+end_src
+
+Then, configure ERC to connect to Libera Chat.
 
 #+begin_src emacs-lisp
   (use-package erc
@@ -2122,33 +2151,56 @@ Turn Emacs into an IRC client.
     (erc-sasl-user erc-nick)
     (erc-sasl-password "~/.config/weechat/certs/libera.pem")
     (erc-user-full-name "Dysthesis")
-    (erc-autojoin-channels-alist '(("irc.libera.chat"
-  				  "#voidlinux"
-  				  "#gentoo"
-  				  "#gentoo-hardened"
-  				  "#emacs"
-  				  "#neovim"
-  				  "#dwl"
-  				  "#nixos"
-  				  "#nixos-dev"
-  				  "#nixos-emacs"
-  				  "#org-mode"
-  				  "#rust"
-  				  "#haskell"
-  				  "#haskell-beginners"
-  				  "haskell-in-depth"
-  				  "#osdev"
-  				  "#jujutsu")))
+    (erc-autojoin-channels-alist '(("palladium.libera.chat"
+    								  "#voidlinux"
+    								  "#gentoo"
+    								  "#gentoo-hardened"
+    								  "#emacs"
+    								  "#neovim"
+    								  "#dwl"
+    								  "#nixos"
+    								  "#nixos-dev"
+    								  "#nixos-emacs"
+    								  "#org-mode"
+    								  "#rust"
+    								  "#haskell"
+    								  "#haskell-beginners"
+    								  "haskell-in-depth"
+    								  "#osdev"
+    								  "#jujutsu")))
     (erc-server-auto-reconnect t)
     (erc-server-reconnect-timeout 10)
     :general
     ("C-c i l" '(lambda ()
-    				(interactive)
-    				(erc-tls :server "palladium.libera.chat"
-    						 :port   "6697"))))
+      				(interactive)
+      				(erc-tls :server "palladium.libera.chat"
+      						 :port   "6697"))))
+#+end_src
+
+* Terminal emulation
+
+Use vterm because it is simple and fast, and does all I need.
+
+#+begin_src emacs-lisp
+  (use-package vterm
+    :ensure t)
 #+end_src
 
 * Miscellaneous
+** Default shell
+
+#+begin_src emacs-lisp
+  (setq-default shell-file-name (executable-find "dash"))
+#+end_src
+
+** Direnv
+
+#+begin_src emacs-lisp
+  (use-package envrc
+    :ensure t
+    :hook (after-init-hook . envrc-global-mode))
+#+end_src
+
 ** Async
 
 #+BEGIN_SRC emacs-lisp
