@@ -169,5 +169,5 @@ end
 # Variables
 export VDIRSYNCER_CONFIG=$HOME/.config/vdirsyncer/config
 export ZK_NOTEBOOK_DIR=~/Documents/Notes
-export PATH="$HOME/.cargo/bin:$HOME/.cabal/bin:$HOME/.ghcup/bin:$HOME/.local/share/flatpak/exports/bin:$HOME/.local/bin:$PATH"
+# export PATH="$HOME/.cargo/bin:$HOME/.cabal/bin:$HOME/.ghcup/bin:$HOME/.local/share/flatpak/exports/bin:$HOME/.local/bin:$PATH"
 export EDITOR=nvim

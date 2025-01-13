@@ -4,8 +4,7 @@
 
 export ZK_NOTEBOOK_DIR=~/Documents/Notes
 export VDIRSYNCER_CONFIG=/home/demiurge/.config/vdirsyncer/config
-export EDITOR=nvim
-export PATH=~/.local/share/flatpak/exports/bin:$PATH
+export PATH=~/.local/bin:~/.local/bin/zigd:~/.local/share/flatpak/exports/bin:$PATH
 export ELECTRON_OZONE_PLATFORM_HINT=wayland
 export SXHKD_SHELL sh
 export GDK_SCALE=2

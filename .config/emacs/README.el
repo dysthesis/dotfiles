@@ -859,6 +859,23 @@
 
 (use-package haskell-mode :ensure t)
 
+(use-package zig-mode
+  :ensure t
+  :after eglot
+  :custom (zig-format-on-save 1)
+  :hook
+  (zig-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs '(zig-mode . ("/usr/bin/zls"
+ 												   :initializationOptions (:zig_exe_path (executable-find "zig")))))
+  (if (>= emacs-major-version 28)
+      (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+    (progn
+      (defun colorize-compilation-buffer ()
+     	(let ((inhibit-read-only t))
+   		 (ansi-color-apply-on-region compilation-filter-start (point))))
+      (add-hook 'compilation-filter-hook 'colorize-compilation-buffer))))
+
 (use-package citar
   :ensure t
   :custom (citar-bibliography '("~/Documents/Org/Library.bib"))
@@ -884,58 +901,6 @@
       (delete-char 1))))
 
 (setq-default citar-open-note-function 'my-citar-org-open-notes)
-
-(use-package nov
-  :ensure t
-  :mode ("\\.epub\\'" . nov-mode)
-  :general
-  ("RET" 'nov-scroll-up)
-  :config
-  (advice-add 'nov-render :override #'ignore)
-  (defun +nov-mode-setup ()
-    "Tweak nov-mode to our liking."
-    (face-remap-add-relative 'variable-pitch
-                             :family "Georgia Pro"
-                             :height 1.4)
-    (face-remap-add-relative 'default :height 1.3)
-    (setq-local line-spacing 0.2
-                next-screen-context-lines 4
-                shr-use-colors nil)
-    (require 'visual-fill-column nil t)
-    (setq-local visual-fill-column-center-text t
-                visual-fill-column-width 81
-                nov-text-width 80)
-    (visual-fill-column-mode 1)
-    (hl-line-mode -1)
-    ;; Re-render with new display settings
-    (nov-render-document)
-    ;; Look up words with the dictionary.
-    (add-to-list '+lookup-definition-functions #'+lookup/dictionary-definition)
-    ;; Customise the mode-line to make it more minimal and relevant.
-    (setq-local
-     mode-line-format
-     `((:eval
-        (doom-modeline-segment--workspace-name))
-       (:eval
-        (doom-modeline-segment--window-number))
-       (:eval
-        (doom-modeline-segment--nov-info))
-       ,(propertize
-         " %P "
-         'face 'doom-modeline-buffer-minor-mode)
-       ,(propertize
-         " "
-         'face (if (doom-modeline--active) 'mode-line 'mode-line-inactive)
-         'display `((space
-                     :align-to
-                     (- (+ right right-fringe right-margin)
-                        ,(* (let ((width (doom-modeline--font-width)))
-                              (or (and (= width 1) 1)
-                                  (/ width (frame-char-width) 1.0)))
-                            (string-width
-                             (format-mode-line (cons "" '(:eval (doom-modeline-segment--major-mode))))))))))
-       (:eval (doom-modeline-segment--major-mode)))))
-  (add-hook 'nov-mode-hook #'+nov-mode-setup))
 
 (use-package org
   :ensure nil
@@ -1579,8 +1544,10 @@
   :init
   (setq evil-undo-system 'undo-fu))
 
-(setenv "PATH" (concat (getenv "PATH") ":/home/demiurge/.nix-profile/bin"))
-(setq exec-path (append exec-path '("/home/demiurge/.nix-profile/bin")))
+(setenv "PATH" (concat "/home/demiurge/.nix-profile/bin:/home/demiurge/.local/bin:" (getenv "PATH")))
+(setq exec-path (append '("/home/demiurge/.nix-profile/bin"
+			  "/home/demiurge/.local/bin")
+			exec-path))
 
 ;;(use-package elpaca
 ;;  :init
