@@ -2238,12 +2238,17 @@ Use vterm because it is simple and fast, and does all I need.
 ** Undo history
 
 #+BEGIN_SRC emacs-lisp
-    (use-package undo-fu
-      :ensure t
-      :config
-      (global-unset-key (kbd "C-z"))
-      (global-set-key (kbd "C-z")   'undo-fu-only-undo)
-      (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
+  (use-package undo-fu
+    :ensure t
+    :config
+    (global-unset-key (kbd "C-z"))
+    (global-set-key (kbd "C-z")   'undo-fu-only-undo)
+    (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
+
+  (use-package undo-fu-session
+    :ensure t
+    :config
+    (undo-fu-session-global-mode))
 #+END_SRC
 
 *** Integrate with Evil Mode
@@ -2253,6 +2258,14 @@ Use vterm because it is simple and fast, and does all I need.
       :init
       (setq evil-undo-system 'undo-fu))
 #+END_SRC
+
+** Undo tree
+
+#+begin_src emacs-lisp
+  (use-package vundo
+    :ensure t
+    :custom (vundo-glyph-alist vundo-unicode-symbols))
+#+end_src
 
 ** Custom =PATH=
 

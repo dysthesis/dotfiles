@@ -1540,9 +1540,18 @@
   (global-set-key (kbd "C-z")   'undo-fu-only-undo)
   (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
 
+(use-package undo-fu-session
+  :ensure t
+  :config
+  (undo-fu-session-global-mode))
+
 (use-package evil
   :init
   (setq evil-undo-system 'undo-fu))
+
+(use-package vundo
+  :ensure t
+  :custom (vundo-glyph-alist vundo-unicode-symbols))
 
 (setenv "PATH" (concat "/home/demiurge/.nix-profile/bin:/home/demiurge/.local/bin:" (getenv "PATH")))
 (setq exec-path (append '("/home/demiurge/.nix-profile/bin"
