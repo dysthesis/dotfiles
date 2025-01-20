@@ -675,6 +675,13 @@
 (use-package smartparens
   :ensure smartparens  ;; install the package
   :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
+  :general
+  ("M-h" 'sp-backward-slurp-sexp)
+  ("M-l" 'sp-forward-slurp-sexp)
+  ("M-H" 'sp-backward-barf-sexp)
+  ("M-L" 'sp-forward-barf-sexp)
+  ("M-r" '(sp-rewrap-sexp :wk "Change wrapping parentheses"))
+  ("C-M-t" 'sp-transpose-sexp)
   :config
   ;; load default config
   (require 'smartparens-config))
@@ -845,6 +852,60 @@
   :after (transient)
   :general ("C-x g" 'magit))
 
+(use-package diff-hl
+  :ensure t
+  :demand t
+  :custom
+  (vc-git-diff-switches '("--histogram"))
+  (diff-hl-flydiff-delay 0.5)
+  (diff-hl-update-async t)
+  (diff-hl-show-staged-changes nil)
+  (diff-hl-draw-borders nil)
+  :hook (vc-dir-mode . turn-on-diff-hl-mode)
+  :hook (diff-hl-mode . diff-hl-flydiff-mode)
+  :hook (elpaca-after-init . global-diff-hl-mode)
+  :config
+  (if (fboundp 'fringe-mode) (fringe-mode '8))
+  (setq-default fringes-outside-margins t)
+;; from https://github.com/jidibinlin/.emacs.d/blob/d5332b2a7877126e83dc3dc0c94e1c66dd5446c0/lisp/init-vc.el#L56C2-L91C69
+  (defun dysthesis/pretty-diff-hl-fringe (&rest _)
+    (let* ((scale (if (and (boundp 'text-scale-mode-amount)
+  						   (numberp text-scale-mode-amount))
+  				      (expt text-scale-mode-step text-scale-mode-amount)
+  				    1))
+  		   (spacing (or (and (display-graphic-p) (default-value 'line-spacing)) 0))
+  		   (h (+ (ceiling (* (frame-char-height) scale))
+  					(if (floatp spacing)
+  				     (truncate (* (frame-char-height) spacing))
+  				   spacing)))
+  		   (w (min (frame-parameter nil (intern (format "%s-fringe" diff-hl-side)))
+  					  16))
+  		   (_ (if (zerop w) (setq w 16))))
+
+      (define-fringe-bitmap 'diff-hl-bmp-middle
+  		(make-vector
+  		 h (string-to-number (let ((half-w (1- (/ w 2))))
+  						       (concat (make-string half-w ?1)
+  									      (make-string (- w half-w) ?0)))
+  							    2))
+  		nil nil 'center)))
+  
+  (advice-add #'diff-hl-define-bitmaps
+  			     :after #'dysthesis/pretty-diff-hl-fringe)
+  
+  (defun dysthesis/diff-hl-type-at-pos-fn (type _pos)
+    'diff-hl-bmp-middle)
+  
+  (setq diff-hl-fringe-bmp-function #'dysthesis/diff-hl-type-at-pos-fn)
+  (defun dysthesis/diff-hl-fringe-pretty(_)
+    (set-face-attribute 'diff-hl-insert nil :background 'unspecified :inherit nil)
+    (set-face-attribute 'diff-hl-delete nil :background 'unspecified :inherit nil)
+    (set-face-attribute 'diff-hl-change nil :background 'unspecified :inherit nil))
+  (add-to-list 'after-make-frame-functions
+  			      #'dysthesis/diff-hl-fringe-pretty)
+  (add-to-list 'enable-theme-functions #'dysthesis/diff-hl-fringe-pretty)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+
 (use-package git-timemachine
   :ensure t
   :hook (evil-normalize-keymaps . git-timemachine-hook))
@@ -899,12 +960,9 @@
 
 (use-package citar
   :ensure t
+  :demand t
   :custom
   (citar-bibliography '("~/Documents/Org/Library.bib"))
-  (org-cite-global-bibliography citar-bibliography)
-  (org-cite-insert-processor 'citar)
-  (org-cite-follow-processor 'citar)
-  (org-cite-activate-processor 'citar)
   :hook
   ((org-mode LaTeX-mode) . citar-capf-setup)
   :general
@@ -932,6 +990,7 @@
 
 (use-package org
   :ensure nil
+  :after citar
   :general
   ("C-c c" 'org-capture)
   ("S-RET" 'org-open-at-point)
@@ -940,6 +999,10 @@
   (org-archive-location (concat org-directory "archive.org::* From =%s="))
   (org-preview-latex-default-process 'dvisvgm)
   (org-highlight-latex-and-related '(latex script entities))
+  (org-cite-global-bibliography citar-bibliography)
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
   :config
   (custom-set-faces
    '(org-level-1 ((t (:inherit outline-1 :foreground "#ffffff" :height 1.4 :weight bold))))
@@ -1490,6 +1553,9 @@ If on a:
   :ensure t
   :custom
   (org-roam-directory (file-truename "~/Documents/Org/Roam/"))
+  (org-roam-complete-everywhere t)
+  (org-roam-buffer-window-parameters '((no-delete-other-windows . t)))
+  (org-roam-link-use-custom-faces 'everywhere)
   (org-roam-capture-templates
    '(("d" " Default" plain
       "%?"
