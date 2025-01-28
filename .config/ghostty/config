@@ -2222,31 +2222,31 @@ auto-update-channel =
 
 # Theme
 #
-## Rasmus
+## Monochrome
 
 palette = 0=#333332
-palette = 1=#ff968c
-palette = 2=#61957f
-palette = 3=#ffc591
-palette = 4=#8db4d4
-palette = 5=#de9bc8
-palette = 6=#7bb099
+palette = 1=#eca8a8
+palette = 2=#ccd389
+palette = 3=#efd5a0
+palette = 4=#a5c6e1
+palette = 5=#e1bee9
+palette = 6=#c7ebe6
 palette = 7=#d1d1d1
 
 palette = 8=#4c4c4b
-palette = 9=#ffafa5
-palette = 10=#7aae98
-palette = 11=#ffdeaa
-palette = 12=#a6cded
-palette = 13=#f7b4e1
-palette = 14=#94c9b2
+palette = 9=#ffc4c4
+palette = 10=#eff6ab
+palette = 11=#ffe6b5
+palette = 12=#c9e6fd
+palette = 13=#f7d7ff
+palette = 14=#ddfcf8
 palette = 15=#eaeaea
 
-background = #1a1a19
-foreground = #d1d1d1
-cursor-color = #d1d1d1
-selection-background = #d1d1d1
-selection-foreground = #1a1a19
+background = #000000
+foreground = #ffffff
+cursor-color = #ffffff
+selection-background = #ffffff
+selection-foreground = #000000
 
 ## Nordic
 # Based on https://github.com/AlexvZyl/nordic.nvim
