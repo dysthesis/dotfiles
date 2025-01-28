@@ -363,10 +363,10 @@ freetype-load-flags = hinting,force-autohint,monochrome,autohint
 theme = 
 
 # Background color for the window.
-background = #282c34
+#background = #282c34
 
 # Foreground color for the window.
-foreground = #ffffff
+#foreground = #ffffff
 
 # The foreground and background color for selection. If this is not set, then
 # the selection color is just the inverted window background and foreground
@@ -780,7 +780,7 @@ mouse-scroll-multiplier = 1
 # On macOS, background opacity is disabled when the terminal enters native
 # fullscreen. This is because the background becomes gray and it can cause
 # widgets to show through which isn't generally desirable.
-background-opacity = 0.85
+background-opacity = 1
 
 # A positive value enables blurring of the background when background-opacity
 # is less than 1. The value is the blur radius to apply. A value of 20
@@ -2221,24 +2221,80 @@ auto-update = check
 auto-update-channel = 
 
 # Theme
-palette = 0=#45475a
-palette = 1=#f38ba8
-palette = 2=#a6e3a1
-palette = 3=#f9e2af
-palette = 4=#89b4fa
-palette = 5=#f5c2e7
-palette = 6=#94e2d5
-palette = 7=#bac2de
-palette = 8=#585b70
-palette = 9=#f38ba8
-palette = 10=#a6e3a1
-palette = 11=#f9e2af
-palette = 12=#89b4fa
-palette = 13=#f5c2e7
-palette = 14=#94e2d5
-palette = 15=#a6adc8
-background = 000000
-foreground = ffffff
-cursor-color = f5e0dc
-selection-background = 353749
-selection-foreground = cdd6f4
+#
+## Rasmus
+
+palette = 0=#333332
+palette = 1=#ff968c
+palette = 2=#61957f
+palette = 3=#ffc591
+palette = 4=#8db4d4
+palette = 5=#de9bc8
+palette = 6=#7bb099
+palette = 7=#d1d1d1
+
+palette = 8=#4c4c4b
+palette = 9=#ffafa5
+palette = 10=#7aae98
+palette = 11=#ffdeaa
+palette = 12=#a6cded
+palette = 13=#f7b4e1
+palette = 14=#94c9b2
+palette = 15=#eaeaea
+
+background = #1a1a19
+foreground = #d1d1d1
+cursor-color = #d1d1d1
+selection-background = #d1d1d1
+selection-foreground = #1a1a19
+
+## Nordic
+# Based on https://github.com/AlexvZyl/nordic.nvim
+
+# palette = 0=#191D24
+# palette = 1=#BF616A
+# palette = 2=#A3BE8C
+# palette = 3=#EBCB8B
+# palette = 4=#81A1C1
+# palette = 5=#B48EAD
+# palette = 6=#8FBCBB
+# palette = 7=#D8DEE9
+#
+# palette = 8=#3B4252
+# palette = 9=#D06F79
+# palette = 10=#B1D196
+# palette = 11=#F0D399
+# palette = 12=#88C0D0
+# palette = 13=#C895BF
+# palette = 14=#93CCDC
+# palette = 15=#E5E9F0
+#
+# background = #242933
+# foreground = #D8DEE9
+# cursor-color = #D8DEE9
+# selection-background = #2E3440
+# selection-foreground = #D8DEE9
+
+#
+## Catppuccin
+# palette = 0=#45475a
+# palette = 1=#f38ba8
+# palette = 2=#a6e3a1
+# palette = 3=#f9e2af
+# palette = 4=#89b4fa
+# palette = 5=#f5c2e7
+# palette = 6=#94e2d5
+# palette = 7=#bac2de
+# palette = 8=#585b70
+# palette = 9=#f38ba8
+# palette = 10=#a6e3a1
+# palette = 11=#f9e2af
+# palette = 12=#89b4fa
+# palette = 13=#f5c2e7
+# palette = 14=#94e2d5
+# palette = 15=#a6adc8
+# background = 000000
+# foreground = ffffff
+# cursor-color = f5e0dc
+# selection-background = 353749
+# selection-foreground = cdd6f4

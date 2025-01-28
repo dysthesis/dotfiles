@@ -2,7 +2,7 @@ return {
   { -- A statusline for neovim
     'nvim-lualine/lualine.nvim',
     event = 'VeryLazy',
-    enabled = true,
+    enabled = false,
     dependencies = {
       'nvim-tree/nvim-web-devicons',
     },
