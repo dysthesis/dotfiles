@@ -360,7 +360,8 @@ freetype-load-flags = hinting,force-autohint,monochrome,autohint
 # 
 #   - macOS: titlebar tabs style is not updated when switching themes.
 # 
-theme = 
+
+theme =
 
 # Background color for the window.
 #background = #282c34
@@ -2222,32 +2223,57 @@ auto-update-channel =
 
 # Theme
 #
+## Lackluster
+# https://github.com/slugbyte/lackluster.nvim/blob/662fba7e6719b7afc155076385c00d79290bc347/extra/ghostty/lackluster
+
+palette = 0=#080808
+palette = 1=#d70000
+palette = 2=#789978
+palette = 3=#ffaa88
+palette = 4=#7788aa
+palette = 5=#d7007d
+palette = 6=#708090
+palette = 7=#deeeed
+palette = 8=#444444
+palette = 9=#d70000
+palette = 10=#789978
+palette = 11=#ffaa88
+palette = 12=#7788aa
+palette = 13=#d7007d
+palette = 14=#708090
+palette = 15=#deeeed
+background = 0a0a0a
+foreground = deeeed
+cursor-color = deeeed
+selection-background = 7a7a7a
+selection-foreground = 0a0a0a
+
 ## Monochrome
 
-palette = 0=#333332
-palette = 1=#eca8a8
-palette = 2=#ccd389
-palette = 3=#efd5a0
-palette = 4=#a5c6e1
-palette = 5=#e1bee9
-palette = 6=#c7ebe6
-palette = 7=#d1d1d1
-
-palette = 8=#4c4c4b
-palette = 9=#ffc4c4
-palette = 10=#eff6ab
-palette = 11=#ffe6b5
-palette = 12=#c9e6fd
-palette = 13=#f7d7ff
-palette = 14=#ddfcf8
-palette = 15=#eaeaea
-
-background = #000000
-foreground = #ffffff
-cursor-color = #ffffff
-selection-background = #ffffff
-selection-foreground = #000000
-
+# palette = 0=#333332
+# palette = 1=#eca8a8
+# palette = 2=#ccd389
+# palette = 3=#efd5a0
+# palette = 4=#a5c6e1
+# palette = 5=#e1bee9
+# palette = 6=#c7ebe6
+# palette = 7=#d1d1d1
+#
+# palette = 8=#4c4c4b
+# palette = 9=#ffc4c4
+# palette = 10=#eff6ab
+# palette = 11=#ffe6b5
+# palette = 12=#c9e6fd
+# palette = 13=#f7d7ff
+# palette = 14=#ddfcf8
+# palette = 15=#eaeaea
+#
+# background = #000000
+# foreground = #ffffff
+# cursor-color = #ffffff
+# selection-background = #ffffff
+# selection-foreground = #000000
+#
 ## Nordic
 # Based on https://github.com/AlexvZyl/nordic.nvim
 
