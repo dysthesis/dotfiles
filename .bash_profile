@@ -2,7 +2,7 @@
 # ~/.bash_profile
 #
 
-export ZK_NOTEBOOK_DIR=~/Documents/Notes
+export ZK_NOTEBOOK_DIR=$HOME/Documents/Notes/Contents
 export VDIRSYNCER_CONFIG=/home/demiurge/.config/vdirsyncer/config
 export PATH=~/.local/bin:~/.local/bin/zigd:~/.local/share/flatpak/exports/bin:$PATH
 export ELECTRON_OZONE_PLATFORM_HINT=wayland

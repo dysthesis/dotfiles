@@ -13,7 +13,6 @@ if status is-interactive
 end
 
 alias sudo=doas
-alias ytfzf="ytfzf -t -T kitty"
 # Git stuff
 alias gc="git commit -S -am"
 
@@ -50,7 +49,7 @@ alias tat='task add scheduled:tomorrow until:sch+14d'
 alias tm='task modify'
 
 alias torsubs='torsocks ytfzf -c SI --sort'
-alias subs='ytfzf -t -T kitty -c SI --sort'
+alias subs='ytfzf -t -T kitty -c S --sort'
 
 alias yt='mpv --ytdl-format=bestvideo+bestaudio'
 
@@ -167,8 +166,6 @@ function backup --argument filename
     cp $filename $filename.bak
 end
 # Variables
-export VDIRSYNCER_CONFIG=$HOME/.config/vdirsyncer/config
-export ZK_NOTEBOOK_DIR=~/Documents/Notes
 # export PATH="$HOME/.cargo/bin:$HOME/.cabal/bin:$HOME/.ghcup/bin:$HOME/.local/share/flatpak/exports/bin:$HOME/.local/bin:$PATH"
 export EDITOR=nvim
 
